@@ -1,0 +1,22 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>com.yl.distribute.scheduler</groupId>
+  <artifactId>distribute-scheduler</artifactId>
+  <version>0.0.1-SNAPSHOT</version>
+  <packaging>pom</packaging>
+  <!--
+  <modules>
+        <module>distribute-scheduler-client</module>
+        <module>distribute-scheduler-common</module>
+        <module>distribute-scheduler-config</module>
+        <module>distribute-scheduler-server</module>
+    </modules>
+    -->  
+  <modules>
+  	<module>distribute-scheduler-client</module>
+  	<module>distribute-scheduler-common</module>
+  	<module>distribute-scheduler-core</module>
+  	<module>distribute-scheduler-server</module>
+  	<module>distribute-scheduler-web</module>
+  </modules>
+</project>
