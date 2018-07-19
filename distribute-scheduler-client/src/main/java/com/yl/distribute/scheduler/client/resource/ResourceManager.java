@@ -3,21 +3,21 @@ package com.yl.distribute.scheduler.client.resource;
 import java.net.InetSocketAddress;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 import org.I0Itec.zkclient.ZkClient;
-import org.apache.commons.lang3.StringUtils;
 import org.I0Itec.zkclient.IZkChildListener;
 import com.yl.distribute.scheduler.client.NettyPoolClient;
 import com.yl.distribute.scheduler.common.bean.HostInfo;
 import com.yl.distribute.scheduler.common.bean.JobRequest;
-import com.yl.distribute.scheduler.common.config.Configuration;
 import com.yl.distribute.scheduler.common.constants.GlobalConstants;
-import com.yl.distribute.scheduler.common.zk.*;
+import com.yl.distribute.scheduler.core.config.Configuration;
+import com.yl.distribute.scheduler.core.zk.*;
+
 import io.netty.channel.pool.SimpleChannelPool;
 
 public class ResourceManager {
@@ -31,7 +31,7 @@ public class ResourceManager {
     public Map<String,SimpleChannelPool> channelPoolMap = new ConcurrentHashMap<String,SimpleChannelPool>();
     
     //key is servername,value is host info
-    public Map<String,HostInfo> resourceMap = new ConcurrentHashMap<String,HostInfo>();
+    public Map<String,HostInfo> resourceMap = new HashMap<String,HostInfo>();
     
     private static ResourceManager resourceManager = new ResourceManager(); 
     
@@ -48,13 +48,14 @@ public class ResourceManager {
         init(rootPool);
     }
     
-    public void init(String rootPath) {
+    public void init(String rootPool) {
+        this.rootPool = rootPool;
         ZkClient zkClient = ZKHelper.getClient();
-        List<String> pools = zkClient.getChildren(rootPath);
+        List<String> pools = zkClient.getChildren(rootPool);
         if(pools != null && pools.size() > 0) {
             for(String poolName : pools) {
-                initPool(zkClient,rootPath + "/" + poolName);
-                addNodeChangeListener(zkClient,rootPath + "/" + poolName);  
+                initPool(zkClient,rootPool + "/" + poolName);
+                addNodeChangeListener(zkClient,rootPool + "/" + poolName);  
             }
         }
     }
@@ -74,7 +75,11 @@ public class ResourceManager {
             }
         }         
     }
-    
+    /**
+     * zk中节点有变动更新pool中机器
+     * @param zkClient
+     * @param path
+     */
     public void addNodeChangeListener(final ZkClient zkClient,final String path) {
         List<String> oldChilds = new ArrayList<String>();
         if(poolServers.get(path) != null) {
@@ -92,7 +97,11 @@ public class ResourceManager {
             }  
         });          
     }  
-    
+    /**
+     * 把新的节点付给老的节点
+     * @param oldChilds
+     * @param currentChilds
+     */
     private void resetOldChild(List<String> oldChilds,List<String> currentChilds) {
         oldChilds.clear();
         if(currentChilds != null && currentChilds.size() > 0) {
@@ -101,7 +110,15 @@ public class ResourceManager {
             }
         }
     }
-    
+    /**
+     * 刷新pool
+     * 给新节点加上channel池
+     * 关闭断掉的节点连接池
+     * @param zkClient
+     * @param parentPath
+     * @param oldChilds
+     * @param currentChilds
+     */
     public synchronized void refreshPool(ZkClient zkClient,String parentPath,List<String> oldChilds,final List<String> currentChilds) {
         List<String> servers = poolServers.get(parentPath);
         servers.clear();  
@@ -133,7 +150,12 @@ public class ResourceManager {
             }
         }
     }
-    
+    /**
+     * 为每台机器添加固定个channel池
+     * @param zkClient
+     * @param path
+     * @param childs
+     */
     private synchronized void addServerAndChannels(ZkClient zkClient,String path,List<String> childs) {
         if(childs != null && childs.size() > 0) {
             Properties prop = Configuration.getConfig("config.properties");        
@@ -148,59 +170,60 @@ public class ResourceManager {
             }
         }
     }
-    
+    /**
+     * 处理任务时减少资源
+     * @param serverName
+     * @param resourceParams
+     */
     public synchronized void subResource(String serverName,Map<String,Object> resourceParams) {
         int usedCores = 0;
         long usedMemory = 0;
-        HostInfo hostInfo = resourceMap.get(serverName);
-        usedCores = (resourceParams == null || resourceParams.get("cores") == null) ? 
-                GlobalConstants.DEFAULT_CORE_SIZE : Integer.parseInt(String.valueOf(resourceParams.get("cores")));
-        usedMemory = (resourceParams == null || resourceParams.get("memory") == null) ? 
-                GlobalConstants.DEFAUTL_MEMEORY : Long.parseLong(String.valueOf(resourceParams.get("memory")));
-        hostInfo.setCores(hostInfo.getCores() - usedCores);
-        hostInfo.setMemory(hostInfo.getMemory() - usedMemory);
+        synchronized(resourceMap){
+            HostInfo hostInfo = resourceMap.get(serverName);
+            usedCores = (resourceParams == null || resourceParams.get("cores") == null) ? 
+                    GlobalConstants.DEFAULT_CORE_SIZE : Integer.parseInt(String.valueOf(resourceParams.get("cores")));
+            usedMemory = (resourceParams == null || resourceParams.get("memory") == null) ? 
+                    GlobalConstants.DEFAUTL_MEMEORY : Long.parseLong(String.valueOf(resourceParams.get("memory")));
+            hostInfo.setCores(hostInfo.getCores() - usedCores);
+            hostInfo.setMemory(hostInfo.getMemory() - usedMemory);  
+        }
     }
     
-    public synchronized void addResource(String serverName,Map<String,Object> resourceParams) {
+    /**
+     * 任务处理完毕恢复资源
+     * @param serverName
+     * @param resourceParams
+     */
+    public void addResource(String serverName,Map<String,Object> resourceParams) {
         int usedCores = 0;
         long usedMemory = 0;
-        HostInfo hostInfo = resourceMap.get(serverName);
-        usedCores = (resourceParams == null || resourceParams.get("cores") == null) ? 
-                GlobalConstants.DEFAULT_CORE_SIZE : Integer.parseInt(String.valueOf(resourceParams.get("cores")));
-        usedMemory = (resourceParams == null || resourceParams.get("memory") == null) ? 
-                GlobalConstants.DEFAUTL_MEMEORY : Long.parseLong(String.valueOf(resourceParams.get("memory")));
-        hostInfo.setCores(hostInfo.getCores() + usedCores);
-        hostInfo.setMemory(hostInfo.getMemory() + usedMemory);
-    }
-      
-    public synchronized String getIdleServer(JobRequest input,String lastFailedServer) { 
-        List<String> servers = poolServers.get(rootPool + "/" + input.getPoolName());
-        List<HostInfo> sortedServers = new ArrayList<HostInfo>();
-        if(servers != null && servers.size() > 0){
-            for(String server : servers) {
-                if(resourceMap.get(server) != null) {
-                    sortedServers.add(resourceMap.get(server));
-                }
-            }
-            Collections.sort(sortedServers);
-            if(sortedServers != null && sortedServers.size() > 0) {
-                if(StringUtils.isEmpty(lastFailedServer)) {
-                    return sortedServers.get(0).getHostName();
-                }else {
-                    //任务重试会选择没有失败并且资源最多的server,如果没有可用server就抛出异常
-                    List<HostInfo> excludeServers = sortedServers.stream().filter(
-                            hostInfo -> !hostInfo.getHostName().equalsIgnoreCase(lastFailedServer))
-                            .collect(Collectors.toList());
-                    if(excludeServers != null && excludeServers.size() > 0) {
-                        return excludeServers.get(0).getHostName();
-                    }else {
-                        throw new RuntimeException("找不到可用的服务器 "+ input.getRequestId());
-                    }
-                }
-                
-            }
+        synchronized(resourceMap){
+            HostInfo hostInfo = resourceMap.get(serverName);
+            usedCores = (resourceParams == null || resourceParams.get("cores") == null) ? 
+                    GlobalConstants.DEFAULT_CORE_SIZE : Integer.parseInt(String.valueOf(resourceParams.get("cores")));
+            usedMemory = (resourceParams == null || resourceParams.get("memory") == null) ? 
+                    GlobalConstants.DEFAUTL_MEMEORY : Long.parseLong(String.valueOf(resourceParams.get("memory")));
+            hostInfo.setCores(hostInfo.getCores() + usedCores);
+            hostInfo.setMemory(hostInfo.getMemory() + usedMemory); 
         }
-        throw new RuntimeException("can not find availiable server");
+    }
+    /**
+     * 根据策略获取pool中的空闲机器 
+     * @param input
+     * @param lastFailedServer
+     * @return
+     */
+    public synchronized String getIdleServer(JobRequest input,String lastFailedServer) { 
+        Properties prop = Configuration.getConfig("config.properties"); 
+        String serverStrategy = Configuration.getString(prop, "idle.server.select.strategy");
+        ServerSelectStrategy serverSelectStrategy = null;
+        try {
+            serverSelectStrategy = (ServerSelectStrategy) Class.forName(serverStrategy).newInstance();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return serverSelectStrategy.getIdleServer(input, poolServers, resourceMap, lastFailedServer);
+
     }
     
     public SimpleChannelPool getIdleServerChannel(String serverName) { 

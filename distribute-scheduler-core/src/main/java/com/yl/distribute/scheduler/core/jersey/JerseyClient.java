@@ -1,4 +1,4 @@
-package com.yl.distribute.scheduler.common.jersey;
+package com.yl.distribute.scheduler.core.jersey;
 
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;

@@ -1,4 +1,4 @@
-package com.yl.distribute.scheduler.common.zk;
+package com.yl.distribute.scheduler.core.zk;
 
 import org.I0Itec.zkclient.exception.ZkMarshallingError;
 import org.I0Itec.zkclient.serialize.ZkSerializer;

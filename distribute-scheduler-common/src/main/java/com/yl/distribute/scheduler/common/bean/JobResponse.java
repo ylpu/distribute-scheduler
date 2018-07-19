@@ -5,6 +5,7 @@ import java.io.Serializable;
 public class JobResponse implements Serializable{
 
     private static final long serialVersionUID = 1L;
+    //responseId和requestId相同
     private String responseId;
     private String runningServer;        
     private String jobStatus;

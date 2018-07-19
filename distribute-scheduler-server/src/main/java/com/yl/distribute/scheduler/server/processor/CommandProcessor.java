@@ -12,11 +12,12 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import com.yl.distribute.scheduler.common.bean.*;
-import com.yl.distribute.scheduler.common.config.Configuration;
 import com.yl.distribute.scheduler.common.enums.JobStatus;
-import com.yl.distribute.scheduler.common.jersey.JerseyClient;
 import com.yl.distribute.scheduler.common.utils.JobUtils;
 import com.yl.distribute.scheduler.common.utils.MetricsUtils;
+import com.yl.distribute.scheduler.core.config.Configuration;
+import com.yl.distribute.scheduler.core.jersey.JerseyClient;
+
 import io.netty.channel.ChannelHandlerContext;
 
 public class CommandProcessor implements IServerProcessor{
@@ -39,9 +40,7 @@ public class CommandProcessor implements IServerProcessor{
         
         JobResponse output = setOutput(outPutFile,errorFile);              
         try {
-          //更新任务
             Response response = updateJob(output);
-            System.out.println(response);
             if(response.getStatus() != 200) {
                 throw new RuntimeException("failed to update job for " + input.getRequestId());
             }
@@ -49,7 +48,6 @@ public class CommandProcessor implements IServerProcessor{
                 Process process = Runtime.getRuntime().exec(input.getCommand());
                 generateStreamOutPut(process.getInputStream(),outPutFile);
                 generateStreamOutPut(process.getErrorStream(),errorFile);
-                //waitFor()判断Process进程是否终止，通过返回值判断是否正常终止。0代表正常终止
                 int c = process.waitFor();
                 if(c != 0){
                     output.setJobStatus(JobStatus.FAILED.getStatus());                    
@@ -74,7 +72,9 @@ public class CommandProcessor implements IServerProcessor{
         JobResponse response = new JobResponse();
         response.setRunningServer(MetricsUtils.getHostName() + "-" + zkPort);
         response.setResponseId(input.getRequestId());
+        //瀹㈡埛绔彲浠ユ牴鎹畊rl璇诲彇jetty鏈嶅姟鍣ㄤ笂鐨別rrorFile
         response.setErrorOutputUrl("http://" + MetricsUtils.getHostIpAddress() + ":" + port + "/" + errorFile);
+        //瀹㈡埛绔彲浠ユ牴鎹畊rl璇诲彇jetty鏈嶅姟鍣ㄤ笂鐨刼utPutFile
         response.setStdOutputUrl("http://" + MetricsUtils.getHostIpAddress() + ":" + port + "/" + outPutFile);        
         response.setJobStatus(JobStatus.RUNNING.getStatus());
         return response;

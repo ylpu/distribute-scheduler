@@ -6,9 +6,9 @@ import com.yl.distribute.scheduler.client.JobClient;
 import com.yl.distribute.scheduler.client.resource.ResourceManager;
 import com.yl.distribute.scheduler.common.bean.JobRequest;
 import com.yl.distribute.scheduler.common.bean.JobResponse;
-import com.yl.distribute.scheduler.common.config.Configuration;
 import com.yl.distribute.scheduler.common.enums.JobStatus;
-import com.yl.distribute.scheduler.common.jersey.JerseyClient;
+import com.yl.distribute.scheduler.core.config.Configuration;
+import com.yl.distribute.scheduler.core.jersey.JerseyClient;
 
 public class ClientCallback{
     

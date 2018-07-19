@@ -4,9 +4,10 @@ import java.util.Properties;
 import com.yl.distribute.scheduler.client.callback.ClientCallback;
 import com.yl.distribute.scheduler.client.resource.ResourceManager;
 import com.yl.distribute.scheduler.common.bean.JobRequest;
-import com.yl.distribute.scheduler.common.config.Configuration;
-import com.yl.distribute.scheduler.common.jersey.JerseyClient;
 import com.yl.distribute.scheduler.common.utils.CallBackUtils;
+import com.yl.distribute.scheduler.core.config.Configuration;
+import com.yl.distribute.scheduler.core.jersey.JerseyClient;
+
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelFutureListener;

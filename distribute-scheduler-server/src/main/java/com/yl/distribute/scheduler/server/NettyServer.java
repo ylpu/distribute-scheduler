@@ -7,9 +7,9 @@ import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.webapp.WebAppContext;
 import org.eclipse.jetty.xml.XmlConfiguration;
 import com.yl.distribute.scheduler.common.bean.HostInfo;
-import com.yl.distribute.scheduler.common.config.Configuration;
 import com.yl.distribute.scheduler.common.utils.MetricsUtils;
-import com.yl.distribute.scheduler.common.zk.ZKHelper;
+import com.yl.distribute.scheduler.core.config.Configuration;
+import com.yl.distribute.scheduler.core.zk.ZKHelper;
 import com.yl.distribute.scheduler.server.handler.NettyServerHandler;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.ChannelFuture;
@@ -45,9 +45,10 @@ public class NettyServer {
                         protected void initChannel(SocketChannel ch) throws Exception {
                             ch.pipeline()        
                             .addLast(new LengthFieldBasedFrameDecoder(Integer.MAX_VALUE, 0, 4, 0, 4))
-//                            ÀûÓÃLengthFieldPrepender»ØÌî²¹³äObjectDecoderÏûÏ¢±¨ÎÄÍ·
                             .addLast(new LengthFieldPrepender(4))
-                            .addLast(new ObjectDecoder(Integer.MAX_VALUE,ClassResolvers.weakCachingConcurrentResolver(this.getClass().getClassLoader())))
+                            //ä½¿ç”¨nettyè‡ªå·±çš„encoderå’Œdecoder,æ ¹æ®éœ€è¦å¯ä»¥ä½¿ç”¨coreä¸­çš„kryoæˆ–protobuf
+                            .addLast(new ObjectDecoder(Integer.MAX_VALUE,
+                                    ClassResolvers.weakCachingConcurrentResolver(this.getClass().getClassLoader())))
                             .addLast(new ObjectEncoder())
                             .addLast(new DefaultEventExecutorGroup(8),new NettyServerHandler());
                         }
@@ -61,26 +62,34 @@ public class NettyServer {
             workerGroup.shutdownGracefully();
         }
     }
-    
+    /**
+     * æ³¨å†Œserverçš„ä¿¡æ¯åˆ°zkä¸Š
+     * @param zkServers
+     * @param path
+     */
     public void regServer(String zkServers, String path) {  
-        //ÏòZooKeeper×¢²áµ±Ç°·şÎñÆ÷  
         ZkClient client = ZKHelper.getClient(zkServers);          
         if(client.exists(path)) {     
             ZKHelper.delete(client, path);     
         }
         HostInfo hostInfo = new HostInfo();
-        setRegData(hostInfo);
+        setRegistData(hostInfo);
         client.createEphemeral(path, hostInfo); 
     } 
     
     
-    private void setRegData(HostInfo hostInfo) {
+    private void setRegistData(HostInfo hostInfo) {
         hostInfo.setCores(MetricsUtils.getAvailiableProcessors());
         hostInfo.setMemory(MetricsUtils.getMemInfo());
         hostInfo.setIpAddress(MetricsUtils.getHostIpAddress() + ":" + zkPort);
         hostInfo.setHostName(MetricsUtils.getHostName() + "-" + zkPort);
     }
     
+    /**
+     * å¯åŠ¨jettyæœåŠ¡å™¨ä¾›å®¢æˆ·ç«¯è·å–jobçš„logä¿¡æ¯
+     * @param port
+     * @throws Exception
+     */
     public void startJettyServer(int port) throws Exception {
         Server server = new Server(port);
         XmlConfiguration config = new XmlConfiguration(new FileInputStream("./WebContent/WEB-INF/jetty.xml"));  
@@ -118,7 +127,7 @@ public class NettyServer {
         String path = defaultPoolPath + MetricsUtils.getHostName() + "-" + zkPort; 
         NettyServer server = new NettyServer(zkPort);
         server.regServer(zkServers,path);
-//        server.startJettyServer(jettyPort);
+        server.startJettyServer(jettyPort);
         server.start();        
     }
 }

@@ -1,4 +1,4 @@
-package com.yl.distribute.scheduler.common.config;
+package com.yl.distribute.scheduler.core.config;
 
 import java.io.IOException;
 import java.util.Properties;

@@ -7,10 +7,7 @@ import com.esotericsoftware.kryo.io.Input;
 import com.esotericsoftware.kryo.io.Output;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufInputStream;
-/**
- * Kryo–Ú¡–ªØ
- *
- */
+
 public class KryoSerializer {
 
     private static final ThreadLocalKryoFactory factory = new ThreadLocalKryoFactory();

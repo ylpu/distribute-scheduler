@@ -25,9 +25,9 @@ public class NettyChannelPoolHandler implements ChannelPoolHandler {
         channel.config().setKeepAlive(true);
         channel.config().setTcpNoDelay(true);
         channel.pipeline()
-//                .addLast(new IdleStateHandler(10, 0, 0, TimeUnit.SECONDS))
                 .addLast(new LengthFieldBasedFrameDecoder(Integer.MAX_VALUE, 0, 4, 0, 4))
                 .addLast(new LengthFieldPrepender(4))
+                //使用netty自己的encoder和decoder,根据需要可以使用core中的kryo或protobuf
                 .addLast(new ObjectEncoder())
                 .addLast(new ObjectDecoder(Integer.MAX_VALUE,ClassResolvers.weakCachingConcurrentResolver(this.getClass().getClassLoader())))                
                 .addLast(new NettyClientHander());

@@ -30,7 +30,7 @@ public class ClientTest {
     public static void main(String[] args) throws Exception {
         ResourceManager.getInstance().init();
         JobClient client = JobClient.getInstance();
-        for(int i = 0;i < 50; i++) {
+        for(int i = 0;i < 1; i++) {
             new ProduceThread(client,i).start();
         }
         Thread.sleep(10000);
