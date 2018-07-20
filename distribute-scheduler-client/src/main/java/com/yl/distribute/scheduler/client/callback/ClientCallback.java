@@ -3,12 +3,13 @@ package com.yl.distribute.scheduler.client.callback;
 import java.util.Properties;
 import javax.ws.rs.core.Response;
 import com.yl.distribute.scheduler.client.JobClient;
-import com.yl.distribute.scheduler.client.resource.ResourceManager;
+import com.yl.distribute.scheduler.client.proxy.ResourceProxy;
 import com.yl.distribute.scheduler.common.bean.JobRequest;
 import com.yl.distribute.scheduler.common.bean.JobResponse;
 import com.yl.distribute.scheduler.common.enums.JobStatus;
 import com.yl.distribute.scheduler.core.config.Configuration;
 import com.yl.distribute.scheduler.core.jersey.JerseyClient;
+import com.yl.distribute.scheduler.core.service.ResourceService;
 
 public class ClientCallback{
     
@@ -18,9 +19,9 @@ public class ClientCallback{
         this.input = input;
     }
     public void onRead(JobResponse response) throws Exception {
+        ResourceService service = ResourceProxy.get(ResourceService.class);
         updateJob(response);
-        ResourceManager resource = ResourceManager.getInstance();
-        resource.addResource(response.getRunningServer(), input.getExecuteParameters());
+        service.addResource(response.getRunningServer(), input.getExecuteParameters());
         resubmitIfNeccesery(response);
     }
     

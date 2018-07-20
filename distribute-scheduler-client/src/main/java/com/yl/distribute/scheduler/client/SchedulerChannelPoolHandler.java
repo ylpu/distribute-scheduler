@@ -1,5 +1,5 @@
 package com.yl.distribute.scheduler.client;
-import com.yl.distribute.scheduler.client.handler.NettyClientHander;
+import com.yl.distribute.scheduler.client.handler.SchedulerClientHander;
 import io.netty.channel.Channel;
 import io.netty.channel.pool.ChannelPoolHandler;
 import io.netty.channel.socket.SocketChannel;
@@ -9,7 +9,7 @@ import io.netty.handler.codec.serialization.ClassResolvers;
 import io.netty.handler.codec.serialization.ObjectDecoder;
 import io.netty.handler.codec.serialization.ObjectEncoder;
 
-public class NettyChannelPoolHandler implements ChannelPoolHandler {
+public class SchedulerChannelPoolHandler implements ChannelPoolHandler {
     public void channelReleased(Channel ch) throws Exception {
         System.out.println("channelReleased. Channel ID: " + ch.id());
     }
@@ -30,7 +30,7 @@ public class NettyChannelPoolHandler implements ChannelPoolHandler {
                 //使用netty自己的encoder和decoder,根据需要可以使用core中的kryo或protobuf
                 .addLast(new ObjectEncoder())
                 .addLast(new ObjectDecoder(Integer.MAX_VALUE,ClassResolvers.weakCachingConcurrentResolver(this.getClass().getClassLoader())))                
-                .addLast(new NettyClientHander());
+                .addLast(new SchedulerClientHander());
 
     }
 }

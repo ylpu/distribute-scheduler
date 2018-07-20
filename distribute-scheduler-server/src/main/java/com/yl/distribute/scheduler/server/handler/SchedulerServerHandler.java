@@ -7,7 +7,7 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 
 
-public class NettyServerHandler extends SimpleChannelInboundHandler<JobRequest> {    
+public class SchedulerServerHandler extends SimpleChannelInboundHandler<JobRequest> {    
 
     @Override
     public void channelActive(ChannelHandlerContext ctx) throws Exception {

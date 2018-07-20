@@ -18,5 +18,6 @@
   	<module>distribute-scheduler-core</module>
   	<module>distribute-scheduler-server</module>
   	<module>distribute-scheduler-web</module>
+  	<module>distribute-scheduler-resourcemanager</module>
   </modules>
 </project>

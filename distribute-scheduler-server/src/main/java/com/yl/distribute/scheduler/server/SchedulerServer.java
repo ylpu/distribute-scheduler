@@ -10,7 +10,7 @@ import com.yl.distribute.scheduler.common.bean.HostInfo;
 import com.yl.distribute.scheduler.common.utils.MetricsUtils;
 import com.yl.distribute.scheduler.core.config.Configuration;
 import com.yl.distribute.scheduler.core.zk.ZKHelper;
-import com.yl.distribute.scheduler.server.handler.NettyServerHandler;
+import com.yl.distribute.scheduler.server.handler.SchedulerServerHandler;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelInitializer;
@@ -26,11 +26,11 @@ import io.netty.handler.codec.serialization.ObjectDecoder;
 import io.netty.handler.codec.serialization.ObjectEncoder;
 import io.netty.util.concurrent.DefaultEventExecutorGroup;
 
-public class NettyServer {
+public class SchedulerServer {
     
     private int zkPort;
     
-    public NettyServer(int zkPort) {
+    public SchedulerServer(int zkPort) {
         this.zkPort = zkPort;
     }
     
@@ -50,7 +50,7 @@ public class NettyServer {
                             .addLast(new ObjectDecoder(Integer.MAX_VALUE,
                                     ClassResolvers.weakCachingConcurrentResolver(this.getClass().getClassLoader())))
                             .addLast(new ObjectEncoder())
-                            .addLast(new DefaultEventExecutorGroup(8),new NettyServerHandler());
+                            .addLast(new DefaultEventExecutorGroup(8),new SchedulerServerHandler());
                         }
                     })
                     .option(ChannelOption.SO_BACKLOG, 128)
@@ -125,7 +125,7 @@ public class NettyServer {
         }
         String zkServers = Configuration.getString(prop, "zk.server.list");
         String path = defaultPoolPath + MetricsUtils.getHostName() + "-" + zkPort; 
-        NettyServer server = new NettyServer(zkPort);
+        SchedulerServer server = new SchedulerServer(zkPort);
         server.regServer(zkServers,path);
         server.startJettyServer(jettyPort);
         server.start();        

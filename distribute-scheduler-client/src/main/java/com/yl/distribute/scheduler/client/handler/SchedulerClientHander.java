@@ -7,7 +7,7 @@ import com.yl.distribute.scheduler.core.handler.CommonChannelInboundHandler;
 import io.netty.channel.ChannelHandlerContext;
 
 
-public class NettyClientHander extends CommonChannelInboundHandler{
+public class SchedulerClientHander extends CommonChannelInboundHandler{
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {    
         System.out.println("read message is " + msg);

@@ -1,6 +1,5 @@
-package com.yl.distribute.scheduler.client.resource;
+package com.yl.distribute.scheduler.resource.manager;
 
-import java.net.InetSocketAddress;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -11,31 +10,25 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 import org.I0Itec.zkclient.ZkClient;
 import org.I0Itec.zkclient.IZkChildListener;
-import com.yl.distribute.scheduler.client.SchedulerClientPool;
 import com.yl.distribute.scheduler.common.bean.HostInfo;
 import com.yl.distribute.scheduler.common.bean.JobRequest;
 import com.yl.distribute.scheduler.common.constants.GlobalConstants;
 import com.yl.distribute.scheduler.core.config.Configuration;
 import com.yl.distribute.scheduler.core.zk.*;
 
-import io.netty.channel.pool.SimpleChannelPool;
-
 public class ResourceManager {
+    
+    private static ResourceManager resourceManager = new ResourceManager(); 
     
     public String rootPool = "/root";
     
     //key is machine pool name,value is server list
-    public Map<String,List<String>> poolServers = new ConcurrentHashMap<String,List<String>>();    
-   
-    //key is servername,value is channel pool
-    public Map<String,SimpleChannelPool> channelPoolMap = new ConcurrentHashMap<String,SimpleChannelPool>();
+    public Map<String,List<String>> poolServers = new ConcurrentHashMap<String,List<String>>(); 
+
     
     //key is servername,value is host info
-    public Map<String,HostInfo> resourceMap = new HashMap<String,HostInfo>();
-    
-    private static ResourceManager resourceManager = new ResourceManager(); 
-    
-    private SchedulerClientPool client = SchedulerClientPool.getInstance();
+    public Map<String,HostInfo> resourceMap = new HashMap<String,HostInfo>();    
+        
     
     private ResourceManager() {        
     }
@@ -71,7 +64,7 @@ public class ResourceManager {
         if(childs != null && childs.size() > 0) {
             for(String childPath : childs) { 
                 servers.add(childPath);  
-                addServerAndChannels(zkClient,path,Arrays.asList(childPath));
+                addServers(zkClient,path,Arrays.asList(childPath));
             }
         }         
     }
@@ -128,9 +121,9 @@ public class ResourceManager {
             }
         }        
         List<String> newChilds = getNewChilds(oldChilds,currentChilds);
-        addServerAndChannels(zkClient,parentPath,newChilds);
+        addServers(zkClient,parentPath,newChilds);
         List<String> disconnectedChilds = getDisconnectedChilds(oldChilds,currentChilds);
-        removeServerAndChannels(disconnectedChilds);
+        removeServers(disconnectedChilds);
     }
     
     private List<String> getDisconnectedChilds(List<String> oldChilds,List<String> currentChilds){
@@ -141,11 +134,9 @@ public class ResourceManager {
         return currentChilds.stream().filter(t-> !oldChilds.contains(t)).collect(Collectors.toList());
     }
     
-    private void removeServerAndChannels(List<String> disconnectedChilds) {
+    private void removeServers(List<String> disconnectedChilds) {
         if(disconnectedChilds != null && disconnectedChilds.size() > 0) {
             for(String child : disconnectedChilds) {
-                channelPoolMap.get(child).close();
-                channelPoolMap.remove(child);
                 resourceMap.remove(child);
             }
         }
@@ -156,17 +147,11 @@ public class ResourceManager {
      * @param path
      * @param childs
      */
-    private synchronized void addServerAndChannels(ZkClient zkClient,String path,List<String> childs) {
+    private synchronized void addServers(ZkClient zkClient,String path,List<String> childs) {
         if(childs != null && childs.size() > 0) {
-            Properties prop = Configuration.getConfig("config.properties");        
-            int poolNumber = Configuration.getInt(prop, "channel.pool.numbers");
             for(String child : childs) {                
-                HostInfo serverData = zkClient.readData(path + "/" + child);
-                client.build(poolNumber);
-                SimpleChannelPool pool = client.poolMap.get(new InetSocketAddress(serverData.getIpAddress().split(":")[0],
-                        Integer.parseInt(serverData.getIpAddress().split(":")[1])));                
-                resourceMap.put(child, serverData);
-                channelPoolMap.put(child, pool);
+                HostInfo serverData = zkClient.readData(path + "/" + child);             
+                resourceMap.put(child, serverData);     
             }
         }
     }
@@ -225,10 +210,6 @@ public class ResourceManager {
         return serverSelectStrategy.getIdleServer(input, poolServers, resourceMap, lastFailedServer);
 
     }
-    
-    public SimpleChannelPool getIdleServerChannel(String serverName) { 
-       return channelPoolMap.get(serverName);
-    }
 
     public String getRootPool() {
         return rootPool;
@@ -236,5 +217,10 @@ public class ResourceManager {
 
     public void setRootPool(String rootPool) {
         this.rootPool = rootPool;
-    }   
+    }
+
+    public Map<String, HostInfo> getResourceMap() {
+        return resourceMap;
+    }  
+    
 }

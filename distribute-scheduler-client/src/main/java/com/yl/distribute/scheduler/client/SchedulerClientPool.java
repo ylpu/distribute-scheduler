@@ -12,15 +12,15 @@ import io.netty.channel.socket.nio.NioSocketChannel;
 import java.net.InetSocketAddress;
 
 
-public class NettyPoolClient {
+public class SchedulerClientPool {
     
-    private static NettyPoolClient jobClient = new NettyPoolClient();
+    private static SchedulerClientPool jobClient = new SchedulerClientPool();
     
-    private NettyPoolClient() {
+    private SchedulerClientPool() {
         
     }
     
-    public static NettyPoolClient getInstance() {
+    public static SchedulerClientPool getInstance() {
         return jobClient;
     }
     
@@ -36,7 +36,7 @@ public class NettyPoolClient {
         poolMap = new AbstractChannelPoolMap<InetSocketAddress, SimpleChannelPool>() {
             @Override
             protected SimpleChannelPool newPool(InetSocketAddress key) {
-                return new FixedChannelPool(strap.remoteAddress(key), new NettyChannelPoolHandler(), connections);
+                return new FixedChannelPool(strap.remoteAddress(key), new SchedulerChannelPoolHandler(), connections);
             }
         };
     }
