@@ -134,7 +134,7 @@ public class ResourceManager {
         return currentChilds.stream().filter(t-> !oldChilds.contains(t)).collect(Collectors.toList());
     }
     
-    private void removeServers(List<String> disconnectedChilds) {
+    private synchronized void removeServers(List<String> disconnectedChilds) {
         if(disconnectedChilds != null && disconnectedChilds.size() > 0) {
             for(String child : disconnectedChilds) {
                 resourceMap.remove(child);

@@ -4,13 +4,8 @@ import java.net.InetSocketAddress;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
-import java.util.concurrent.ConcurrentHashMap;
-
-import org.I0Itec.zkclient.ZkClient;
-
 import com.yl.distribute.scheduler.client.callback.ClientCallback;
 import com.yl.distribute.scheduler.client.proxy.ResourceProxy;
-import com.yl.distribute.scheduler.client.resource.ResourceManager;
 import com.yl.distribute.scheduler.common.bean.HostInfo;
 import com.yl.distribute.scheduler.common.bean.JobRequest;
 import com.yl.distribute.scheduler.common.utils.CallBackUtils;

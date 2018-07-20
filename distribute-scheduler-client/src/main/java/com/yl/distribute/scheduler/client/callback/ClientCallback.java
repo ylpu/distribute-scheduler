@@ -18,11 +18,18 @@ public class ClientCallback{
     public ClientCallback(JobRequest input) {
         this.input = input;
     }
-    public void onRead(JobResponse response) throws Exception {
-        ResourceService service = ResourceProxy.get(ResourceService.class);
+    
+    public void onRead(JobResponse response) throws Exception {        
         updateJob(response);
+        ResourceService service = ResourceProxy.get(ResourceService.class);
         service.addResource(response.getRunningServer(), input.getExecuteParameters());
         resubmitIfNeccesery(response);
+    }
+    
+    private Response updateJob(JobResponse response) {
+        Properties prop = Configuration.getConfig("config.properties");        
+        String jobApi = Configuration.getString(prop, "job.web.api");
+        return JerseyClient.update(jobApi + "/" + "updateJob", response);
     }
     
     private void resubmitIfNeccesery(JobResponse output) throws Exception {
@@ -31,11 +38,5 @@ public class ClientCallback{
             input.setRetryTimes(input.getRetryTimes() + 1);
             JobClient.getInstance().submit(input);            
         }
-    }
-    
-    private Response updateJob(JobResponse response) {
-        Properties prop = Configuration.getConfig("config.properties");        
-        String jobApi = Configuration.getString(prop, "job.web.api");
-        return JerseyClient.update(jobApi + "/" + "updateJob", response);
     }
 }
