@@ -1,9 +1,6 @@
 package com.yl.distribute.scheduler.common.bean;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
 
 public class HostInfo implements Serializable,Comparable<HostInfo>{
 
@@ -12,39 +9,83 @@ public class HostInfo implements Serializable,Comparable<HostInfo>{
      */
     private static final long serialVersionUID = 1L;
     
-    private String ipAddress;
+    /**
+     * ip address of current host
+     */
+    
+    private String ip;
+    
+    /**
+     * host name of current host
+     */
     
     private String hostName;
     
-    private int cores;
+    /**
+     * total cores of current host
+     */
     
-    private long memory; 
+    private int totalCores;
+    
+    /**
+     * total memory of current host
+     */
+    
+    private long totalMemory; 
+    
+    /**
+     * available cores of current host
+     */
+    
+    private int availableCores;
+    
+    /**
+     * available memory of current host
+     */
+    
+    private long availableMemory;    
 
-    public String getIpAddress() {
-        return ipAddress;
-    }
+    public String getIp() {
+		return ip;
+	}
 
-    public void setIpAddress(String ipAddress) {
-        this.ipAddress = ipAddress;
-    }
+	public void setIp(String ip) {
+		this.ip = ip;
+	}
 
-    public int getCores() {
-        return cores;
-    }
+	public int getTotalCores() {
+		return totalCores;
+	}
 
-    public void setCores(int cores) {
-        this.cores = cores;
-    }
+	public void setTotalCores(int totalCores) {
+		this.totalCores = totalCores;
+	}
 
-    public long getMemory() {
-        return memory;
-    }
+	public long getTotalMemory() {
+		return totalMemory;
+	}
 
-    public void setMemory(long memory) {
-        this.memory = memory;
-    }    
+	public void setTotalMemory(long totalMemory) {
+		this.totalMemory = totalMemory;
+	}   
 
-    public String getHostName() {
+    public int getAvailableCores() {
+		return availableCores;
+	}
+
+	public void setAvailableCores(int availableCores) {
+		this.availableCores = availableCores;
+	}
+
+	public long getAvailableMemory() {
+		return availableMemory;
+	}
+
+	public void setAvailableMemory(long availableMemory) {
+		this.availableMemory = availableMemory;
+	}
+
+	public String getHostName() {
         return hostName;
     }
 
@@ -56,10 +97,10 @@ public class HostInfo implements Serializable,Comparable<HostInfo>{
     public int compareTo(HostInfo o) {
        if(o!= null) {
            HostInfo hostInfo =(HostInfo)o;
-           if(getMemory() > hostInfo.getMemory()) {
+           if(getAvailableMemory() > hostInfo.getAvailableMemory()) {
                return -1;
-           }else if(getMemory() == hostInfo.getMemory()) {
-               if(getCores() > hostInfo.getCores()) {
+           }else if(getAvailableMemory() == hostInfo.getAvailableMemory()) {
+               if(getAvailableCores() > hostInfo.getAvailableCores()) {
                    return -1;
                }else {
                    return 1;
@@ -72,30 +113,6 @@ public class HostInfo implements Serializable,Comparable<HostInfo>{
     }
     
     public static void main(String[] args) {
-        List<HostInfo> list = new ArrayList<HostInfo>();
-        
-        HostInfo hostInfo = new HostInfo();
-        hostInfo = new HostInfo();
-        hostInfo.setMemory(1200);
-        hostInfo.setCores(7);
-        list.add(hostInfo);
-        
-        HostInfo hostInfo1 = new HostInfo();
-        hostInfo1 = new HostInfo();
-        hostInfo1.setMemory(1000);
-        hostInfo1.setCores(8);        
-        list.add(hostInfo1);
-        
-        HostInfo hostInfo2 = new HostInfo();
-        hostInfo2 = new HostInfo();
-        hostInfo2.setMemory(1500);
-        hostInfo2.setCores(8);        
-        list.add(hostInfo2);
-        
-        Collections.sort(list);
-        
-        list.remove(hostInfo);
-        
-        System.out.println(list);
+   
     }    
 }

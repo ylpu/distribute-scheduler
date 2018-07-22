@@ -3,12 +3,11 @@ package com.yl.distribute.scheduler.client.proxy;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
-import java.util.Properties;
 import java.util.concurrent.atomic.AtomicLong;
 import com.yl.distribute.scheduler.client.ResourceClient;
 import com.yl.distribute.scheduler.common.bean.ResourceRequest;
 import com.yl.distribute.scheduler.common.bean.ResourceResponse;
-import com.yl.distribute.scheduler.core.config.Configuration;
+
 
 public class ResourceProxy implements InvocationHandler {
 
@@ -33,13 +32,7 @@ public class ResourceProxy implements InvocationHandler {
         request.setMethodName(method.getName());
         request.setParameterTypes(method.getParameterTypes());
         request.setParameters(args);
-
-        if (client == null) {
-            Properties prop = Configuration.getConfig("config.properties");        
-            String resourceServer = Configuration.getString(prop, "resource.manager.server");
-            int resourcePort = Configuration.getInt(prop, "resource.manager.port");
-            client = ResourceClient.getConnect(resourceServer, resourcePort);
-        }
+        client = ResourceClient.connect();        
         ResourceResponse r = client.invoke(request);
         return r.getResult();
     }

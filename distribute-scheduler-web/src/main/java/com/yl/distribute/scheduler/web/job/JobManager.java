@@ -17,8 +17,8 @@ public class JobManager {
         return jobManager;
     }    
     
-    public void addJob(String jobId,JobResponse response) {
-        jobMap.put(jobId, response);
+    public void addJob(JobResponse response) {
+        jobMap.put(response.getResponseId(), response);
     }
     
     public void removeJob(String jobId) {
@@ -27,7 +27,7 @@ public class JobManager {
     
     public void updateJob(JobResponse response) {
         removeJob(response.getResponseId());
-        addJob(response.getResponseId(), response);
+        addJob(response);
     }
     
     public JobResponse getJob(String jobId) {

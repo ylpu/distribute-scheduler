@@ -8,15 +8,17 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
+
 import org.I0Itec.zkclient.ZkClient;
 import org.I0Itec.zkclient.IZkChildListener;
+
 import com.yl.distribute.scheduler.common.bean.HostInfo;
 import com.yl.distribute.scheduler.common.bean.JobRequest;
 import com.yl.distribute.scheduler.common.constants.GlobalConstants;
 import com.yl.distribute.scheduler.core.config.Configuration;
 import com.yl.distribute.scheduler.core.zk.*;
 
-public class ResourceManager {
+public class ResourceManager{
     
     private static ResourceManager resourceManager = new ResourceManager(); 
     
@@ -169,8 +171,8 @@ public class ResourceManager {
                     GlobalConstants.DEFAULT_CORE_SIZE : Integer.parseInt(String.valueOf(resourceParams.get("cores")));
             usedMemory = (resourceParams == null || resourceParams.get("memory") == null) ? 
                     GlobalConstants.DEFAUTL_MEMEORY : Long.parseLong(String.valueOf(resourceParams.get("memory")));
-            hostInfo.setCores(hostInfo.getCores() - usedCores);
-            hostInfo.setMemory(hostInfo.getMemory() - usedMemory);  
+            hostInfo.setAvailableCores(hostInfo.getAvailableCores() - usedCores);
+            hostInfo.setAvailableMemory(hostInfo.getAvailableMemory() - usedMemory);  
         }
     }
     
@@ -188,8 +190,8 @@ public class ResourceManager {
                     GlobalConstants.DEFAULT_CORE_SIZE : Integer.parseInt(String.valueOf(resourceParams.get("cores")));
             usedMemory = (resourceParams == null || resourceParams.get("memory") == null) ? 
                     GlobalConstants.DEFAUTL_MEMEORY : Long.parseLong(String.valueOf(resourceParams.get("memory")));
-            hostInfo.setCores(hostInfo.getCores() + usedCores);
-            hostInfo.setMemory(hostInfo.getMemory() + usedMemory); 
+            hostInfo.setAvailableCores(hostInfo.getAvailableCores() + usedCores);
+            hostInfo.setAvailableMemory(hostInfo.getAvailableMemory() + usedMemory); 
         }
     }
     /**
@@ -219,8 +221,19 @@ public class ResourceManager {
         this.rootPool = rootPool;
     }
 
-    public Map<String, HostInfo> getResourceMap() {
-        return resourceMap;
-    }  
-    
+	public Map<String, List<String>> getPoolServers() {
+		return poolServers;
+	}
+
+	public void setPoolServers(Map<String, List<String>> poolServers) {
+		this.poolServers = poolServers;
+	}
+
+	public Map<String, HostInfo> getResourceMap() {
+		return resourceMap;
+	}
+
+	public void setResourceMap(Map<String, HostInfo> resourceMap) {
+		this.resourceMap = resourceMap;
+	}    
 }

@@ -31,16 +31,15 @@ public class ClientTest {
     public static void main(String[] args) throws Exception {
 //        ResourceManager.getInstance().init();
         JobClient client = JobClient.getInstance();
-        for(int i = 0;i < 50; i++) {
+        for(int i = 0;i < 1; i++) {
             new ProduceThread(client,i).start();
         }
-        Thread.sleep(10000);
+        Thread.sleep(60000);
         ResourceService service = ResourceProxy.get(ResourceService.class);
         Map<String,HostInfo> map = service.getResources();
-        System.out.println("map size is " + map.size());
         for(Entry<String,HostInfo> entry : map.entrySet()) {
-            System.out.println("host is " + entry.getKey() +  ",availiable cores is " + entry.getValue().getCores() 
-                    +  ",availiable memory is " + entry.getValue().getMemory()); 
+            System.out.println("host is " + entry.getKey() +  ",availiable cores is " + entry.getValue().getAvailableCores() 
+                    +  ",availiable memory is " + entry.getValue().getAvailableMemory()); 
         }        
     }
 }

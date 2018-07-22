@@ -1,7 +1,12 @@
 package com.yl.distribute.scheduler.client.callback;
 
 import java.util.Properties;
+
 import javax.ws.rs.core.Response;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 import com.yl.distribute.scheduler.client.JobClient;
 import com.yl.distribute.scheduler.client.proxy.ResourceProxy;
 import com.yl.distribute.scheduler.common.bean.JobRequest;
@@ -12,6 +17,8 @@ import com.yl.distribute.scheduler.core.jersey.JerseyClient;
 import com.yl.distribute.scheduler.core.service.ResourceService;
 
 public class ClientCallback{
+	
+	private static Log LOG = LogFactory.getLog(ClientCallback.class);
     
     private JobRequest input;
     
@@ -19,7 +26,9 @@ public class ClientCallback{
         this.input = input;
     }
     
-    public void onRead(JobResponse response) throws Exception {        
+    public void onRead(JobResponse response) throws Exception {
+    	System.out.println(input.getRequestId() + "返回url是" + response.getStdOutputUrl());
+    	LOG.info(input.getRequestId() + "返回url是" + response.getStdOutputUrl());
         updateJob(response);
         ResourceService service = ResourceProxy.get(ResourceService.class);
         service.addResource(response.getRunningServer(), input.getExecuteParameters());

@@ -79,9 +79,11 @@ public class SchedulerServer {
     
     
     private void setRegistData(HostInfo hostInfo) {
-        hostInfo.setCores(MetricsUtils.getAvailiableProcessors());
-        hostInfo.setMemory(MetricsUtils.getMemInfo());
-        hostInfo.setIpAddress(MetricsUtils.getHostIpAddress() + ":" + zkPort);
+        hostInfo.setTotalCores(MetricsUtils.getAvailiableProcessors());
+        hostInfo.setTotalMemory(MetricsUtils.getMemInfo());
+        hostInfo.setAvailableCores(MetricsUtils.getAvailiableProcessors());
+        hostInfo.setAvailableMemory(MetricsUtils.getMemInfo());
+        hostInfo.setIp(MetricsUtils.getHostIpAddress() + ":" + zkPort);
         hostInfo.setHostName(MetricsUtils.getHostName() + "-" + zkPort);
     }
     
@@ -96,7 +98,7 @@ public class SchedulerServer {
         config.configure(server);
         WebAppContext webAppContext = new WebAppContext("WebContent","/");
         webAppContext.setDescriptor("./WebContent/WEB-INF/web.xml");
-        webAppContext.setResourceBase("./WebContent/jobfiles");
+        webAppContext.setResourceBase("./WebContent/jobfiles/");
         webAppContext.setDisplayName("jetty");
         webAppContext.setContextPath("/server");
         webAppContext.setConfigurationDiscovered(true);

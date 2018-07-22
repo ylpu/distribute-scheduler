@@ -1,0 +1,78 @@
+package com.yl.distribute.scheduler.client.handler;
+
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.TimeUnit;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
+import com.yl.distribute.scheduler.client.ResourceClient;
+import com.yl.distribute.scheduler.client.callback.ResourceCallback;
+import com.yl.distribute.scheduler.common.bean.ResourceRequest;
+import com.yl.distribute.scheduler.common.bean.ResourceResponse;
+
+import io.netty.channel.Channel;
+import io.netty.channel.ChannelHandlerContext;
+import io.netty.channel.EventLoop;
+import io.netty.channel.SimpleChannelInboundHandler;
+
+public class ResourceClientHandler extends SimpleChannelInboundHandler<ResourceResponse> {
+	
+	private static Log LOG = LogFactory.getLog(ResourceClientHandler.class);
+
+    private Channel channel;
+
+    //request Id 与 response的映射
+    private Map<Long, ResourceCallback> responseMap = new ConcurrentHashMap<Long, ResourceCallback>();
+
+    @Override
+    public void channelRead0(ChannelHandlerContext ctx, ResourceResponse response) throws Exception {
+        ResourceCallback holder = responseMap.get(response.getId());
+        if (holder != null) {
+            responseMap.remove(response.getId());
+            holder.setResponse(response);
+        }
+    }
+
+    @Override
+    public void channelRegistered(ChannelHandlerContext ctx) throws Exception {
+        super.channelRegistered(ctx);
+        channel = ctx.channel();
+    }
+    
+    /**
+     * if channel is inactive, then try to reconnect it
+     */
+    public void channelInactive(ChannelHandlerContext ctx) throws Exception {
+        System.out.println("channel inactive" + ctx.channel()); 
+        
+        EventLoop eventLoop = ctx.channel().eventLoop();  
+        eventLoop.schedule(new Runnable() {  
+          @Override 
+          public void run() {  
+            try {
+				ResourceClient.connect();
+			} catch (InterruptedException e) {
+				LOG.error(e);
+			}  
+          }  
+        }, 1L, TimeUnit.SECONDS);      
+    }
+
+
+    /**
+     * if caught exception, then close the channel
+     */
+    public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
+        System.out.println(cause.getMessage());
+        ctx.close();
+    }
+
+    public ResourceResponse invoke(ResourceRequest request) throws Exception {
+        ResourceCallback holder = new ResourceCallback();
+        responseMap.put(request.getId(), holder);
+        channel.writeAndFlush(request);
+        return holder.getResponse();
+    }
+}

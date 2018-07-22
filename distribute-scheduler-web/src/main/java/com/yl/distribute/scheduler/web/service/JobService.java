@@ -1,18 +1,18 @@
 package com.yl.distribute.scheduler.web.service;
 
-import javax.enterprise.context.ApplicationScoped;
-
 import com.yl.distribute.scheduler.common.bean.JobResponse;
-import com.yl.distribute.scheduler.web.job.JobManager;
 
-@ApplicationScoped
-public class JobService {
+public interface JobService {
+	
+    public void updateJob(JobResponse response) ;
     
-    public void updateJob(JobResponse response) {
-        JobManager.getInstance().updateJob(response);
-    }
+    public void insertJob(JobResponse response);
     
-    public String getLastFailedServer(String jobId) { 
-        return JobManager.getInstance().getLastFailedServer(jobId);      
-    }
+    public JobResponse getJobById(String jobId);
+    
+    public String getLastFailedServer(String jobId);
+    
+    public String getErrorLog(String jobId);
+    
+    public String getOutputLog(String jobId);
 }

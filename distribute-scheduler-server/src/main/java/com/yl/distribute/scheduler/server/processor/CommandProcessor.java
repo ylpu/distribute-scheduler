@@ -7,10 +7,14 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.Properties;
+import java.util.Random;
+
 import javax.ws.rs.core.Response;
+
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
 import com.yl.distribute.scheduler.common.bean.*;
 import com.yl.distribute.scheduler.common.enums.JobStatus;
 import com.yl.distribute.scheduler.common.utils.JobUtils;
@@ -44,6 +48,7 @@ public class CommandProcessor implements IServerProcessor{
             if(response.getStatus() != 200) {
                 throw new RuntimeException("failed to update job for " + input.getRequestId());
             }
+            Thread.sleep(new Random().nextInt(30000));
             if(StringUtils.isNotBlank(input.getCommand())) {
                 Process process = Runtime.getRuntime().exec(input.getCommand());
                 generateStreamOutPut(process.getInputStream(),outPutFile);

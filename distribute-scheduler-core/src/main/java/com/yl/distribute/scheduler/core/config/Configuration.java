@@ -1,18 +1,27 @@
 package com.yl.distribute.scheduler.core.config;
 
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Properties;
 
 public class Configuration {
+	
+	private static Map<String,Properties> configMap = new HashMap<String,Properties>();
     
     public static Properties getConfig(String propFileName) {
-        Properties prop = new Properties();
-        try {
-            prop.load(Configuration.class.getClassLoader().getResourceAsStream(propFileName));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return prop;
+    	Properties config = configMap.get(propFileName);
+    	if(config == null){
+            Properties prop = new Properties();
+            try {
+                prop.load(Configuration.class.getClassLoader().getResourceAsStream(propFileName));
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            config = prop;
+            configMap.put(propFileName, prop);
+    	}
+        return config;
     }
     
     public static int getInt(Properties prop,String key) {
@@ -34,7 +43,7 @@ public class Configuration {
         return Double.valueOf(prop.getProperty(key));       
     }
     
-    public static void main(String[] args) {
-
+    public static Long getLong(Properties prop,String key) {
+        return Long.valueOf(prop.getProperty(key));       
     }
 }

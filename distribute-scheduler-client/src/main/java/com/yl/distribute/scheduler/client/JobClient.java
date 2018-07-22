@@ -4,6 +4,10 @@ import java.net.InetSocketAddress;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 import com.yl.distribute.scheduler.client.callback.ClientCallback;
 import com.yl.distribute.scheduler.client.proxy.ResourceProxy;
 import com.yl.distribute.scheduler.common.bean.HostInfo;
@@ -13,6 +17,7 @@ import com.yl.distribute.scheduler.core.config.Configuration;
 import com.yl.distribute.scheduler.core.jersey.JerseyClient;
 import com.yl.distribute.scheduler.core.service.ResourceService;
 import com.yl.distribute.scheduler.core.zk.ZKHelper;
+
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelFutureListener;
@@ -21,6 +26,8 @@ import io.netty.util.concurrent.Future;
 import io.netty.util.concurrent.FutureListener;
 
 public class JobClient {
+	
+	private static Log LOG = LogFactory.getLog(JobClient.class);
     
     private static JobClient jobClient = new JobClient();    
     
@@ -54,7 +61,7 @@ public class JobClient {
                             if(future.isSuccess()) {
                                 service.subResource(idleServer, input.getExecuteParameters());  
                             } else {  
-                                System.out.println("写数据" + input +"到"+ idleServer + "失败");  
+                            	LOG.error("写数据" + input.getRequestId() +"到"+ idleServer + "失败");  
                             }  
                                 
                         }  
@@ -64,7 +71,7 @@ public class JobClient {
             });
             
         }catch(Exception e) {
-            System.out.println("任务 " + input.getRequestId() + " 失败第 " + input.getRetryTimes() + "次并且找不到可运行的服务器");
+        	LOG.error("任务 " + input.getRequestId() + " 失败第 " + input.getRetryTimes() + "次并且找不到可运行的服务器",e);
         }
     } 
     
@@ -83,8 +90,8 @@ public class JobClient {
            SchedulerClientPool clientPool = SchedulerClientPool.getInstance();
            HostInfo serverData = ZKHelper.getClient(zkServers).readData("/root" + "/" +poolName + "/" + serverName);
            clientPool.build(poolNumber);
-           SimpleChannelPool pool = clientPool.poolMap.get(new InetSocketAddress(serverData.getIpAddress().split(":")[0],
-                         Integer.parseInt(serverData.getIpAddress().split(":")[1])));                
+           SimpleChannelPool pool = clientPool.poolMap.get(new InetSocketAddress(serverData.getIp().split(":")[0],
+                         Integer.parseInt(serverData.getIp().split(":")[1])));                
            channelPoolMap.put(serverName, pool);
            channelPool = channelPoolMap.get(serverName);
        }

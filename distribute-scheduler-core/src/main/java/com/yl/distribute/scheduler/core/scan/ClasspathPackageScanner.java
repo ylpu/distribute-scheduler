@@ -9,24 +9,25 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.jar.JarEntry;
 import java.util.jar.JarInputStream;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 import com.yl.distribute.scheduler.common.utils.StringUtils;
 
 public class ClasspathPackageScanner {
+	
+	private static Log LOG = LogFactory.getLog(ClasspathPackageScanner.class);
     
     private static List<String> classNames = new ArrayList<String>();    
-    private static String basePackage;
     private static ClassLoader cl = ClasspathPackageScanner.class.getClassLoader();
     
     static {
         try {
-            doScan("com.yl.distribute.scheduler.resource");
+            doScan("com.yl.distribute");
         } catch (IOException e) {
-            e.printStackTrace();
+        	LOG.error(e);
         }
-    }
-
-    public static void setPackage(String basePackage) {
-        ClasspathPackageScanner.basePackage = basePackage;
     }
      
     /**
@@ -37,7 +38,6 @@ public class ClasspathPackageScanner {
      * @throws IOException
      */
      private static List<String> doScan(String basePackage) throws IOException {
-         classNames.clear();
          String splashPath = StringUtils.dotToSplash(basePackage);
          URL url = cl.getResource(splashPath);   //file:/D:/WorkSpace/java/ScanTest/target/classes/com/scan
          String filePath = StringUtils.getRootPath(url);
@@ -61,8 +61,6 @@ public class ClasspathPackageScanner {
          StringBuilder sb = new StringBuilder(basePackage);
          sb.append('.');
          sb.append(StringUtils.trimExtension(shortName));
-         //打印出结果
-         System.out.println(sb.toString());
          return sb.toString();
      }
      
@@ -111,10 +109,6 @@ public class ClasspathPackageScanner {
         return classNames;
     }
 
-    public static void setClassNames(List<String> classNames) {
-        ClasspathPackageScanner.classNames = classNames;
-    }
-
     /**
       * For test purpose.
       */
@@ -123,6 +117,7 @@ public class ClasspathPackageScanner {
          List<String> classes = ClasspathPackageScanner.getClassNames();
          for(String classname : classes) {
              Class<?> cls1 = Class.forName(classname);
+             System.out.println(classname);
              if(cls.isAssignableFrom(cls1)) {
                  System.out.println("service is " + cls1.getName());
              }

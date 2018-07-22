@@ -5,7 +5,7 @@ import javax.ws.rs.*;
 import javax.ws.rs.core.*;
 import javax.enterprise.context.RequestScoped;
 import com.yl.distribute.scheduler.common.bean.JobResponse;
-import com.yl.distribute.scheduler.web.service.JobService;
+import com.yl.distribute.scheduler.web.service.JobServiceImpl;
 import javax.ws.rs.core.Response;
 /**
  * JAX-RS resource class that provides operations for jobs.
@@ -19,7 +19,7 @@ public class JobResource {
     private UriInfo uriInfo;
 
     @Inject
-    private JobService jobService;
+    private JobServiceImpl jobService;
 
     @GET
     @Path("getAllJobs")
@@ -39,7 +39,7 @@ public class JobResource {
     @Path("{jobId}")
     @Produces(MediaType.APPLICATION_JSON)
     public Response getJobById(@PathParam("jobId") String jobId) {
-       return Response.ok().build();
+       return Response.ok(jobService.getJobById(jobId)).build();
     }
     
     @GET
@@ -47,5 +47,19 @@ public class JobResource {
     @Produces(MediaType.APPLICATION_JSON)
     public Response getLastFailedServer(@PathParam("jobId") String jobId) {
         return Response.ok(jobService.getLastFailedServer(jobId)).build();
+    }
+    
+    @GET
+    @Path("getErrorLog/{jobId}")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response getErrorLog(@PathParam("jobId") String jobId) {
+        return Response.ok(jobService.getErrorLog(jobId)).build();
+    }
+    
+    @GET
+    @Path("getOutputLog/{jobId}")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response getOutputLog(@PathParam("jobId") String jobId) {
+        return Response.ok(jobService.getOutputLog(jobId)).build();
     }
 }
