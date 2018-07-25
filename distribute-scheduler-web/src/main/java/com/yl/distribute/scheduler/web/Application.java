@@ -10,10 +10,10 @@ import io.undertow.servlet.api.DeploymentManager;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.glassfish.jersey.servlet.ServletContainer;
-import org.jboss.weld.environment.servlet.Listener;
+//import org.jboss.weld.environment.servlet.Listener;
 import javax.servlet.ServletException;
 import static io.undertow.servlet.Servlets.listener;
-
+import org.springframework.web.context.ContextLoaderListener ;
 /**
  * Application entry point.
  *
@@ -60,7 +60,8 @@ public class Application {
         DeploymentInfo servletBuilder = Servlets.deployment()
                 .setClassLoader(Application.class.getClassLoader())
                 .setContextPath("/")
-                .addListeners(listener(Listener.class))
+                //添加spring listener
+                .addListeners(listener(ContextLoaderListener.class))
                 .setResourceManager(new ClassPathResourceManager(Application.class.getClassLoader()))
                 .addServlets(
                         Servlets.servlet("jerseyServlet", ServletContainer.class)

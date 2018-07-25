@@ -26,7 +26,7 @@ public class SchedulerServerHandler extends SimpleChannelInboundHandler<JobReque
 
     @Override
     public void channelRead0(ChannelHandlerContext ctx, JobRequest request) throws Exception {
-    	LOG.info("execute command " + request.getCommand() + " for requestId " + request.getRequestId());
+    	LOG.info("execute command " + request.getCommand() + " for requestId " + request.getJobId());
         IServerProcessor processor = new CommandProcessor(request);
         processor.execute(ctx);
     } 

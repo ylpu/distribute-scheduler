@@ -9,6 +9,13 @@
            <artifactId>netty-all</artifactId>
            <version>4.1.25.Final</version>
         </dependency>   
+        <!-- JUnit -->
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>4.12</version>
+            <scope>test</scope>
+        </dependency>
         <dependency>
 		   <groupId>org.apache.curator</groupId>
 		   <artifactId>curator-recipes</artifactId>

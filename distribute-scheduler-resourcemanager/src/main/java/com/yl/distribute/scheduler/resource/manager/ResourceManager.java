@@ -10,6 +10,8 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
 import org.I0Itec.zkclient.ZkClient;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.I0Itec.zkclient.IZkChildListener;
 
 import com.yl.distribute.scheduler.common.bean.HostInfo;
@@ -19,6 +21,8 @@ import com.yl.distribute.scheduler.core.config.Configuration;
 import com.yl.distribute.scheduler.core.zk.*;
 
 public class ResourceManager{
+    
+    private static Log LOG = LogFactory.getLog(ResourceManager.class);
     
     private static ResourceManager resourceManager = new ResourceManager(); 
     
@@ -207,9 +211,10 @@ public class ResourceManager{
         try {
             serverSelectStrategy = (ServerSelectStrategy) Class.forName(serverStrategy).newInstance();
         } catch (Exception e) {
-            e.printStackTrace();
+            LOG.error(e);
+            throw new RuntimeException(e);
         }
-        return serverSelectStrategy.getIdleServer(input, poolServers, resourceMap, lastFailedServer);
+        return new ResourceStrategyContext(serverSelectStrategy).select(input, poolServers, resourceMap, lastFailedServer);
 
     }
 

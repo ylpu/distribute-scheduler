@@ -32,7 +32,7 @@ public class ResourceProxy implements InvocationHandler {
         request.setMethodName(method.getName());
         request.setParameterTypes(method.getParameterTypes());
         request.setParameters(args);
-        client = ResourceClient.connect();        
+        client = new ResourceClient().connect();        
         ResourceResponse r = client.invoke(request);
         return r.getResult();
     }

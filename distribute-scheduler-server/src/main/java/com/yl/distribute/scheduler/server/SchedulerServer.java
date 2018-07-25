@@ -3,6 +3,9 @@ package com.yl.distribute.scheduler.server;
 import java.io.FileInputStream;
 import java.util.Properties;
 import org.I0Itec.zkclient.ZkClient;
+import org.apache.commons.lang3.math.NumberUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.webapp.WebAppContext;
 import org.eclipse.jetty.xml.XmlConfiguration;
@@ -27,6 +30,8 @@ import io.netty.handler.codec.serialization.ObjectEncoder;
 import io.netty.util.concurrent.DefaultEventExecutorGroup;
 
 public class SchedulerServer {
+    
+    private static Log LOG = LogFactory.getLog(SchedulerServer.class);
     
     private int zkPort;
     
@@ -107,7 +112,7 @@ public class SchedulerServer {
         try{
             server.start();
         }catch(Exception e){
-            e.printStackTrace();
+            LOG.error(e);
         }
     }    
     
@@ -117,14 +122,11 @@ public class SchedulerServer {
         int jettyPort = Configuration.getInt(prop, "jetty.server.port");
         String defaultPoolPath = Configuration.getString(prop, "zk.regist.default.pool.path");
         
-        if (args.length > 1) {
-            try {
-                zkPort = Integer.parseInt(args[0]);   
-                defaultPoolPath = args[1];
-            } catch (NumberFormatException e) {
-                e.printStackTrace();
-            }
+        if (args.length > 1) {           
+           zkPort = NumberUtils.toInt(args[0],zkPort);   
+           defaultPoolPath = args[1];             
         }
+        
         String zkServers = Configuration.getString(prop, "zk.server.list");
         String path = defaultPoolPath + MetricsUtils.getHostName() + "-" + zkPort; 
         SchedulerServer server = new SchedulerServer(zkPort);

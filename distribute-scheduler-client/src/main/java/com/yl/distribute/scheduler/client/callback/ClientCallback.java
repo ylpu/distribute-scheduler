@@ -27,8 +27,8 @@ public class ClientCallback{
     }
     
     public void onRead(JobResponse response) throws Exception {
-    	System.out.println(input.getRequestId() + "返回url是" + response.getStdOutputUrl());
-    	LOG.info(input.getRequestId() + "返回url是" + response.getStdOutputUrl());
+    	System.out.println(input.getJobId() + "返回url是" + response.getStdOutputUrl());
+    	LOG.info(input.getJobId() + "返回url是" + response.getStdOutputUrl());
         updateJob(response);
         ResourceService service = ResourceProxy.get(ResourceService.class);
         service.addResource(response.getRunningServer(), input.getExecuteParameters());
@@ -43,8 +43,9 @@ public class ClientCallback{
     
     private void resubmitIfNeccesery(JobResponse output) throws Exception {
         if(output.getJobStatus().equals(JobStatus.FAILED.getStatus())
-                && input.getRetryTimes() < 3) { 
-            input.setRetryTimes(input.getRetryTimes() + 1);
+                && input.getFailedTimes() < input.getRetryTimes()) { 
+            input.setFailedTimes(input.getFailedTimes() + 1);
+            LOG.warn("任务"+ input.getJobId() + "执行失败，现在进行第" + input.getFailedTimes() + "次重试");
             JobClient.getInstance().submit(input);            
         }
     }

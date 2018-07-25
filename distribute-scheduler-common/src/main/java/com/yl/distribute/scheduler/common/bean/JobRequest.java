@@ -6,10 +6,11 @@ import java.util.Map;
 public class JobRequest implements Serializable{
 
     private static final long serialVersionUID = 1L;
-    private String requestId;
+    private String jobId;
     private String command;    
     private String poolName;
     private int retryTimes = 1;
+    private int failedTimes = 0;
     private Map<String,Object> commandParameters;
     private Map<String,Object> executeParameters;       
     
@@ -18,14 +19,19 @@ public class JobRequest implements Serializable{
     }
     public void setRetryTimes(int retryTimes) {
         this.retryTimes = retryTimes;
-    }
-    public String getRequestId() {
-        return requestId;
-    }
-    public void setRequestId(String requestId) {
-        this.requestId = requestId;
     }     
-
+    public int getFailedTimes() {
+        return failedTimes;
+    }
+    public void setFailedTimes(int failedTimes) {
+        this.failedTimes = failedTimes;
+    }    
+    public String getJobId() {
+        return jobId;
+    }
+    public void setJobId(String jobId) {
+        this.jobId = jobId;
+    }
     public String getCommand() {
         return command;
     }

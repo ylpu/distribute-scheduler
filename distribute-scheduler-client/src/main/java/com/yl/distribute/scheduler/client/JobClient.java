@@ -44,7 +44,7 @@ public class JobClient {
     
     public void submit(JobRequest input){        
         try {
-            String lastFailedServer = getLastFailedJob(input.getRequestId());
+            String lastFailedServer = getLastFailedJob(input.getJobId());
             ResourceService service = ResourceProxy.get(ResourceService.class);
             String idleServer = service.getIdleServer(input,lastFailedServer);    
             SimpleChannelPool channelPool = getChannelPool(input.getPoolName(),idleServer);
@@ -53,15 +53,16 @@ public class JobClient {
             f.addListener((FutureListener<Channel>) f1 -> {
                 if (f1.isSuccess()) {
                     ClientCallback callback = new ClientCallback(input);                    
-                    CallBackUtils.putCallback(input.getRequestId(), callback);
+                    CallBackUtils.putCallback(input.getJobId(), callback);
                     Channel ch = f1.getNow();                    
                     ch.writeAndFlush(input).addListener(new ChannelFutureListener() {
                         @Override
                         public void operationComplete(ChannelFuture future) throws Exception {
                             if(future.isSuccess()) {
+                                LOG.info("提交任务" + input.getJobId() +"到"+ idleServer);
                                 service.subResource(idleServer, input.getExecuteParameters());  
                             } else {  
-                            	LOG.error("写数据" + input.getRequestId() +"到"+ idleServer + "失败");  
+                            	LOG.error("提交任务" + input.getJobId() +"到"+ idleServer + "失败");  
                             }  
                                 
                         }  
@@ -71,7 +72,7 @@ public class JobClient {
             });
             
         }catch(Exception e) {
-        	LOG.error("任务 " + input.getRequestId() + " 失败第 " + input.getRetryTimes() + "次并且找不到可运行的服务器",e);
+        	LOG.error("任务 " + input.getJobId() + "第 " + input.getFailedTimes() + "失败次并且找不到可运行的服务器",e);
         }
     } 
     
@@ -88,7 +89,7 @@ public class JobClient {
            int poolNumber = Configuration.getInt(prop, "channel.pool.numbers");
            String zkServers = Configuration.getString(prop, "zk.server.list");
            SchedulerClientPool clientPool = SchedulerClientPool.getInstance();
-           HostInfo serverData = ZKHelper.getClient(zkServers).readData("/root" + "/" +poolName + "/" + serverName);
+           HostInfo serverData = ZKHelper.getClient(zkServers).readData("/root/" + poolName + "/" + serverName);
            clientPool.build(poolNumber);
            SimpleChannelPool pool = clientPool.poolMap.get(new InetSocketAddress(serverData.getIp().split(":")[0],
                          Integer.parseInt(serverData.getIp().split(":")[1])));                

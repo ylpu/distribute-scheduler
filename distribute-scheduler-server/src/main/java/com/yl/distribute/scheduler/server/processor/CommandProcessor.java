@@ -7,21 +7,17 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.Properties;
-import java.util.Random;
-
+//import java.util.Random;
 import javax.ws.rs.core.Response;
-
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
 import com.yl.distribute.scheduler.common.bean.*;
 import com.yl.distribute.scheduler.common.enums.JobStatus;
 import com.yl.distribute.scheduler.common.utils.JobUtils;
 import com.yl.distribute.scheduler.common.utils.MetricsUtils;
 import com.yl.distribute.scheduler.core.config.Configuration;
 import com.yl.distribute.scheduler.core.jersey.JerseyClient;
-
 import io.netty.channel.ChannelHandlerContext;
 
 public class CommandProcessor implements IServerProcessor{
@@ -38,7 +34,7 @@ public class CommandProcessor implements IServerProcessor{
     @Override
     public void execute(ChannelHandlerContext ctx){          
         
-        String jobId = JobUtils.getJobId(input.getRequestId());
+        String jobId = JobUtils.getJobId(input.getJobId());
         String errorFile = jobId + "_error";
         String outPutFile = jobId + "_out"; 
         
@@ -46,9 +42,9 @@ public class CommandProcessor implements IServerProcessor{
         try {
             Response response = updateJob(output);
             if(response.getStatus() != 200) {
-                throw new RuntimeException("failed to update job for " + input.getRequestId());
+                throw new RuntimeException("failed to update job for " + input.getJobId());
             }
-            Thread.sleep(new Random().nextInt(30000));
+//            Thread.sleep(new Random().nextInt(30000));
             if(StringUtils.isNotBlank(input.getCommand())) {
                 Process process = Runtime.getRuntime().exec(input.getCommand());
                 generateStreamOutPut(process.getInputStream(),outPutFile);
@@ -61,26 +57,30 @@ public class CommandProcessor implements IServerProcessor{
                     output.setJobStatus(JobStatus.SUCCESS.getStatus());                    
                     ctx.writeAndFlush(output);                
                 } 
-            }  
+            }else {
+                LOG.warn("command is empty for " + input.getJobId());
+                output.setJobStatus(JobStatus.SUCCESS.getStatus());            
+                ctx.writeAndFlush(output);
+            }
         }catch (Exception e) {
             LOG.error(e);
             output.setJobStatus(JobStatus.FAILED.getStatus());            
             ctx.writeAndFlush(output);
-            System.out.println("after process " +  output.getResponseId());
+            System.out.println("after process " +  output.getJobId());
         }
     }
     
-    private JobResponse setOutput(String outPutFile,String errorFile) {    
+    private JobResponse setOutput(String stdoutFile,String stderrorFile) {    
         Properties prop = Configuration.getConfig("config.properties");        
         int port = Configuration.getInt(prop, "jetty.server.port");
         int zkPort = Configuration.getInt(prop, "zk.regist.default.port");
         JobResponse response = new JobResponse();
         response.setRunningServer(MetricsUtils.getHostName() + "-" + zkPort);
-        response.setResponseId(input.getRequestId());
+        response.setJobId(input.getJobId());
         //客户端可以根据url读取jetty服务器上的errorFile
-        response.setErrorOutputUrl("http://" + MetricsUtils.getHostIpAddress() + ":" + port + "/" + errorFile);
+        response.setErrorOutputUrl("http://" + MetricsUtils.getHostIpAddress() + ":" + port + "/server/" + stderrorFile);
         //客户端可以根据url读取jetty服务器上的outPutFile
-        response.setStdOutputUrl("http://" + MetricsUtils.getHostIpAddress() + ":" + port + "/" + outPutFile);        
+        response.setStdOutputUrl("http://" + MetricsUtils.getHostIpAddress() + ":" + port + "/server/" + stdoutFile);        
         response.setJobStatus(JobStatus.RUNNING.getStatus());
         return response;
     }
@@ -96,13 +96,13 @@ public class CommandProcessor implements IServerProcessor{
                 bw.flush();
             }
         } catch (IOException e) {
-            e.printStackTrace();
+            LOG.error(e);
             throw new RuntimeException(e);
         } finally {            
             try {
                 bw.close();
             } catch (IOException e) {
-                e.printStackTrace();
+                LOG.error(e);
                 throw new RuntimeException(e);
             }
         }

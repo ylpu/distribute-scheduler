@@ -19,6 +19,7 @@
         <h2.version>1.4.194</h2.version>
         <hibernate.version>5.2.10.Final</hibernate.version>
         <arquillian.version>1.1.13.Final</arquillian.version>
+        <spring.version>4.3.11.RELEASE</spring.version>
         <arquillian-undertow-embedded.version>1.0.0.Alpha2</arquillian-undertow-embedded.version>
     </properties>
      <dependencies>
@@ -182,6 +183,73 @@
             <artifactId>distribute-scheduler-client</artifactId>
             <version>0.0.1-SNAPSHOT</version>
         </dependency>
+        
+        <!-- Spring 4 -->
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-web</artifactId>
+            <version>${spring.version}</version>
+        </dependency>
+        <!--Spring4 end-->
+        
+        <!-- Jersey2 + Spring4 -->
+        <dependency>
+            <groupId>org.glassfish.jersey.ext</groupId>
+            <!-- 官方只提供了对 Spring 3 的扩展:jersey-spring3.jar -->
+            <artifactId>jersey-spring3</artifactId>
+            <version>${jersey.version}</version>
+            <!-- 要想使用spring4 需去除jersey-spring3.jar自带的spring3版本 -->
+            <exclusions>
+                <exclusion>
+                    <groupId>org.springframework</groupId>
+                    <artifactId>spring-web</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.springframework</groupId>
+                    <artifactId>spring-beans</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.springframework</groupId>
+                    <artifactId>spring-core</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.springframework</groupId>
+                    <artifactId>spring-context</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>        
+        
+        <dependency>
+            <groupId>org.springframework.data</groupId>
+            <artifactId>spring-data-jpa</artifactId>
+            <version>1.11.7.RELEASE</version>
+        </dependency>
+
+        <!-- Hibernate -->
+
+        <dependency>
+            <groupId>org.hibernate</groupId>
+            <artifactId>hibernate-core</artifactId>
+            <version>5.0.11.Final</version>
+        </dependency>
+        
+        <dependency>
+            <groupId>org.hibernate</groupId>
+            <artifactId>hibernate-entitymanager</artifactId>
+            <version>5.0.11.Final</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.mchange</groupId>
+            <artifactId>c3p0</artifactId>
+            <version>0.9.5.2</version>
+        </dependency>
+
+        <dependency>
+            <groupId>mysql</groupId>
+            <artifactId>mysql-connector-java</artifactId>
+            <version>5.1.29</version>
+        </dependency>       
     </dependencies>
     <build>
         <plugins>

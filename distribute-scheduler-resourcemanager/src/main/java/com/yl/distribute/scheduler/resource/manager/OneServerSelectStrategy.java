@@ -37,7 +37,7 @@ public class OneServerSelectStrategy implements ServerSelectStrategy{
                     if(excludeServers != null && excludeServers.size() > 0) {
                         return excludeServers.get(0).getHostName();
                     }else {
-                        throw new RuntimeException("找不到可用的服务器 "+ input.getRequestId());
+                        throw new RuntimeException("找不到可用的服务器 "+ input.getJobId());
                     }
                 }
                 

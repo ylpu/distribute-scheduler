@@ -14,6 +14,10 @@ import io.netty.handler.codec.serialization.ClassResolvers;
 import io.netty.handler.codec.serialization.ObjectDecoder;
 import io.netty.handler.codec.serialization.ObjectEncoder;
 import io.netty.util.concurrent.DefaultEventExecutorGroup;
+
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.math.NumberUtils;
+
 import com.yl.distribute.scheduler.resource.handler.ResourceServerHandler;
 import com.yl.distribute.scheduler.resource.manager.ResourceManager;
 
@@ -54,18 +58,19 @@ public class ResourceServer {
         }
     }   
     
-    public static void main(String[] args) throws Exception {
+    public static void main(String[] args) throws Exception {        
         int port = 8088;
-        
-        if (args.length > 1) {
-            try {
-                port = Integer.parseInt(args[0]);   
-            } catch (NumberFormatException e) {
-                e.printStackTrace();
-            }
-        }
+        String rootPool = "";        
+        if (args.length > 1) {          
+            port = NumberUtils.toInt(args[0]); 
+            rootPool = args[1];     
+        }        
+        if(StringUtils.isEmpty(rootPool)) {
+            ResourceManager.getInstance().init();
+        }else {
+            ResourceManager.getInstance().init(rootPool);
+        }     
         ResourceServer server = new ResourceServer(port);
-        ResourceManager.getInstance().init();
         server.start();        
     }
 }

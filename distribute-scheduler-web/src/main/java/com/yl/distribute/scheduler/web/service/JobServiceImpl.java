@@ -1,10 +1,11 @@
 package com.yl.distribute.scheduler.web.service;
 
-import javax.enterprise.context.ApplicationScoped;
+import org.springframework.stereotype.Component;
+
 import com.yl.distribute.scheduler.common.bean.JobResponse;
 import com.yl.distribute.scheduler.web.job.JobManager;
 
-@ApplicationScoped
+@Component
 public class JobServiceImpl implements JobService{
     
     public void updateJob(JobResponse response) {

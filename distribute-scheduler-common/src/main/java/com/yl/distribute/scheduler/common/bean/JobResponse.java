@@ -6,17 +6,17 @@ public class JobResponse implements Serializable{
 
     private static final long serialVersionUID = 1L;
     //responseId和requestId相同
-    private String responseId;
+    private String jobId;
     private String runningServer;        
     private String jobStatus;
     private String errorOutputUrl;
     private String stdOutputUrl;
 
-    public String getResponseId() {
-        return responseId;
+    public String getJobId() {
+        return jobId;
     }
-    public void setResponseId(String responseId) {
-        this.responseId = responseId;
+    public void setJobId(String jobId) {
+        this.jobId = jobId;
     }
     public String getJobStatus() {
         return jobStatus;
