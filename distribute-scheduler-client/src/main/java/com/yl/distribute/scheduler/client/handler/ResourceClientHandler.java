@@ -27,10 +27,10 @@ public class ResourceClientHandler extends SimpleChannelInboundHandler<ResourceR
 
     @Override
     public void channelRead0(ChannelHandlerContext ctx, ResourceResponse response) throws Exception {
-        ResourceCallback holder = responseMap.get(response.getId());
-        if (holder != null) {
+        ResourceCallback callback = responseMap.get(response.getId());
+        if (callback != null) {
             responseMap.remove(response.getId());
-            holder.setResponse(response);
+            callback.setResponse(response);
         }
     }
 
@@ -57,9 +57,9 @@ public class ResourceClientHandler extends SimpleChannelInboundHandler<ResourceR
     }
 
     public ResourceResponse invoke(ResourceRequest request) throws Exception {
-        ResourceCallback holder = new ResourceCallback();
-        responseMap.put(request.getId(), holder);
+        ResourceCallback callback = new ResourceCallback();
+        responseMap.put(request.getId(), callback);
         channel.writeAndFlush(request);
-        return holder.getResponse();
+        return callback.getResponse();
     }
 }

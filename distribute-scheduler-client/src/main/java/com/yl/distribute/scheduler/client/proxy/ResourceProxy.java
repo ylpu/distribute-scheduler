@@ -34,10 +34,7 @@ public class ResourceProxy implements InvocationHandler {
         request.setParameters(args);
         client = new ResourceClient().connect();        
         ResourceResponse r = client.invoke(request);
+        client.closeConnect();
         return r.getResult();
-    }
-
-    public void close() {
-        this.client.closeConnect();
     }
 }

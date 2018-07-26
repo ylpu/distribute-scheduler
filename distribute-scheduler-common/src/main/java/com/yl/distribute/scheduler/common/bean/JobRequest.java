@@ -8,7 +8,7 @@ public class JobRequest implements Serializable{
     private static final long serialVersionUID = 1L;
     private String jobId;
     private String command;    
-    private String poolName;
+    private String poolPath;
     private int retryTimes = 1;
     private int failedTimes = 0;
     private Map<String,Object> commandParameters;
@@ -38,11 +38,11 @@ public class JobRequest implements Serializable{
     public void setCommand(String command) {
         this.command = command;
     }     
-    public String getPoolName() {
-        return poolName;
+    public String getPoolPath() {
+        return poolPath;
     }
-    public void setPoolName(String poolName) {
-        this.poolName = poolName;
+    public void setPoolPath(String poolPath) {
+        this.poolPath = poolPath;
     }
     public Map<String, Object> getCommandParameters() {
         return commandParameters;

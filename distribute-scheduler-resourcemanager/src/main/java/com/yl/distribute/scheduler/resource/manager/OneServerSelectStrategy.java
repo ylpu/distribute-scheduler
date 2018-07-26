@@ -17,7 +17,7 @@ public class OneServerSelectStrategy implements ServerSelectStrategy{
 
     @Override
     public String getIdleServer(JobRequest input,Map<String,List<String>> poolServers,Map<String,HostInfo> resourceMap,String lastFailedServer) {
-        List<String> servers = poolServers.get(ResourceManager.getInstance().getRootPool() + "/" + input.getPoolName());
+        List<String> servers = poolServers.get(input.getPoolPath());
         List<HostInfo> sortedServers = new ArrayList<HostInfo>();
         if(servers != null && servers.size() > 0){
             for(String server : servers) {

@@ -9,17 +9,16 @@ import com.yl.distribute.scheduler.common.bean.HostInfo;
 import com.yl.distribute.scheduler.common.bean.JobRequest;
 import com.yl.distribute.scheduler.core.service.ResourceService;
 
-
 public class SchedulerClientTest {
     
     @Test
     public void submitJob() throws Exception {
         
         JobClient client = JobClient.getInstance();        
-        for(int i = 0;i < 10; i++) {
+        for(int i = 0;i < 1000; i++) {
             new ProduceThread(client,i).start();
         }        
-        Thread.sleep(10000);        
+        Thread.sleep(300000);        
         ResourceService service = ResourceProxy.get(ResourceService.class);
         Map<String,HostInfo> map = service.getResources();
         for(Entry<String,HostInfo> entry : map.entrySet()) {
@@ -42,7 +41,7 @@ public class SchedulerClientTest {
             JobRequest input = new JobRequest();
             input.setJobId(String.valueOf(Math.random() + index));
             input.setCommand("ls -ltr");
-            input.setPoolName("pool1");            
+            input.setPoolPath("/root/pool1");            
             client.submit(input);
         }
     }

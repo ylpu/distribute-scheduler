@@ -37,10 +37,7 @@ public class ResourceClient {
         String resourceServer = Configuration.getString(prop, "resource.manager.server");
         int resourcePort = Configuration.getInt(prop, "resource.manager.port");
         
-        ResourceClient client = new ResourceClient();    
-        client.setChannel(null);
-        client.setGroup(null);
-        
+        ResourceClient client = new ResourceClient();         
         EventLoopGroup group = new NioEventLoopGroup();
         Bootstrap bootstrap = new Bootstrap();
         bootstrap.group(group);
