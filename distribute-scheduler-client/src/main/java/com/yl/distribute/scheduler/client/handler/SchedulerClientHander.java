@@ -10,7 +10,7 @@ import io.netty.channel.ChannelHandlerContext;
 
 public class SchedulerClientHander extends CommonChannelInboundHandler{
 	
-	private static Log LOG = LogFactory.getLog(SchedulerClientHander.class);
+    private static Log LOG = LogFactory.getLog(SchedulerClientHander.class);
 	
     /**
      * read the message from server
@@ -19,10 +19,25 @@ public class SchedulerClientHander extends CommonChannelInboundHandler{
         JobResponse output = (JobResponse)msg;
         ClientCallback callBack = CallBackUtils.getCallback(output.getJobId());        
         callBack.onRead((JobResponse)msg);
-    }    
+    } 
     
     /**
-     * if idlestatehandler is set,following method will triggered
+     * if channel is inactive, then try to reconnect it
+     */
+    public void channelInactive(ChannelHandlerContext ctx) throws Exception {
+        System.out.println("channel inactive" + ctx.channel());    
+    }
+
+
+    /**
+     * if caught exception, then close the channel
+     */
+    public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
+        LOG.error(cause);
+    }
+    
+    /**
+     * if idlestatehandler is set,following method will be triggered
      */
     public void userEventTriggered(ChannelHandlerContext ctx, Object evt)
             throws Exception {    

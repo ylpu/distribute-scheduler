@@ -6,16 +6,20 @@ import com.yl.distribute.scheduler.common.bean.HostInfo;
 
 public interface ResourceMBean {
 	
-	public Map<String, List<String>> getPoolServers();
+    public Map<String, List<String>> getPoolServers();
 	
-	public void setPoolServers(Map<String, List<String>> poolServers);
+    public void setPoolServers(Map<String, List<String>> poolServers);
 
-	public Map<String, HostInfo> getResourceMap();
+    public Map<String, HostInfo> getResourceMap();
 
-	public void setResourceMap(Map<String, HostInfo> resourceMap);
+    public void setResourceMap(Map<String, HostInfo> resourceMap);
 	
     public String getRootPool();
 
-    public void setRootPool(String rootPool); 
+    public void setRootPool(String rootPool);
+    
+    public Map<String, Integer> getTaskMap();
+    
+    public void setTaskMap(Map<String, Integer> taskMap);  
 
 }

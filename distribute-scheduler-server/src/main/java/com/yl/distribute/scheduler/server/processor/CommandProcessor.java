@@ -67,6 +67,8 @@ public class CommandProcessor implements IServerProcessor{
             output.setJobStatus(JobStatus.FAILED.getStatus());            
             ctx.writeAndFlush(output);
             System.out.println("after process " +  output.getJobId());
+        }finally {
+            
         }
     }
     

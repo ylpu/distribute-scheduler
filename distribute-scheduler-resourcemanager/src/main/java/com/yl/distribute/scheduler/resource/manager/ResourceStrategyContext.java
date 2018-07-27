@@ -1,8 +1,5 @@
 package com.yl.distribute.scheduler.resource.manager;
 
-import java.util.List;
-import java.util.Map;
-import com.yl.distribute.scheduler.common.bean.HostInfo;
 import com.yl.distribute.scheduler.common.bean.JobRequest;
 
 public class ResourceStrategyContext {
@@ -13,8 +10,7 @@ public class ResourceStrategyContext {
         this.strategy = strategy;
     }
     
-    public String select(JobRequest input,Map<String,List<String>> poolServers,Map<String,HostInfo> resourceMap,String lastFailedServer) {
-        return strategy.getIdleServer(input, poolServers, resourceMap, lastFailedServer);
+    public String select(JobRequest input,String lastFailedServer,ResourceManager rm) {
+        return strategy.getIdleServer(input,lastFailedServer,rm);
     }
-
 }

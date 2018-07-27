@@ -11,7 +11,7 @@ import io.netty.channel.SimpleChannelInboundHandler;
 
 public class SchedulerServerHandler extends SimpleChannelInboundHandler<JobRequest> {    
 
-	private static Log LOG = LogFactory.getLog(SchedulerServerHandler.class);
+    private static Log LOG = LogFactory.getLog(SchedulerServerHandler.class);
 	
     @Override
     public void channelActive(ChannelHandlerContext ctx) throws Exception {

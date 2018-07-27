@@ -19,7 +19,7 @@ import io.netty.util.concurrent.FutureListener;
 
 public class JobClient {
 	
-	private static Log LOG = LogFactory.getLog(JobClient.class);
+    private static Log LOG = LogFactory.getLog(JobClient.class);
     
     private static final JobClient jobClient = new JobClient();    
 
@@ -54,6 +54,7 @@ public class JobClient {
                             if(future.isSuccess()) {
                                 LOG.info("提交任务" + input.getJobId() +"到"+ idleServer);
                                 service.subResource(idleServer, input.getExecuteParameters());  
+                                service.increaseTask(idleServer);
                             } else {  
                             	LOG.error("提交任务" + input.getJobId() +"到"+ idleServer + "失败");  
                             }                                

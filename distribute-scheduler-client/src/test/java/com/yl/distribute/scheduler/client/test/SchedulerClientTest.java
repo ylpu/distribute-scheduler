@@ -15,15 +15,20 @@ public class SchedulerClientTest {
     public void submitJob() throws Exception {
         
         JobClient client = JobClient.getInstance();        
-        for(int i = 0;i < 1000; i++) {
+        for(int i = 0;i < 100; i++) {
             new ProduceThread(client,i).start();
         }        
-        Thread.sleep(300000);        
+        Thread.sleep(30000);        
         ResourceService service = ResourceProxy.get(ResourceService.class);
         Map<String,HostInfo> map = service.getResources();
         for(Entry<String,HostInfo> entry : map.entrySet()) {
             System.out.println("host is " + entry.getKey() +  ",availiable cores is " + entry.getValue().getAvailableCores() 
                     +  ",availiable memory is " + entry.getValue().getAvailableMemory()); 
+        } 
+        
+        Map<String,Integer> tasks = service.getTasks();
+        for(Entry<String,Integer> entry : tasks.entrySet()) {
+            System.out.println("host is " + entry.getKey() +  ",task number is " + entry.getValue()); 
         } 
     }
     

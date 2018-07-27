@@ -22,7 +22,19 @@ public class ResourceServiceImpl implements ResourceService{
         ResourceManager.getInstance().subResource(serverName, resourceParams);
     }
     
+    public void increaseTask(String serverName) {
+        ResourceManager.getInstance().increaseTask(serverName);
+    }
+    
+    public void decreaseTask(String serverName) {
+        ResourceManager.getInstance().decreaseTask(serverName);
+    }
+    
     public Map<String,HostInfo> getResources() {
         return ResourceManager.getInstance().getResourceMap();
+    }
+    
+    public Map<String,Integer> getTasks() {
+        return ResourceManager.getInstance().getTaskMap();
     }
 }

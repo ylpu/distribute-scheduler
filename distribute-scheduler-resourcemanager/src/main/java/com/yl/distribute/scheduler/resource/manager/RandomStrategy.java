@@ -1,27 +1,24 @@
 package com.yl.distribute.scheduler.resource.manager;
 
 import java.util.List;
-import java.util.Map;
 import java.util.Random;
 import org.apache.commons.lang3.StringUtils;
-import com.yl.distribute.scheduler.common.bean.HostInfo;
 import com.yl.distribute.scheduler.common.bean.JobRequest;
 
 /**
  * 从pool中随机选一台机器去提交任务
  *
  */
-public class RandomServerSelectStrategy implements ServerSelectStrategy{
-
+public class RandomStrategy implements ServerSelectStrategy{
     @Override
-    public String getIdleServer(JobRequest input,Map<String,List<String>> poolServers,Map<String,HostInfo> resourceMap,String lastFailedServer) {
-        List<String> servers = poolServers.get(input.getPoolPath());
+    public String getIdleServer(JobRequest request,String lastFailedServer,ResourceManager rm) {
+        List<String> servers = rm.getPoolServers().get(request.getPoolPath());
         String idleServer = "";
         if(servers != null && servers.size() > 0){
-            String[] keys = resourceMap.keySet().toArray(new String[0]);
+            String[] keys = rm.getResourceMap().keySet().toArray(new String[0]);
             Random random = new Random();
             String randomServer = keys[random.nextInt(keys.length)];
-            idleServer = resourceMap.get(randomServer).getHostName();
+            idleServer = rm.getResourceMap().get(randomServer).getHostName();
         }
         if(!StringUtils.isEmpty(idleServer)) {
            return idleServer;

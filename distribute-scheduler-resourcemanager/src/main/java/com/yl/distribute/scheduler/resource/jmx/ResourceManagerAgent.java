@@ -5,7 +5,7 @@ import javax.management.ObjectName;
 //import com.sun.jdmk.comm.HtmlAdaptorServer;
 
 public class ResourceManagerAgent {
-	public static void main(String[] args) throws Exception {         
+    public static void main(String[] args) throws Exception {         
         MBeanServer server = MBeanServerFactory.createMBeanServer();
         ObjectName jobResource = new ObjectName("job:name=ResourceManager");         
         server.registerMBean(new Resource(), jobResource);

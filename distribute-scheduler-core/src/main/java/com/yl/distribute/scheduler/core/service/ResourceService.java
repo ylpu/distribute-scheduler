@@ -12,6 +12,11 @@ public interface ResourceService {
     
     void subResource(String serverName,Map<String,Object> resourceParams);
     
+    void increaseTask(String serverName);
+    
+    void decreaseTask(String serverName);
+    
     Map<String,HostInfo> getResources();
-
+    
+    Map<String,Integer> getTasks();
 }

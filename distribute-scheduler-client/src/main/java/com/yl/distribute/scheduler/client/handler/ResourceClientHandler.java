@@ -13,7 +13,7 @@ import io.netty.channel.SimpleChannelInboundHandler;
 
 public class ResourceClientHandler extends SimpleChannelInboundHandler<ResourceResponse> {
 	
-	private static Log LOG = LogFactory.getLog(ResourceClientHandler.class);
+    private static Log LOG = LogFactory.getLog(ResourceClientHandler.class);
 
     private Channel channel;
 

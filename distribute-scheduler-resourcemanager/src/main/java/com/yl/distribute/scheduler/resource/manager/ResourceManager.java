@@ -33,7 +33,10 @@ public class ResourceManager{
 
     
     //key is servername,value is host info
-    public Map<String,HostInfo> resourceMap = new HashMap<String,HostInfo>();    
+    public Map<String,HostInfo> resourceMap = new HashMap<String,HostInfo>();   
+    
+    //key is servername,value is tasknumbers
+    public Map<String,Integer> taskMap = new HashMap<String,Integer>();
         
     
     private ResourceManager() {        
@@ -198,6 +201,34 @@ public class ResourceManager{
             hostInfo.setAvailableMemory(hostInfo.getAvailableMemory() + usedMemory); 
         }
     }
+    
+    /**
+     * 开始处理任务
+     * @param serverName
+     * @param taskMap
+     */
+    public void increaseTask(String serverName) {
+        synchronized(taskMap){
+            if(taskMap.get(serverName) != null) {
+                taskMap.put(serverName, taskMap.get(serverName) + 1);
+            }else {
+                taskMap.put(serverName, 1);
+            }
+        }
+    }
+    
+    /**
+     * 处理完任务
+     * @param serverName
+     * @param taskMap
+     */
+    public void decreaseTask(String serverName) {
+        synchronized(taskMap){
+            if(taskMap.get(serverName) != null) {
+                taskMap.put(serverName, taskMap.get(serverName) - 1);
+            }
+        }
+    }
     /**
      * 根据策略获取pool中的空闲机器 
      * @param input
@@ -214,7 +245,7 @@ public class ResourceManager{
             LOG.error(e);
             throw new RuntimeException(e);
         }
-        return new ResourceStrategyContext(serverSelectStrategy).select(input, poolServers, resourceMap, lastFailedServer);
+        return new ResourceStrategyContext(serverSelectStrategy).select(input,lastFailedServer,this);
 
     }
 
@@ -240,5 +271,13 @@ public class ResourceManager{
 
 	public void setResourceMap(Map<String, HostInfo> resourceMap) {
 		this.resourceMap = resourceMap;
-	}    
+	}
+
+    public Map<String, Integer> getTaskMap() {
+        return taskMap;
+    }
+
+    public void setTaskMap(Map<String, Integer> taskMap) {
+        this.taskMap = taskMap;
+    }    	
 }

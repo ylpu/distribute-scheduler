@@ -57,8 +57,8 @@ public class ServerDisconnectedListener {
             public void handleChildChange(String parentPath, List<String> currentChilds) throws Exception {  
                 System.out.println(String.format("[ZookeeperRegistry] service list change: path=%s, currentChilds=%s",
                         parentPath, currentChilds.toString()));  
-                closeDisconnectedPool(zkClient,parentPath,oldChilds,currentChilds); 
                 resetOldChilds(oldChilds,currentChilds);
+                closeDisconnectedPool(zkClient,parentPath,oldChilds,currentChilds);                 
                 System.out.println("Servers: " + poolServers.get(path).toString());  
             }  
         });          

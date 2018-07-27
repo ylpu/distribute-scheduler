@@ -18,7 +18,7 @@ import com.yl.distribute.scheduler.core.service.ResourceService;
 
 public class ClientCallback{
 	
-	private static Log LOG = LogFactory.getLog(ClientCallback.class);
+    private static Log LOG = LogFactory.getLog(ClientCallback.class);
     
     private JobRequest input;
     
@@ -32,6 +32,7 @@ public class ClientCallback{
         updateJob(response);
         ResourceService service = ResourceProxy.get(ResourceService.class);
         service.addResource(response.getRunningServer(), input.getExecuteParameters());
+        service.decreaseTask(response.getRunningServer());
         resubmitIfNeccesery(response);
     }
     
