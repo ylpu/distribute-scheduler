@@ -11,18 +11,18 @@ public class TaskResponse implements Serializable{
     private String stdOutputUrl;
     
     public String getTaskId() {
-		return taskId;
-	}
-	public void setTaskId(String taskId) {
-		this.taskId = taskId;
-	}
-	public String getTaskStatus() {
-		return taskStatus;
-	}
-	public void setTaskStatus(String taskStatus) {
-		this.taskStatus = taskStatus;
-	}
-	public String getErrorOutputUrl() {
+        return taskId;
+    }
+    public void setTaskId(String taskId) {
+        this.taskId = taskId;
+    }
+    public String getTaskStatus() {
+        return taskStatus;
+    }
+    public void setTaskStatus(String taskStatus) {
+        this.taskStatus = taskStatus;
+    }
+    public String getErrorOutputUrl() {
         return errorOutputUrl;
     }
     public void setErrorOutputUrl(String errorOutputUrl) {

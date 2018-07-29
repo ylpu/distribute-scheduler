@@ -5,6 +5,8 @@ import java.io.Serializable;
 public enum TaskStatus implements Serializable{
 	
    INITIAL("initial"),
+   
+   START("start"),
     
    FAILED("failed"),
    
