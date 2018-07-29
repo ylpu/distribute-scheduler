@@ -1,15 +1,21 @@
 package com.yl.distribute.scheduler.client;
 
 import java.util.Properties;
+
+import javax.ws.rs.core.Response;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
 import com.yl.distribute.scheduler.client.callback.ClientCallback;
 import com.yl.distribute.scheduler.client.proxy.ResourceProxy;
-import com.yl.distribute.scheduler.common.bean.JobRequest;
+import com.yl.distribute.scheduler.common.bean.Task;
+import com.yl.distribute.scheduler.common.enums.TaskStatus;
 import com.yl.distribute.scheduler.common.utils.CallBackUtils;
 import com.yl.distribute.scheduler.core.config.Configuration;
 import com.yl.distribute.scheduler.core.jersey.JerseyClient;
 import com.yl.distribute.scheduler.core.service.ResourceService;
+
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelFutureListener;
@@ -32,31 +38,34 @@ public class JobClient {
         return jobClient;
     }
     
-    public void submit(JobRequest input){        
-        try {
-            String lastFailedServer = getLastFailedJob(input.getJobId());
+    public void submit(Task task){        
+        try {                       
+            long startTime =  System.currentTimeMillis();    
             ResourceService service = ResourceProxy.get(ResourceService.class);
-            long startTime =  System.currentTimeMillis();            
-            String idleServer = service.getIdleServer(input,lastFailedServer);  
+            String idleServer = service.getIdleServer(task.getJob(),task.getLastFailedServer());  
             long endTime = System.currentTimeMillis();
-            System.out.println("cost " + (endTime - startTime) + " to get idle server for " + input.getJobId());
-            SimpleChannelPool channelPool = SchedulerClientPool.getInstance().getChannelPool(input.getPoolPath(),idleServer);
+            System.out.println("cost " + (endTime - startTime) + " to get idle server for " + task.getTaskId());
+            
+            task.setRunningServer(idleServer);            
+            
+            SimpleChannelPool channelPool = SchedulerClientPool.getInstance().getChannelPool(task.getJob().getPoolPath(),idleServer);
             Future<Channel> f = null;
             f = channelPool.acquire(); 
+            
             f.addListener((FutureListener<Channel>) f1 -> {
                 if (f1.isSuccess()) {
-                    ClientCallback callback = new ClientCallback(input);                    
-                    CallBackUtils.putCallback(input.getJobId(), callback);
+                    ClientCallback callback = new ClientCallback(task);                    
+                    CallBackUtils.putCallback(task.getTaskId(), callback);
                     Channel ch = f1.getNow();                    
-                    ch.writeAndFlush(input).addListener(new ChannelFutureListener() {
+                    ch.writeAndFlush(task).addListener(new ChannelFutureListener() {
                         @Override
                         public void operationComplete(ChannelFuture future) throws Exception {
                             if(future.isSuccess()) {
-                                LOG.info("提交任务" + input.getJobId() +"到"+ idleServer);
-                                service.subResource(idleServer, input.getExecuteParameters());  
+                                LOG.info("提交任务" + task.getTaskId() +"到"+ idleServer);                                
+                                service.subResource(idleServer, task.getJob().getExecuteParameters());  
                                 service.increaseTask(idleServer);
                             } else {  
-                            	LOG.error("提交任务" + input.getJobId() +"到"+ idleServer + "失败");  
+                            	LOG.error("提交任务" + task.getTaskId() +"到"+ idleServer + "失败");  
                             }                                
                         }  
                     });                  
@@ -65,13 +74,9 @@ public class JobClient {
             });
             
         }catch(Exception e) {
-        	LOG.error("任务 " + input.getJobId() + "第 " + input.getFailedTimes() + "失败次并且找不到可运行的服务器",e);
+        	System.out.println("任务 " + task.getTaskId() + "第 " + task.getFailedTimes() + "失败次并且找不到可运行的服务器");
+        	LOG.error("任务 " + task.getTaskId() + "第 " + task.getFailedTimes() + "失败次并且找不到可运行的服务器",e);
         }
     } 
-    
-    private String getLastFailedJob(String jobId) {
-        Properties prop = Configuration.getConfig("config.properties");        
-        String jobApi = Configuration.getString(prop, "job.web.api");
-        return JerseyClient.get(jobApi + "/" + "getLastFailedServer" + "/" + jobId,String.class);
-    }  
+
 }

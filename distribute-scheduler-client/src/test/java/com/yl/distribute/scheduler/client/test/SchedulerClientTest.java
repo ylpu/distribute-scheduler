@@ -1,12 +1,22 @@
 package com.yl.distribute.scheduler.client.test;
 
+import java.util.Date;
 import java.util.Map;
+import java.util.Properties;
 import java.util.Map.Entry;
+
+import javax.ws.rs.core.Response;
+
 import org.junit.Test;
+
 import com.yl.distribute.scheduler.client.JobClient;
 import com.yl.distribute.scheduler.client.proxy.ResourceProxy;
 import com.yl.distribute.scheduler.common.bean.HostInfo;
-import com.yl.distribute.scheduler.common.bean.JobRequest;
+import com.yl.distribute.scheduler.common.bean.JobConf;
+import com.yl.distribute.scheduler.common.bean.Task;
+import com.yl.distribute.scheduler.common.enums.TaskStatus;
+import com.yl.distribute.scheduler.core.config.Configuration;
+import com.yl.distribute.scheduler.core.jersey.JerseyClient;
 import com.yl.distribute.scheduler.core.service.ResourceService;
 
 public class SchedulerClientTest {
@@ -15,10 +25,10 @@ public class SchedulerClientTest {
     public void submitJob() throws Exception {
         
         JobClient client = JobClient.getInstance();        
-        for(int i = 0;i < 100; i++) {
+        for(int i = 0;i < 500; i++) {
             new ProduceThread(client,i).start();
         }        
-        Thread.sleep(30000);        
+        Thread.sleep(180000);        
         ResourceService service = ResourceProxy.get(ResourceService.class);
         Map<String,HostInfo> map = service.getResources();
         for(Entry<String,HostInfo> entry : map.entrySet()) {
@@ -43,11 +53,24 @@ public class SchedulerClientTest {
         }
         
         public void run() {
-            JobRequest input = new JobRequest();
-            input.setJobId(String.valueOf(Math.random() + index));
-            input.setCommand("ls -ltr");
-            input.setPoolPath("/root/pool1");            
-            client.submit(input);
+        	String id = String.valueOf(Math.random() + index);
+            JobConf jobConf = new JobConf();
+            Task task = new Task();
+            jobConf.setJobId(id);
+            jobConf.setCommand("ls -ltr");
+            jobConf.setPoolPath("/root/pool1");
+            task.setJob(jobConf);
+            task.setTaskId(id);
+            task.setStartTime(new Date()); 
+            task.setTaskStatus(TaskStatus.INITIAL.getStatus());
+            addTask(task);
+            client.submit(task);
+        }    
+        
+        private Response addTask(Task task) {
+            Properties prop = Configuration.getConfig("config.properties");        
+            String taskApi = Configuration.getString(prop, "task.web.api");
+            return JerseyClient.add(taskApi + "/" + "addTask", task);
         }
     }
  }

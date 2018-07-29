@@ -1,6 +1,6 @@
 package com.yl.distribute.scheduler.resource.manager;
 
-import com.yl.distribute.scheduler.common.bean.JobRequest;
+import com.yl.distribute.scheduler.common.bean.JobConf;
 
 public class ResourceStrategyContext {
     
@@ -10,7 +10,7 @@ public class ResourceStrategyContext {
         this.strategy = strategy;
     }
     
-    public String select(JobRequest input,String lastFailedServer,ResourceManager rm) {
+    public String select(JobConf input,String lastFailedServer,ResourceManager rm) {
         return strategy.getIdleServer(input,lastFailedServer,rm);
     }
 }

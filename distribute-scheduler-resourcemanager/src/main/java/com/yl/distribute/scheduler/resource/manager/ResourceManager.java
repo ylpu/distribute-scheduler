@@ -15,7 +15,7 @@ import org.apache.commons.logging.LogFactory;
 import org.I0Itec.zkclient.IZkChildListener;
 
 import com.yl.distribute.scheduler.common.bean.HostInfo;
-import com.yl.distribute.scheduler.common.bean.JobRequest;
+import com.yl.distribute.scheduler.common.bean.JobConf;
 import com.yl.distribute.scheduler.common.constants.GlobalConstants;
 import com.yl.distribute.scheduler.core.config.Configuration;
 import com.yl.distribute.scheduler.core.zk.*;
@@ -235,7 +235,7 @@ public class ResourceManager{
      * @param lastFailedServer
      * @return
      */
-    public synchronized String getIdleServer(JobRequest input,String lastFailedServer) { 
+    public synchronized String getIdleServer(JobConf input,String lastFailedServer) { 
         Properties prop = Configuration.getConfig("config.properties"); 
         String serverStrategy = Configuration.getString(prop, "idle.server.select.strategy");
         ServerSelectStrategy serverSelectStrategy = null;

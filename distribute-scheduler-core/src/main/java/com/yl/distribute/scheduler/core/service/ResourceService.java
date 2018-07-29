@@ -2,11 +2,11 @@ package com.yl.distribute.scheduler.core.service;
 
 import java.util.Map;
 import com.yl.distribute.scheduler.common.bean.HostInfo;
-import com.yl.distribute.scheduler.common.bean.JobRequest;
+import com.yl.distribute.scheduler.common.bean.JobConf;
 
 public interface ResourceService {
     
-    String getIdleServer(JobRequest input,String lastFailedServer);
+    String getIdleServer(JobConf input,String lastFailedServer);
     
     void addResource(String serverName,Map<String,Object> resourceParams);
     

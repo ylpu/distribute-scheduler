@@ -3,7 +3,7 @@ package com.yl.distribute.scheduler.resource.manager;
 import java.util.List;
 import java.util.Random;
 import org.apache.commons.lang3.StringUtils;
-import com.yl.distribute.scheduler.common.bean.JobRequest;
+import com.yl.distribute.scheduler.common.bean.JobConf;
 
 /**
  * 从pool中随机选一台机器去提交任务
@@ -11,7 +11,7 @@ import com.yl.distribute.scheduler.common.bean.JobRequest;
  */
 public class RandomStrategy implements ServerSelectStrategy{
     @Override
-    public String getIdleServer(JobRequest request,String lastFailedServer,ResourceManager rm) {
+    public String getIdleServer(JobConf request,String lastFailedServer,ResourceManager rm) {
         List<String> servers = rm.getPoolServers().get(request.getPoolPath());
         String idleServer = "";
         if(servers != null && servers.size() > 0){

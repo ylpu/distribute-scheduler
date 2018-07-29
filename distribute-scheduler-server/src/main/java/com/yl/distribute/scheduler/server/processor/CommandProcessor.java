@@ -13,8 +13,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import com.yl.distribute.scheduler.common.bean.*;
-import com.yl.distribute.scheduler.common.enums.JobStatus;
-import com.yl.distribute.scheduler.common.utils.JobUtils;
+import com.yl.distribute.scheduler.common.enums.TaskStatus;
 import com.yl.distribute.scheduler.common.utils.MetricsUtils;
 import com.yl.distribute.scheduler.core.config.Configuration;
 import com.yl.distribute.scheduler.core.jersey.JerseyClient;
@@ -24,67 +23,65 @@ public class CommandProcessor implements IServerProcessor{
     
     private static final Log LOG = LogFactory.getLog(CommandProcessor.class);    
  
-    private JobRequest input;
+    private Task task;
     
-    public CommandProcessor(JobRequest input) {
-        this.input = input;
+    public CommandProcessor(Task task) {
+        this.task = task;
     }
 
 
     @Override
-    public void execute(ChannelHandlerContext ctx){          
+    public void execute(ChannelHandlerContext ctx){        
         
-        String jobId = JobUtils.getJobId(input.getJobId());
-        String errorFile = jobId + "_error";
-        String outPutFile = jobId + "_out"; 
+        String errorFile = task.getTaskId() + "_error";
+        String outPutFile = task.getTaskId() + "_out"; 
         
-        JobResponse output = setOutput(outPutFile,errorFile);              
+        TaskResponse response = new TaskResponse();
+        response.setTaskId(task.getTaskId());       
+                      
         try {
-            Response response = updateJob(output);
-            if(response.getStatus() != 200) {
-                throw new RuntimeException("failed to update job for " + input.getJobId());
-            }
 //            Thread.sleep(new Random().nextInt(30000));
-            if(StringUtils.isNotBlank(input.getCommand())) {
-                Process process = Runtime.getRuntime().exec(input.getCommand());
+            if(StringUtils.isNotBlank(task.getJob().getCommand())) {
+            	
+                Process process = Runtime.getRuntime().exec(task.getJob().getCommand());
                 generateStreamOutPut(process.getInputStream(),outPutFile);
                 generateStreamOutPut(process.getErrorStream(),errorFile);
+                
+                setTask(outPutFile,errorFile);
+                Response updateResponse = updateTask(task);
+                if(updateResponse.getStatus() != 200) {
+                    throw new RuntimeException("failed to update task for " + task.getTaskId());
+                }
+                
                 int c = process.waitFor();
                 if(c != 0){
-                    output.setJobStatus(JobStatus.FAILED.getStatus());                    
-                    ctx.writeAndFlush(output);
+                	response.setTaskStatus(TaskStatus.FAILED.getStatus());                    
+                    ctx.writeAndFlush(response);
                 }else {
-                    output.setJobStatus(JobStatus.SUCCESS.getStatus());                    
-                    ctx.writeAndFlush(output);                
+                	response.setTaskStatus(TaskStatus.SUCCESS.getStatus());                    
+                    ctx.writeAndFlush(response);                
                 } 
             }else {
-                LOG.warn("command is empty for " + input.getJobId());
-                output.setJobStatus(JobStatus.SUCCESS.getStatus());            
-                ctx.writeAndFlush(output);
+                LOG.warn("command is empty for " + task.getTaskId());
+                response.setTaskStatus(TaskStatus.SUCCESS.getStatus());            
+                ctx.writeAndFlush(response);
             }
         }catch (Exception e) {
             LOG.error(e);
-            output.setJobStatus(JobStatus.FAILED.getStatus());            
-            ctx.writeAndFlush(output);
-            System.out.println("after process " +  output.getJobId());
-        }finally {
-            
+            response.setTaskStatus(TaskStatus.FAILED.getStatus());            
+            ctx.writeAndFlush(response);
+            System.out.println("after process " +  response.getTaskId());
         }
     }
     
-    private JobResponse setOutput(String stdoutFile,String stderrorFile) {    
+    private void setTask(String stdoutFile,String stderrorFile) {    
         Properties prop = Configuration.getConfig("config.properties");        
         int port = Configuration.getInt(prop, "jetty.server.port");
-        int zkPort = Configuration.getInt(prop, "zk.regist.default.port");
-        JobResponse response = new JobResponse();
-        response.setRunningServer(MetricsUtils.getHostName() + "-" + zkPort);
-        response.setJobId(input.getJobId());
         //客户端可以根据url读取jetty服务器上的errorFile
-        response.setErrorOutputUrl("http://" + MetricsUtils.getHostIpAddress() + ":" + port + "/server/" + stderrorFile);
+        task.setErrorOutputUrl("http://" + MetricsUtils.getHostIpAddress() + ":" + port + "/server/" + stderrorFile);
         //客户端可以根据url读取jetty服务器上的outPutFile
-        response.setStdOutputUrl("http://" + MetricsUtils.getHostIpAddress() + ":" + port + "/server/" + stdoutFile);        
-        response.setJobStatus(JobStatus.RUNNING.getStatus());
-        return response;
+        task.setStdOutputUrl("http://" + MetricsUtils.getHostIpAddress() + ":" + port + "/server/" + stdoutFile);
+        task.setTaskStatus(TaskStatus.RUNNING.getStatus());
     }
     
     private void generateStreamOutPut(InputStream is,String fileName){        
@@ -110,9 +107,9 @@ public class CommandProcessor implements IServerProcessor{
         }
     }
     
-    private Response updateJob(JobResponse response) {
+    private Response updateTask(Task task) {
         Properties prop = Configuration.getConfig("config.properties");        
-        String jobApi = Configuration.getString(prop, "job.web.api");
-        return JerseyClient.update(jobApi + "/" + "updateJob", response);
+        String taskApi = Configuration.getString(prop, "task.web.api");
+        return JerseyClient.update(taskApi + "/" + "updateTask", task);
     }
 }

@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 import org.apache.commons.lang3.StringUtils;
 import com.yl.distribute.scheduler.common.bean.HostInfo;
-import com.yl.distribute.scheduler.common.bean.JobRequest;
+import com.yl.distribute.scheduler.common.bean.JobConf;
 
 /**
  * 从pool中选择资源最多的一台机器提交任务
@@ -15,7 +15,7 @@ import com.yl.distribute.scheduler.common.bean.JobRequest;
 public class ResourceIdleStrategy implements ServerSelectStrategy{
 
     @Override
-    public String getIdleServer(JobRequest request,String lastFailedServer,ResourceManager rm) {
+    public String getIdleServer(JobConf request,String lastFailedServer,ResourceManager rm) {
         List<String> servers = rm.getPoolServers().get(request.getPoolPath());
         List<HostInfo> sortedServers = new ArrayList<HostInfo>();
         if(servers != null && servers.size() > 0){

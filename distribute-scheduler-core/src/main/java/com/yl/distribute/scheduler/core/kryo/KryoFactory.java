@@ -1,8 +1,8 @@
 package com.yl.distribute.scheduler.core.kryo;
 
 import com.esotericsoftware.kryo.Kryo;
-import com.yl.distribute.scheduler.common.bean.JobRequest;
-import com.yl.distribute.scheduler.common.bean.JobResponse;
+import com.yl.distribute.scheduler.common.bean.JobConf;
+import com.yl.distribute.scheduler.common.bean.TaskResponse;
 
 public abstract class KryoFactory {
 
@@ -22,8 +22,8 @@ public abstract class KryoFactory {
     protected Kryo createKryo() {      
         Kryo kryo = new Kryo();
         kryo.setRegistrationRequired(false);
-        kryo.register(JobRequest.class);
-        kryo.register(JobResponse.class);
+        kryo.register(JobConf.class);
+        kryo.register(TaskResponse.class);
         return kryo;
     }
 }

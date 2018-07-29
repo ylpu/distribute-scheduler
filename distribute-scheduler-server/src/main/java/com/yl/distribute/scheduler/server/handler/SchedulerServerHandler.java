@@ -2,14 +2,17 @@ package com.yl.distribute.scheduler.server.handler;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import com.yl.distribute.scheduler.common.bean.JobRequest;
+
+import com.yl.distribute.scheduler.common.bean.JobConf;
+import com.yl.distribute.scheduler.common.bean.Task;
 import com.yl.distribute.scheduler.server.processor.CommandProcessor;
 import com.yl.distribute.scheduler.server.processor.IServerProcessor;
+
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 
 
-public class SchedulerServerHandler extends SimpleChannelInboundHandler<JobRequest> {    
+public class SchedulerServerHandler extends SimpleChannelInboundHandler<Task> {    
 
     private static Log LOG = LogFactory.getLog(SchedulerServerHandler.class);
 	
@@ -25,9 +28,9 @@ public class SchedulerServerHandler extends SimpleChannelInboundHandler<JobReque
     }
 
     @Override
-    public void channelRead0(ChannelHandlerContext ctx, JobRequest request) throws Exception {
-    	LOG.info("execute command " + request.getCommand() + " for requestId " + request.getJobId());
-        IServerProcessor processor = new CommandProcessor(request);
+    public void channelRead0(ChannelHandlerContext ctx, Task task) throws Exception {
+    	LOG.info("execute command " + task.getJob().getCommand() + " for requestId " + task.getTaskId());
+        IServerProcessor processor = new CommandProcessor(task);
         processor.execute(ctx);
     } 
 }
