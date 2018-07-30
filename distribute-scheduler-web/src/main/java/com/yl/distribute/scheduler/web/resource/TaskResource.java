@@ -2,7 +2,7 @@ package com.yl.distribute.scheduler.web.resource;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.*;
-import com.yl.distribute.scheduler.common.bean.Task;
+import com.yl.distribute.scheduler.common.bean.TaskRequest;
 import com.yl.distribute.scheduler.web.service.TaskService;
 import javax.ws.rs.core.Response;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,7 +34,7 @@ public class TaskResource {
     @Path("addTask")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public Response addTask(Task task) {
+    public Response addTask(TaskRequest task) {
     	taskService.insertTask(task);
         return Response.ok().build();
     }
@@ -43,33 +43,33 @@ public class TaskResource {
     @Path("updateTask")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public Response updateTask(Task task) {
+    public Response updateTask(TaskRequest task) {
         taskService.updateTask(task);
         return Response.ok().build();
     }
     
     @GET
-    @Path("{taskId}")
+    @Path("{id}")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public Response getTaskById(@PathParam("taskId") String taskId) {
-       return Response.ok(taskService.getTaskById(taskId)).build();
+    public Response getTaskById(@PathParam("id") String id) {
+       return Response.ok(taskService.getTaskById(id)).build();
     }
     
    
     @GET
-    @Path("getErrorLog/{taskId}")
+    @Path("getErrorLog/{id}")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public Response getErrorLog(@PathParam("taskId") String taskId) {
-        return Response.ok(taskService.getErrorLog(taskId)).build();
+    public Response getErrorLog(@PathParam("id") String id) {
+        return Response.ok(taskService.getErrorLog(id)).build();
     }
     
     @GET
-    @Path("getOutputLog/{taskId}")
+    @Path("getOutputLog/{id}")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public Response getOutputLog(@PathParam("taskId") String taskId) {
-        return Response.ok(taskService.getOutputLog(taskId)).build();
+    public Response getOutputLog(@PathParam("id") String id) {
+        return Response.ok(taskService.getOutputLog(id)).build();
     }
 }

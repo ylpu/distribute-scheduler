@@ -4,23 +4,14 @@ import java.io.Serializable;
 
 public enum TaskStatus implements Serializable{
 	
-   INITIAL("initial"),
+   SUBMIT,
    
-   START("start"),
+   START,
     
-   FAILED("failed"),
+   FAILED,
    
-   SUCCESS("success"),
+   SUCCESS,
    
-   RUNNING("running");
-   
-   private String status;
-    
-   private TaskStatus(String status) {
-       this.status = status;
-   }
-
-   public String getStatus() {
-       return status;
-   }  
+   RUNNING
+ 
 }

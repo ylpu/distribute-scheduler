@@ -5,11 +5,11 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.commons.lang3.StringUtils;
 
-import com.yl.distribute.scheduler.common.bean.Task;
+import com.yl.distribute.scheduler.common.bean.TaskRequest;
 
 public class TaskManager {
     
-    private Map<String,Task> taskMap = new ConcurrentHashMap<String,Task>();
+    private Map<String,TaskRequest> taskMap = new ConcurrentHashMap<String,TaskRequest>();
     private static TaskManager taskManager = new TaskManager();
     
     private TaskManager() {        
@@ -19,19 +19,19 @@ public class TaskManager {
         return taskManager;
     }    
     
-    public void addTask(Task task) {
-    	taskMap.put(task.getTaskId(), task);
+    public void addTask(TaskRequest task) {
+    	taskMap.put(task.getId(), task);
     }
     
-    public void removeTask(String taskId) {
-    	taskMap.remove(taskId);
+    public void removeTask(String id) {
+    	taskMap.remove(id);
     }
     
-    public void updateTask(Task task) {
-       if(task == null || StringUtils.isEmpty(task.getTaskId())){
+    public void updateTask(TaskRequest task) {
+       if(task == null || StringUtils.isEmpty(task.getId())){
     	   throw new RuntimeException("task can not empty");
        }
-       Task newTask = taskMap.get(task.getTaskId());
+       TaskRequest newTask = taskMap.get(task.getId());
        if(task.getEndTime() != null){
     	   newTask.setEndTime(task.getEndTime());
        }
@@ -47,13 +47,13 @@ public class TaskManager {
        if(StringUtils.isNotBlank(task.getStdOutputUrl())){
     	   newTask.setStdOutputUrl(task.getStdOutputUrl());    	   
        }
-       if(StringUtils.isNotBlank(task.getTaskStatus())){
+       if(task.getTaskStatus() != null){
     	   newTask.setTaskStatus(task.getTaskStatus());
        }
        newTask.setFailedTimes(task.getFailedTimes());
     }
     
-    public Task getTask(String taskId) {
-        return taskMap.get(taskId);
+    public TaskRequest getTask(String id) {
+        return taskMap.get(id);
     }
 }

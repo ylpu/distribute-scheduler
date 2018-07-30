@@ -1,12 +1,14 @@
 package com.yl.distribute.scheduler.resource.manager;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.stream.Collectors;
 import com.yl.distribute.scheduler.common.bean.HostInfo;
 import com.yl.distribute.scheduler.common.bean.JobConf;
 
@@ -17,7 +19,7 @@ import com.yl.distribute.scheduler.common.bean.JobConf;
 public class TaskIdleStrategy implements ServerSelectStrategy{
 
     @Override
-    public String getIdleServer(JobConf request,String lastFailedServer,ResourceManager rm) {
+    public String getIdleServer(JobConf request,ResourceManager rm,String... lastFailedServers) {
         
         List<String> poolServers = rm.getPoolServers().get(request.getPoolPath());
         Map<String, Integer>  poolServerTasks = new HashMap<String, Integer>();
@@ -40,11 +42,14 @@ public class TaskIdleStrategy implements ServerSelectStrategy{
             }  
         }); 
         if(taskSortlist != null && taskSortlist.size() > 0) {
-            String hostName = resourceMap.get(taskSortlist.get(taskSortlist.size()-1).getKey()).getHostName();
-            if(!hostName.equalsIgnoreCase(lastFailedServer)) {
-                return hostName;
+            
+            List<Entry<String, Integer>> runningServers = taskSortlist.stream().filter(
+                    entry -> !Arrays.asList(lastFailedServers).contains(entry.getKey()))
+                    .collect(Collectors.toList());
+            if(runningServers != null && runningServers.size() > 0) {
+                return resourceMap.get(runningServers.get(runningServers.size()-1).getKey()).getHostName();
             }else {
-                throw new RuntimeException("can not find availiable server");
+                throw new RuntimeException("找不到可用的服务器 "+ request.getJobId());
             }
         }
         throw new RuntimeException("can not find availiable server");

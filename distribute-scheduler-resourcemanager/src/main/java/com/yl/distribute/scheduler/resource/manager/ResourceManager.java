@@ -235,7 +235,7 @@ public class ResourceManager{
      * @param lastFailedServer
      * @return
      */
-    public synchronized String getIdleServer(JobConf input,String lastFailedServer) { 
+    public synchronized String getIdleServer(JobConf input,String... lastFailedServers) { 
         Properties prop = Configuration.getConfig("config.properties"); 
         String serverStrategy = Configuration.getString(prop, "idle.server.select.strategy");
         ServerSelectStrategy serverSelectStrategy = null;
@@ -245,7 +245,7 @@ public class ResourceManager{
             LOG.error(e);
             throw new RuntimeException(e);
         }
-        return new ResourceStrategyContext(serverSelectStrategy).select(input,lastFailedServer,this);
+        return new ResourceStrategyContext(serverSelectStrategy).select(input,this,lastFailedServers);
 
     }
 

@@ -10,7 +10,7 @@ public class ResourceStrategyContext {
         this.strategy = strategy;
     }
     
-    public String select(JobConf input,String lastFailedServer,ResourceManager rm) {
-        return strategy.getIdleServer(input,lastFailedServer,rm);
+    public String select(JobConf input,ResourceManager rm,String... lastFailedServers) {
+        return strategy.getIdleServer(input,rm,lastFailedServers);
     }
 }

@@ -1,18 +1,17 @@
 package com.yl.distribute.scheduler.server.handler;
 
+import java.lang.reflect.Proxy;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
-import com.yl.distribute.scheduler.common.bean.JobConf;
-import com.yl.distribute.scheduler.common.bean.Task;
+import com.yl.distribute.scheduler.common.bean.TaskRequest;
 import com.yl.distribute.scheduler.server.processor.CommandProcessor;
 import com.yl.distribute.scheduler.server.processor.IServerProcessor;
-
+import com.yl.distribute.scheduler.server.processor.ProcessorProxy;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 
 
-public class SchedulerServerHandler extends SimpleChannelInboundHandler<Task> {    
+public class SchedulerServerHandler extends SimpleChannelInboundHandler<TaskRequest> {    
 
     private static Log LOG = LogFactory.getLog(SchedulerServerHandler.class);
 	
@@ -28,9 +27,10 @@ public class SchedulerServerHandler extends SimpleChannelInboundHandler<Task> {
     }
 
     @Override
-    public void channelRead0(ChannelHandlerContext ctx, Task task) throws Exception {
-    	LOG.info("execute command " + task.getJob().getCommand() + " for requestId " + task.getTaskId());
+    public void channelRead0(ChannelHandlerContext ctx, TaskRequest task) throws Exception {    	
         IServerProcessor processor = new CommandProcessor(task);
-        processor.execute(ctx);
+    	IServerProcessor processorProxy = (IServerProcessor)Proxy.newProxyInstance(processor.getClass().getClassLoader(), processor
+                .getClass().getInterfaces(), new ProcessorProxy(processor));
+    	processorProxy.execute(ctx);
     } 
 }

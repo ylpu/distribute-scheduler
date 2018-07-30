@@ -100,7 +100,7 @@ public class HostInfo implements Serializable,Comparable<HostInfo>{
            if(getAvailableMemory() > hostInfo.getAvailableMemory()) {
                return -1;
            }else if(getAvailableMemory() == hostInfo.getAvailableMemory()) {
-               if(getAvailableCores() > hostInfo.getAvailableCores()) {
+               if(getAvailableCores() >= hostInfo.getAvailableCores()) {
                    return -1;
                }else {
                    return 1;

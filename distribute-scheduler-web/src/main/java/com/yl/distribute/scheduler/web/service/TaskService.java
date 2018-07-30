@@ -1,16 +1,16 @@
 package com.yl.distribute.scheduler.web.service;
 
-import com.yl.distribute.scheduler.common.bean.Task;
+import com.yl.distribute.scheduler.common.bean.TaskRequest;
 
 public interface TaskService {
 	
-    public void updateTask(Task task);
+    public void updateTask(TaskRequest task);
     
-    public void insertTask(Task task);
+    public void insertTask(TaskRequest task);
     
-    public Task getTaskById(String taskId);
+    public TaskRequest getTaskById(String id);
     
-    public String getErrorLog(String taskId);
+    public String getErrorLog(String id);
     
-    public String getOutputLog(String taskId);
+    public String getOutputLog(String id);
 }

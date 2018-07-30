@@ -4,13 +4,13 @@ import java.util.Map;
 
 import com.yl.distribute.scheduler.common.bean.HostInfo;
 import com.yl.distribute.scheduler.common.bean.JobConf;
-import com.yl.distribute.scheduler.core.service.ResourceService;
+import com.yl.distribute.scheduler.core.resource.service.ResourceService;
 import com.yl.distribute.scheduler.resource.manager.ResourceManager;
 
 public class ResourceServiceImpl implements ResourceService{
 
     @Override
-    public String getIdleServer(JobConf input, String lastFailedServer) {
+    public String getIdleServer(JobConf input, String... lastFailedServer) {
         return ResourceManager.getInstance().getIdleServer(input, lastFailedServer);
     }
     

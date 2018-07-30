@@ -1,0 +1,22 @@
+package com.yl.distribute.scheduler.core.resource.service;
+
+import java.util.Map;
+import com.yl.distribute.scheduler.common.bean.HostInfo;
+import com.yl.distribute.scheduler.common.bean.JobConf;
+
+public interface ResourceService {
+    
+    String getIdleServer(JobConf input,String... lastFailedServers);
+    
+    void addResource(String serverName,Map<String,Object> resourceParams);
+    
+    void subResource(String serverName,Map<String,Object> resourceParams);
+    
+    void increaseTask(String serverName);
+    
+    void decreaseTask(String serverName);
+    
+    Map<String,HostInfo> getResources();
+    
+    Map<String,Integer> getTasks();
+}

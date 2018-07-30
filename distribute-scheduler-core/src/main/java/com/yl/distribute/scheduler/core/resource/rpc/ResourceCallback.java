@@ -1,4 +1,4 @@
-package com.yl.distribute.scheduler.client.callback;
+package com.yl.distribute.scheduler.core.resource.rpc;
 
 import com.yl.distribute.scheduler.common.bean.ResourceResponse;
 
