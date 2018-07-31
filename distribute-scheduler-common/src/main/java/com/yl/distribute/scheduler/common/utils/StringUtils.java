@@ -1,6 +1,10 @@
 package com.yl.distribute.scheduler.common.utils;
 
 import java.net.URL;
+import java.util.*;
+import java.util.Map.Entry;
+
+import com.yl.distribute.scheduler.common.bean.HostInfo;
 
 public class StringUtils {
 
@@ -34,4 +38,55 @@ public class StringUtils {
         int splashIndex = trimmed.indexOf('/');        
         return trimmed.substring(splashIndex);
     }
+    
+    public static String getPoolServersAsString(Map<String, List<String>> map) {
+        StringBuilder builder = new StringBuilder();
+        List<Map.Entry<String, List<String>>> list = new ArrayList<Map.Entry<String, List<String>>>(map.entrySet());
+        Iterator<Entry<String, List<String>>> iterator = list.iterator();
+        while(iterator.hasNext()) {
+            Entry<String, List<String>> entry = iterator.next();
+            builder.append(entry.getKey() + " : ");
+            builder.append(entry.getValue().toString());
+            if(iterator.hasNext()) {
+                builder.append("\n");
+            }
+        }
+        return builder.toString();
+    }
+    
+    public static String getTaskMapAsString(Map<String, Integer> map) {
+        StringBuilder builder = new StringBuilder();
+        List<Map.Entry<String, Integer>> list = new ArrayList<Map.Entry<String, Integer>>(map.entrySet());
+        Iterator<Entry<String, Integer>> iterator = list.iterator();
+        while(iterator.hasNext()) {
+            Entry<String, Integer> entry = iterator.next();
+            builder.append(entry.getKey() + " : ");
+            builder.append(entry.getValue());
+            if(iterator.hasNext()) {
+                builder.append("\n");
+            }
+        }
+        return builder.toString();
+    }
+    
+    public static String getResourceMapAsString(Map<String, HostInfo> map) {
+        StringBuilder builder = new StringBuilder();
+        List<Map.Entry<String, HostInfo>> list = new ArrayList<Map.Entry<String, HostInfo>>(map.entrySet());
+        Iterator<Entry<String, HostInfo>> iterator = list.iterator();
+        while(iterator.hasNext()) {
+            Entry<String, HostInfo> entry = iterator.next();
+            builder.append(entry.getKey() + " : [");
+            builder.append("ip : " + entry.getValue().getIp() + ", ");
+            builder.append("availableCores : " + entry.getValue().getAvailableCores() + ", ");
+            builder.append("availableMemory : " + entry.getValue().getAvailableMemory() + ", ");
+            builder.append("totalCores : " + entry.getValue().getTotalCores() + ", ");
+            builder.append("totalMemory : " + entry.getValue().getTotalMemory());
+            builder.append("]");
+            if(iterator.hasNext()) {
+                builder.append("\n");
+            }
+        }
+        return builder.toString();
+    }
+    
 }

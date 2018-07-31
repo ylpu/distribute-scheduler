@@ -19,6 +19,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
 
 import com.yl.distribute.scheduler.resource.handler.ResourceServerHandler;
+import com.yl.distribute.scheduler.resource.jmx.ResourceManagerAgent;
 import com.yl.distribute.scheduler.resource.manager.ResourceManager;
 
 public class ResourceServer {
@@ -69,7 +70,9 @@ public class ResourceServer {
             ResourceManager.getInstance().init();
         }else {
             ResourceManager.getInstance().init(rootPool);
-        }     
+        }    
+        //start jmx monitor
+        new ResourceManagerAgent().start();
         ResourceServer server = new ResourceServer(port);
         server.start();        
     }

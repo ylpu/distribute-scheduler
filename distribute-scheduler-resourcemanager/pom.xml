@@ -57,7 +57,21 @@
             <groupId>com.yl.distribute.scheduler</groupId>
             <artifactId>distribute-scheduler-core</artifactId>
             <version>0.0.1-SNAPSHOT</version>
-        </dependency>                 
+        </dependency>  
+        <dependency>
+	        <groupId>com.sun.jdmk </groupId>
+	        <artifactId>jmxtools </artifactId>
+	        <version>1.2.1</version> 
+	        <scope>system</scope>
+	        <systemPath>${basedir}/lib/jmxtools.jar</systemPath>	
+        </dependency>  
+        <dependency>
+	        <groupId>javax.management</groupId>
+	        <artifactId>jmxri </artifactId>
+	        <version>1.2.1</version> 
+	        <scope>system</scope>
+	        <systemPath>${basedir}/lib/jmxri.jar</systemPath>	
+        </dependency>             
   </dependencies>
   <build>
         <plugins>

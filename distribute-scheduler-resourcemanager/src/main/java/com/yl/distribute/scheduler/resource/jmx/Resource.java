@@ -1,20 +1,18 @@
 package com.yl.distribute.scheduler.resource.jmx;
 
-import java.util.List;
-import java.util.Map;
-import com.yl.distribute.scheduler.common.bean.HostInfo;
+import com.yl.distribute.scheduler.common.utils.StringUtils;
 import com.yl.distribute.scheduler.resource.manager.ResourceManager;
 
 public class Resource implements ResourceMBean{
 
     @Override
-    public Map<String, List<String>> getPoolServers() {
-        return ResourceManager.getInstance().getPoolServers();
+    public String getPoolServers() {
+        return StringUtils.getPoolServersAsString(ResourceManager.getInstance().getPoolServers());
     }
 
     @Override
-    public Map<String, HostInfo> getResourceMap() {
-        return ResourceManager.getInstance().getResourceMap();
+    public String getResourceMap() {
+        return StringUtils.getResourceMapAsString(ResourceManager.getInstance().getResourceMap());
     }
 
     @Override
@@ -23,7 +21,7 @@ public class Resource implements ResourceMBean{
     }
 	
     @Override
-    public Map<String, Integer> getTaskMap() {
-        return ResourceManager.getInstance().getTaskMap();
+    public String getTaskMap() {
+        return StringUtils.getTaskMapAsString(ResourceManager.getInstance().getTaskMap());
     }		
 }
