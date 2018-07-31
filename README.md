@@ -16,3 +16,6 @@ common提供了任务调度的bean和utils等相关类
 
 * distribute-scheduler-core
 core主要提供了resourcemanager的rpc调用，rpc的序列化方式，zookeeper,jersey等一些帮助类
+
+* distribute-scheduler-web
+web主要负责任务的调度，停止，查看以及更新
