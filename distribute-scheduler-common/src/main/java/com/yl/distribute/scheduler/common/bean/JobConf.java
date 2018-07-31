@@ -1,8 +1,6 @@
 package com.yl.distribute.scheduler.common.bean;
 
 import java.io.Serializable;
-import java.util.Map;
-
 import com.yl.distribute.scheduler.common.enums.JobType;
 
 public class JobConf implements Serializable{
@@ -15,8 +13,8 @@ public class JobConf implements Serializable{
     private String poolPath;
     private int retryTimes = 0;
     private String cronExpression;    
-    private Map<String,Object> commandParameters;
-    private Map<String,Object> executeParameters;       
+    private String commandParameters;
+    private String executeParameters;       
     
     public int getRetryTimes() {
         return retryTimes;
@@ -60,16 +58,16 @@ public class JobConf implements Serializable{
     public void setPoolPath(String poolPath) {
         this.poolPath = poolPath;
     }
-    public Map<String, Object> getCommandParameters() {
+    public String getCommandParameters() {
         return commandParameters;
     }
-    public void setCommandParameters(Map<String, Object> commandParameters) {
+    public void setCommandParameters(String commandParameters) {
         this.commandParameters = commandParameters;
     }
-    public Map<String, Object> getExecuteParameters() {
+    public String getExecuteParameters() {
         return executeParameters;
     }
-    public void setExecuteParameters(Map<String, Object> executeParameters) {
+    public void setExecuteParameters(String executeParameters) {
         this.executeParameters = executeParameters;
-    }  
+    }
 }

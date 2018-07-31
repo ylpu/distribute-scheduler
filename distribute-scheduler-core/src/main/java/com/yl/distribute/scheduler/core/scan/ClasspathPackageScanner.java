@@ -113,7 +113,7 @@ public class ClasspathPackageScanner {
       * For test purpose.
       */
      public static void main(String[] args) throws Exception {
-         Class<?> cls = Class.forName("com.yl.distribute.scheduler.core.service.ResourceService");        
+         Class<?> cls = Class.forName("com.yl.distribute.scheduler.core.resource.service.ResourceService");        
          List<String> classes = ClasspathPackageScanner.getClassNames();
          for(String classname : classes) {
              Class<?> cls1 = Class.forName(classname);

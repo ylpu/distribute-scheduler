@@ -38,14 +38,9 @@ public class JobClient {
     public void submit(TaskRequest task){        
         try {
             addTask(task);
-            long startTime =  System.currentTimeMillis();    
             ResourceService service = ResourceProxy.get(ResourceService.class);
-            String idleServer = service.getIdleServer(task.getJob(),task.getLastFailedServer());  
-            long endTime = System.currentTimeMillis();
-            System.out.println("cost " + (endTime - startTime) + " to get idle server for " + task.getTaskId() + "-" + task.getId());
-            
-            task.setRunningServer(idleServer);            
-            
+            String idleServer = service.getIdleServer(task.getJob(),task.getLastFailedServer());            
+            task.setRunningServer(idleServer);              
             SimpleChannelPool channelPool = SchedulerClientPool.getInstance().getChannelPool(task.getJob().getPoolPath(),idleServer);
             Future<Channel> f = null;
             f = channelPool.acquire(); 
@@ -60,7 +55,7 @@ public class JobClient {
                         public void operationComplete(ChannelFuture future) throws Exception {
                             if(future.isSuccess()) {
                                 LOG.info("提交任务" + task.getTaskId() + "-" + task.getId() + "到" + idleServer);                                
-                                service.subResource(idleServer, task.getJob().getExecuteParameters());  
+                                service.subResource(idleServer, task.getJob());  
                                 service.increaseTask(idleServer);
                             } else {  
                             	LOG.error("提交任务" + task.getTaskId() + "-" + task.getId() + "到" + idleServer + "失败");  
@@ -72,7 +67,6 @@ public class JobClient {
             });
             
         }catch(Exception e) {
-        	System.out.println("任务 " + task.getTaskId()+ "-" + task.getId() + "第 " + task.getFailedTimes() +1 + "失败次并且找不到可运行的服务器");
         	LOG.error("任务 " + task.getTaskId()+ "-" + task.getId() + "第 " + task.getFailedTimes() +1 + "失败次并且找不到可运行的服务器",e);
         }
     } 

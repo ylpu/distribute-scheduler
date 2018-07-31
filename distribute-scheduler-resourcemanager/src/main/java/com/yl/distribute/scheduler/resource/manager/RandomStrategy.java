@@ -11,7 +11,7 @@ import com.yl.distribute.scheduler.common.bean.JobConf;
  */
 public class RandomStrategy implements ServerSelectStrategy{
     @Override
-    public String getIdleServer(JobConf request,ResourceManager rm,String... lastFailedServers) {
+    public String getIdleServer(ResourceManager rm,JobConf request,String... lastFailedServers) {
         List<String> servers = rm.getPoolServers().get(request.getPoolPath());
         String idleServer = "";
         if(servers != null && servers.size() > 0){

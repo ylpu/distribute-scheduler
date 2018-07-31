@@ -2,7 +2,11 @@ package com.yl.distribute.scheduler.common.utils;
 
 import java.lang.management.ManagementFactory;
 import java.net.InetAddress;
+import java.util.Arrays;
+import java.util.List;
+import org.apache.commons.lang3.math.NumberUtils;
 import com.sun.management.OperatingSystemMXBean;
+import com.yl.distribute.scheduler.common.constants.GlobalConstants;
 
 public class MetricsUtils {
     
@@ -47,5 +51,18 @@ public class MetricsUtils {
             throw new RuntimeException("can not find ip address");  
         } 
         return ip;
+    }
+    
+    public static long getTaskMemory(String args) {
+        if(args != null && args.length() > 0) {
+            List<String> parameters = Arrays.asList(args.split("\\s+"));
+            for(String parameter : parameters) {
+                if(parameter.startsWith("-Xmx")) {
+                    return NumberUtils.toInt(parameter.substring(4,parameter.length()-1));
+                }
+            }
+            return GlobalConstants.DEFAUTL_MEMEORY;
+        }
+        return GlobalConstants.DEFAUTL_MEMEORY;
     }
 }

@@ -3,7 +3,6 @@ package com.yl.distribute.scheduler.common.enums;
 public enum JobType { 
     
     COMMAND,
-    SCRIPT,
     JAR;
     
     public static JobType getTaskType(String taskType) {

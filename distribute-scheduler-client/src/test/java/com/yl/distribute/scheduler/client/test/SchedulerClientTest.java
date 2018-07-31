@@ -9,6 +9,7 @@ import com.yl.distribute.scheduler.client.JobClient;
 import com.yl.distribute.scheduler.common.bean.HostInfo;
 import com.yl.distribute.scheduler.common.bean.JobConf;
 import com.yl.distribute.scheduler.common.bean.TaskRequest;
+import com.yl.distribute.scheduler.common.enums.JobType;
 import com.yl.distribute.scheduler.common.enums.TaskStatus;
 import com.yl.distribute.scheduler.core.resource.rpc.ResourceProxy;
 import com.yl.distribute.scheduler.core.resource.service.ResourceService;
@@ -19,10 +20,10 @@ public class SchedulerClientTest {
     public void submitJob() throws Exception {
         
         JobClient client = JobClient.getInstance();        
-        for(int i = 0;i < 100; i++) {
+        for(int i = 0;i < 10; i++) {
             new ProduceThread(client,i).start();
         }        
-        Thread.sleep(60000);        
+        Thread.sleep(10000);        
         ResourceService service = ResourceProxy.get(ResourceService.class);
         Map<String,HostInfo> map = service.getResources();
         for(Entry<String,HostInfo> entry : map.entrySet()) {
@@ -51,6 +52,7 @@ public class SchedulerClientTest {
             JobConf jobConf = new JobConf();
             TaskRequest task = new TaskRequest();
             jobConf.setJobId(id);
+            jobConf.setJobType(JobType.COMMAND);
             jobConf.setCommand("ls -ltr");
             jobConf.setPoolPath("/root/pool1");
             task.setJob(jobConf);
@@ -59,8 +61,6 @@ public class SchedulerClientTest {
             task.setStartTime(new Date()); 
             task.setTaskStatus(TaskStatus.SUBMIT);
             client.submit(task);
-        }    
-        
-
+        }
     }
  }

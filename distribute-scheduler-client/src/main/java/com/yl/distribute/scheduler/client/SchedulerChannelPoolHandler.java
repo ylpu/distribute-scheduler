@@ -11,16 +11,13 @@ import io.netty.handler.codec.serialization.ObjectEncoder;
 
 public class SchedulerChannelPoolHandler implements ChannelPoolHandler {
     public void channelReleased(Channel ch) throws Exception {
-        System.out.println("channelReleased. Channel ID: " + ch.id());
     }
 
 
     public void channelAcquired(Channel ch) throws Exception {
-        System.out.println("channelAcquired. Channel ID: " + ch.id());
     }
 
     public void channelCreated(Channel ch) throws Exception {
-        System.out.println("channelCreated. Channel ID: " + ch.id());
         SocketChannel channel = (SocketChannel) ch;
         channel.config().setKeepAlive(true);
         channel.config().setTcpNoDelay(true);

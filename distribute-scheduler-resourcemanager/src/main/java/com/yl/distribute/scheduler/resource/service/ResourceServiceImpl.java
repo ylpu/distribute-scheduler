@@ -14,12 +14,12 @@ public class ResourceServiceImpl implements ResourceService{
         return ResourceManager.getInstance().getIdleServer(input, lastFailedServer);
     }
     
-    public void addResource(String serverName,Map<String,Object> resourceParams) {
-        ResourceManager.getInstance().addResource(serverName, resourceParams);
+    public void addResource(String serverName,JobConf jobConf) {
+        ResourceManager.getInstance().addResource(serverName, jobConf);
     }
     
-    public void subResource(String serverName,Map<String,Object> resourceParams) {
-        ResourceManager.getInstance().subResource(serverName, resourceParams);
+    public void subResource(String serverName,JobConf jobConf) {
+        ResourceManager.getInstance().subResource(serverName, jobConf);
     }
     
     public void increaseTask(String serverName) {

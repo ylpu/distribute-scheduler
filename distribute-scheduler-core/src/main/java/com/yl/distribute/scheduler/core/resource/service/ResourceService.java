@@ -8,9 +8,9 @@ public interface ResourceService {
     
     String getIdleServer(JobConf input,String... lastFailedServers);
     
-    void addResource(String serverName,Map<String,Object> resourceParams);
+    void addResource(String serverName,JobConf jobConf);
     
-    void subResource(String serverName,Map<String,Object> resourceParams);
+    void subResource(String serverName,JobConf jobConf);
     
     void increaseTask(String serverName);
     

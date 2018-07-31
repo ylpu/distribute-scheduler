@@ -19,7 +19,7 @@ import com.yl.distribute.scheduler.common.bean.JobConf;
 public class TaskIdleStrategy implements ServerSelectStrategy{
 
     @Override
-    public String getIdleServer(JobConf request,ResourceManager rm,String... lastFailedServers) {
+    public String getIdleServer(ResourceManager rm,JobConf request,String... lastFailedServers) {
         
         List<String> poolServers = rm.getPoolServers().get(request.getPoolPath());
         Map<String, Integer>  poolServerTasks = new HashMap<String, Integer>();

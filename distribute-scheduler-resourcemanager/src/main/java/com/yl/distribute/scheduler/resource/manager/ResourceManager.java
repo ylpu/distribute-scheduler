@@ -8,15 +8,13 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
-
 import org.I0Itec.zkclient.ZkClient;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.I0Itec.zkclient.IZkChildListener;
-
 import com.yl.distribute.scheduler.common.bean.HostInfo;
 import com.yl.distribute.scheduler.common.bean.JobConf;
-import com.yl.distribute.scheduler.common.constants.GlobalConstants;
+import com.yl.distribute.scheduler.common.utils.MetricsUtils;
 import com.yl.distribute.scheduler.core.config.Configuration;
 import com.yl.distribute.scheduler.core.zk.*;
 
@@ -169,16 +167,12 @@ public class ResourceManager{
      * @param serverName
      * @param resourceParams
      */
-    public void subResource(String serverName,Map<String,Object> resourceParams) {
-        int usedCores = 0;
+    public void subResource(String serverName,JobConf jobConf) {
         long usedMemory = 0;
         synchronized(resourceMap){
             HostInfo hostInfo = resourceMap.get(serverName);
-            usedCores = (resourceParams == null || resourceParams.get("cores") == null) ? 
-                    GlobalConstants.DEFAULT_CORE_SIZE : Integer.parseInt(String.valueOf(resourceParams.get("cores")));
-            usedMemory = (resourceParams == null || resourceParams.get("memory") == null) ? 
-                    GlobalConstants.DEFAUTL_MEMEORY : Long.parseLong(String.valueOf(resourceParams.get("memory")));
-            hostInfo.setAvailableCores(hostInfo.getAvailableCores() - usedCores);
+            usedMemory = MetricsUtils.getTaskMemory(jobConf.getExecuteParameters());
+            hostInfo.setAvailableCores(hostInfo.getAvailableCores() - 1);
             hostInfo.setAvailableMemory(hostInfo.getAvailableMemory() - usedMemory);  
         }
     }
@@ -188,16 +182,12 @@ public class ResourceManager{
      * @param serverName
      * @param resourceParams
      */
-    public void addResource(String serverName,Map<String,Object> resourceParams) {
-        int usedCores = 0;
+    public void addResource(String serverName,JobConf jobConf) {
         long usedMemory = 0;
         synchronized(resourceMap){
             HostInfo hostInfo = resourceMap.get(serverName);
-            usedCores = (resourceParams == null || resourceParams.get("cores") == null) ? 
-                    GlobalConstants.DEFAULT_CORE_SIZE : Integer.parseInt(String.valueOf(resourceParams.get("cores")));
-            usedMemory = (resourceParams == null || resourceParams.get("memory") == null) ? 
-                    GlobalConstants.DEFAUTL_MEMEORY : Long.parseLong(String.valueOf(resourceParams.get("memory")));
-            hostInfo.setAvailableCores(hostInfo.getAvailableCores() + usedCores);
+            usedMemory = MetricsUtils.getTaskMemory(jobConf.getExecuteParameters());
+            hostInfo.setAvailableCores(hostInfo.getAvailableCores() + 1);
             hostInfo.setAvailableMemory(hostInfo.getAvailableMemory() + usedMemory); 
         }
     }
@@ -245,7 +235,7 @@ public class ResourceManager{
             LOG.error(e);
             throw new RuntimeException(e);
         }
-        return new ResourceStrategyContext(serverSelectStrategy).select(input,this,lastFailedServers);
+        return new ResourceStrategyContext(serverSelectStrategy).select(this,input,lastFailedServers);
 
     }
 

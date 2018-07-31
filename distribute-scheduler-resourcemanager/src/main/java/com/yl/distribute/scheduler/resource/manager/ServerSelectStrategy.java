@@ -4,6 +4,6 @@ import com.yl.distribute.scheduler.common.bean.JobConf;
 
 public interface ServerSelectStrategy {
     
-    public String getIdleServer(JobConf request,ResourceManager rm,String... lastFailedServers);
+    public String getIdleServer(ResourceManager rm,JobConf request,String... lastFailedServers);
 
 }
