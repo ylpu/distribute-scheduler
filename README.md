@@ -8,8 +8,7 @@ client端主要负责接收用户提交的任务，根据任务的所属的pool�
 * distribute-scheduler-server
 server端在启动的时候首先会把自己注册到zookeeper上，其次会启动一个jetty server,jetty server主要用于用户获取任务的输出信息和错误信息
 * distribute-scheduler-resoucemanger
-
-resourcemanager主要负责管理机器的资源，暴露jmx信息给外部，为client端提供最优的机器选择策略，目前支持3中策略：1.最优资源策略，提供任务pool中内存最多的一台机器给客户端。2.最小任务策略，提供pool中机器任务数最少的一台机器给客户端。3.随机策略，从pool中随机选择一台机器给客户端。
+resourcemanager主要负责管理机器的资源，暴露jmx信息给外部，为client端提供最优的机器选择策略，目前支持3中策略：1.最优资源策略，提供任务pool中内存最     多的一台机器给客户端。2.最小任务策略，提供pool中机器任务数最少的一台机器给客户端。3.随机策略，从pool中随机选择一台机器给客户端。
 
 * distribute-scheduler-common
 common提供了任务调度的bean和utils等相关类
