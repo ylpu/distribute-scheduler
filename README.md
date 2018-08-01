@@ -1,9 +1,9 @@
 # Introduction
-distribute-scheduler是yl同学基于zookeeper和netty自主研发的一款分布式任务调度系统，系统目前支持命令方式和jar方式提交任务，系统提供了根据pool的最优调度，重试，监控，告警等一些列功能。
+distribute-scheduler是yl基于zookeeper和netty自主研发的一款分布式任务调度系统，系统目前支持命令方式和jar方式提交任务，系统提供了根据pool的最优调度，重试，监控，告警等一些列功能。
 
 # Component
 * distribute-scheduler-client
-client端主要负责接收用户提交的任务，根据任务的所属的pool从resource manager中选择最优的机器去提交任务，任务失败后会根据用户配置的重试次数选择其它机器重新提交任务；监听改zookeeper中pool下面机器的变化，如果有机器掉线，关闭客户端到该机器的连接池
+client端主要负责接收用户提交的任务，根据任务所属的pool从resource manager中选择最优的机器去提交任务，任务失败后会根据用户配置的重试次数选择其它机器重新提交任务；监听zookeeper中pool下面机器的变化，如果有机器掉线，关闭客户端到该机器的连接池
 
 * distribute-scheduler-server
 server端在启动的时候首先会把自己注册到zookeeper上，其次会启动一个jetty server,jetty server主要用于用户获取任务的输出信息和错误信息,最后当任务执行完成更新任务状态并调用resourcemanager释放资源
