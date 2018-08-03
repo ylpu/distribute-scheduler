@@ -1,75 +1,36 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
-  <groupId>com.yl.distribute.scheduler</groupId>
+  <parent>
+    <groupId>com.yl.distribute.scheduler</groupId>
+    <artifactId>distribute-scheduler</artifactId>
+    <version>0.0.1-SNAPSHOT</version>
+  </parent>
   <artifactId>distribute-scheduler-server</artifactId>
-  <version>0.0.1-SNAPSHOT</version>
-    <dependencies>  
-        <dependency>
-           <groupId>io.netty</groupId>
-           <artifactId>netty-all</artifactId>
-           <version>4.1.25.Final</version>
-        </dependency>   
-        <dependency>
-		   <groupId>org.apache.curator</groupId>
-		   <artifactId>curator-recipes</artifactId>
-		   <version>2.9.1</version>
-		</dependency>
-		<dependency>  
-           <groupId>org.apache.curator</groupId>  
-           <artifactId>curator-x-discovery-server</artifactId>  
-           <version>2.9.1</version> 
-           <exclusions> 
-                 <exclusion> 
-                     <groupId>javax.ws.rs</groupId> 
-                     <artifactId>jsr311-api</artifactId> 
-                 </exclusion> 
-            </exclusions> 
-         </dependency>         
-         <dependency>
-           <groupId>org.apache.curator</groupId>
-           <artifactId>curator-x-async</artifactId>
-           <version>3.3.0</version>
-         </dependency> 
-	     <dependency>
-            <groupId>org.apache.curator</groupId>
-            <artifactId>curator-client</artifactId>
-            <version>2.9.1</version>
-         </dependency>
-         <dependency>  
-           <groupId>com.101tec</groupId>  
-           <artifactId>zkclient</artifactId>  
-           <version>0.8</version>  
-         </dependency>
-         <dependency>
-            <groupId>org.fusesource</groupId>
-            <artifactId>sigar</artifactId>
-            <version>1.6.4</version>
-         </dependency>
-         <dependency>
-            <groupId>com.google.guava</groupId>
-            <artifactId>guava</artifactId>
-            <version>18.0</version>
-        </dependency>  
-        <dependency>
-            <groupId>com.yl.distribute.scheduler</groupId>
-            <artifactId>distribute-scheduler-core</artifactId>
-            <version>0.0.1-SNAPSHOT</version>
-        </dependency> 
-        <dependency>
-            <groupId>org.eclipse.jetty.aggregate</groupId>
-            <artifactId>jetty-all</artifactId>
-            <version>9.2.14.v20151106</version>
-       </dependency>
-       <dependency>
-            <groupId>javax.servlet</groupId>
-            <artifactId>javax.servlet-api</artifactId>
-            <version>3.1.0</version>
-       </dependency>
-       <dependency>
-            <groupId>org.eclipse.jetty</groupId>
-            <artifactId>jetty-jsp</artifactId>
-            <version>9.2.15.v20160210</version>
-       </dependency>        
+  <dependencies>  
+      <dependency>
+         <groupId>io.netty</groupId>
+         <artifactId>netty-all</artifactId>
+      </dependency>	
+      <dependency>  
+         <groupId>com.101tec</groupId>  
+         <artifactId>zkclient</artifactId>  
+      </dependency>  
+      <dependency>
+         <groupId>com.yl.distribute.scheduler</groupId>
+         <artifactId>distribute-scheduler-core</artifactId>
+      </dependency> 
+      <dependency>
+         <groupId>org.eclipse.jetty.aggregate</groupId>
+         <artifactId>jetty-all</artifactId>
+      </dependency>
+      <dependency>
+         <groupId>javax.servlet</groupId>
+         <artifactId>javax.servlet-api</artifactId>
+      </dependency>
+      <dependency>
+         <groupId>org.eclipse.jetty</groupId>
+         <artifactId>jetty-jsp</artifactId>
+      </dependency>        
     </dependencies>
     <build>
         <plugins>
@@ -83,6 +44,29 @@
                     <encoding>UTF-8</encoding>
                 </configuration>
             </plugin>
+            <plugin>
+              <groupId>org.apache.maven.plugins</groupId>
+              <artifactId>maven-shade-plugin</artifactId>
+              <version>3.1.0</version>   
+              <configuration>  
+               <transformers>  
+                  <transformer  
+                          implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer"/>  
+                  <transformer  
+                          implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">  
+                      <mainClass>com.yl.distribute.scheduler.server.SchedulerServer</mainClass>  
+                  </transformer>  
+               </transformers>  
+              </configuration>   
+		    <executions>
+		      <execution>
+		        <phase>package</phase>
+		        <goals>
+		          <goal>shade</goal>
+		        </goals>
+		      </execution>
+		    </executions>
+       </plugin>
         </plugins>
     </build>
 </project>

@@ -2,7 +2,6 @@ package com.yl.distribute.scheduler.common.bean;
 
 import java.io.Serializable;
 import java.util.Date;
-
 import com.yl.distribute.scheduler.common.enums.TaskStatus;
 
 public class TaskRequest implements Serializable{

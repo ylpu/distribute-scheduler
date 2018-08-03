@@ -31,7 +31,7 @@ public class SchedulerServerHandler extends SimpleChannelInboundHandler<TaskRequ
         Class<?> cls = ProcessorManager.getProcessor(task.getJob().getJobType());
         IServerProcessor processor = (IServerProcessor) cls.getConstructor(task.getClass()).newInstance(task);
     	IServerProcessor processorProxy = (IServerProcessor)Proxy.newProxyInstance(processor.getClass().getClassLoader(), processor
-                .getClass().getInterfaces(), new ProcessorProxy(processor));
+                .getClass().getInterfaces(), new ProcessorProxy(processor));    	
     	processorProxy.execute(ctx);
     } 
 }

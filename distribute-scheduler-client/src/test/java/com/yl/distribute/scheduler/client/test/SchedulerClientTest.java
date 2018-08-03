@@ -5,7 +5,7 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.Map.Entry;
 import org.junit.Test;
-import com.yl.distribute.scheduler.client.JobClient;
+import com.yl.distribute.scheduler.client.TaskClient;
 import com.yl.distribute.scheduler.common.bean.HostInfo;
 import com.yl.distribute.scheduler.common.bean.JobConf;
 import com.yl.distribute.scheduler.common.bean.TaskRequest;
@@ -19,11 +19,13 @@ public class SchedulerClientTest {
     @Test
     public void submitJob() throws Exception {
         
-        JobClient client = JobClient.getInstance();        
-        for(int i = 0;i < 10; i++) {
+        TaskClient client = TaskClient.getInstance();        
+        for(int i = 0;i < 1; i++) {
             new ProduceThread(client,i).start();
-        }        
-        Thread.sleep(10000);        
+        }
+        
+        Thread.sleep(10000);
+        
         ResourceService service = ResourceProxy.get(ResourceService.class);
         Map<String,HostInfo> map = service.getResources();
         for(Entry<String,HostInfo> entry : map.entrySet()) {
@@ -39,10 +41,10 @@ public class SchedulerClientTest {
     
     public static class ProduceThread extends Thread{
         
-        private JobClient client;
+        private TaskClient client;
         private int index;
         
-        public ProduceThread(JobClient client,int index) {
+        public ProduceThread(TaskClient client,int index) {
             this.client = client;
             this.index = index;
         }

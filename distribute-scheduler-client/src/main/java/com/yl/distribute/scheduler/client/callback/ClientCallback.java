@@ -4,7 +4,7 @@ import java.util.Date;
 import java.util.UUID;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import com.yl.distribute.scheduler.client.JobClient;
+import com.yl.distribute.scheduler.client.TaskClient;
 import com.yl.distribute.scheduler.common.bean.TaskResponse;
 import com.yl.distribute.scheduler.common.bean.TaskRequest;
 import com.yl.distribute.scheduler.common.enums.TaskStatus;
@@ -22,6 +22,7 @@ public class ClientCallback{
     public void onRead(TaskResponse response) throws Exception {
     	System.out.println(task.getTaskId() + "-" + task.getId() + "返回状态是" + response.getTaskId() + response.getTaskStatus());
     	LOG.info(task.getTaskId() + "-" + task.getId() + "返回状态是" + response.getTaskId() +  response.getTaskStatus());
+    	ResponseQueue.add(response);
         resubmitIfNeccesery(response);
     }
     
@@ -30,7 +31,7 @@ public class ClientCallback{
                 && task.getFailedTimes() < task.getJob().getRetryTimes()) {   
             TaskRequest newTask = new TaskRequest();
             initNewTask(newTask);            
-            JobClient.getInstance().submit(newTask);            
+            TaskClient.getInstance().submit(newTask);            
         }
     }
     

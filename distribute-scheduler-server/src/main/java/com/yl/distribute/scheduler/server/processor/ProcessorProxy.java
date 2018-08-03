@@ -25,6 +25,7 @@ public class ProcessorProxy implements InvocationHandler{
         TaskRequest task = null;
         try {
             task = ReflectUtils.getFieldValue(obj, "task");
+            LOG.info("start to execute task " + task.getId());
             method.invoke(obj, args);
         } catch (Exception e) {
             LOG.error(e);
@@ -32,7 +33,6 @@ public class ProcessorProxy implements InvocationHandler{
         }finally {
             try {
                 LOG.info("start to release resource for " + task.getRunningServer());
-                System.out.println("start to release resource for " + task.getRunningServer());
                 ResourceService service = ResourceProxy.get(ResourceService.class);
                 service.addResource(task.getRunningServer(), task.getJob());
                 service.decreaseTask(task.getRunningServer());
@@ -42,8 +42,6 @@ public class ProcessorProxy implements InvocationHandler{
             }finally {
                 long endTime = System.currentTimeMillis();
                 LOG.info("cost " + (endTime - task.getStartTime().getTime())/1000 
-                        + " seconds to execute task " + task.getTaskId() + "-" + task.getId());
-                System.out.println("cost " + (endTime - task.getStartTime().getTime())/1000 
                         + " seconds to execute task " + task.getTaskId() + "-" + task.getId());
             }
         }        
