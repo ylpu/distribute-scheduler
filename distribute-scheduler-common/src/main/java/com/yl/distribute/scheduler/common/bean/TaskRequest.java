@@ -17,7 +17,8 @@ public class TaskRequest implements Serializable{
     private String errorOutputUrl;
     private String stdOutputUrl;
     private Date startTime;
-    private Date endTime;    
+    private Date endTime;
+    private long elapseTime;
     
     public String getId() {
         return id;
@@ -85,4 +86,10 @@ public class TaskRequest implements Serializable{
     public void setEndTime(Date endTime) {
         this.endTime = endTime;
     }
+    public long getElapseTime() {
+        return elapseTime;
+    }
+    public void setElapseTime(long elapseTime) {
+        this.elapseTime = elapseTime;
+    }    
 }

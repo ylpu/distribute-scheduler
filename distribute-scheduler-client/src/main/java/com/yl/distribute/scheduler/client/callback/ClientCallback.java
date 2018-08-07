@@ -22,7 +22,7 @@ public class ClientCallback{
     public void onRead(TaskResponse response) throws Exception {
     	System.out.println(task.getTaskId() + "-" + task.getId() + "返回状态是" + response.getTaskId() + response.getTaskStatus());
     	LOG.info(task.getTaskId() + "-" + task.getId() + "返回状态是" + response.getTaskId() +  response.getTaskStatus());
-    	ResponseQueue.add(response);
+    	TaskResponseCallBack.add(task.getJob().getJobId(),response);
         resubmitIfNeccesery(response);
     }
     

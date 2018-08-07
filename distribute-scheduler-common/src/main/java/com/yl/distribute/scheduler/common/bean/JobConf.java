@@ -14,7 +14,8 @@ public class JobConf implements Serializable{
     private int retryTimes = 0;
     private String cronExpression;    
     private String commandParameters;
-    private String executeParameters;       
+    private String executeParameters;  
+    private JobReleation jobReleation = new JobReleation();
     
     public int getRetryTimes() {
         return retryTimes;
@@ -70,4 +71,10 @@ public class JobConf implements Serializable{
     public void setExecuteParameters(String executeParameters) {
         this.executeParameters = executeParameters;
     }
+    public JobReleation getJobReleation() {
+        return jobReleation;
+    }
+    public void setJobReleation(JobReleation jobReleation) {
+        this.jobReleation = jobReleation;
+    }    
 }

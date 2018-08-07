@@ -1,12 +1,13 @@
 package com.yl.distribute.scheduler.common.bean;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class JobReleation {
     
     private String jobId;
-    private List<JobConf> parentJobs;
-    private List<JobConf> childJobs;
+    private List<JobConf> parentJobs = new ArrayList<JobConf>();
+    private List<JobConf> childJobs = new ArrayList<JobConf>();
     
     public String getJobId() {
         return jobId;

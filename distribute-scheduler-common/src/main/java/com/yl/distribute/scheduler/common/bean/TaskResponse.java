@@ -10,8 +10,6 @@ public class TaskResponse implements Serializable{
     private String id;
     private String taskId;
     private TaskStatus taskStatus;
-    private String errorOutputUrl;
-    private String stdOutputUrl;   
     
     public String getId() {
         return id;
@@ -30,17 +28,5 @@ public class TaskResponse implements Serializable{
     }
     public void setTaskStatus(TaskStatus taskStatus) {
         this.taskStatus = taskStatus;
-    }
-    public String getErrorOutputUrl() {
-        return errorOutputUrl;
-    }
-    public void setErrorOutputUrl(String errorOutputUrl) {
-        this.errorOutputUrl = errorOutputUrl;
-    }
-    public String getStdOutputUrl() {
-        return stdOutputUrl;
-    }
-    public void setStdOutputUrl(String stdOutputUrl) {
-        this.stdOutputUrl = stdOutputUrl;
-    }       
+    }    
 }
