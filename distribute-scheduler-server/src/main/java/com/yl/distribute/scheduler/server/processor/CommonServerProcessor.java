@@ -77,9 +77,10 @@ public abstract class CommonServerProcessor {
     }
     
     public void updateAndWrite(ChannelHandlerContext ctx,TaskStatus taskStatus) {
-        
+        long elapseTime = (System.currentTimeMillis() - task.getStartTime().getTime())/1000;
         task.setTaskStatus(taskStatus);
         task.setEndTime(new Date());
+        task.setElapseTime(elapseTime);
         updateTask(task);
         
         TaskResponse response = new TaskResponse();

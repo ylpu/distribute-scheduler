@@ -32,19 +32,19 @@ public class ProcessorProxy implements InvocationHandler{
             throw new RuntimeException(e);
         }finally {
             try {
-                LOG.info("start to release resource for " + task.getRunningServer());
-                ResourceService service = ResourceProxy.get(ResourceService.class);
-                service.addResource(task.getRunningServer(), task.getJob());
-                service.decreaseTask(task.getRunningServer());
+                restoreTaskAndResource(task);
             } catch (Exception e) {
                 LOG.error(e);
                 throw new RuntimeException(e);
-            }finally {
-                long endTime = System.currentTimeMillis();
-                LOG.info("cost " + (endTime - task.getStartTime().getTime())/1000 
-                        + " seconds to execute task " + task.getTaskId() + "-" + task.getId());
             }
         }        
         return null;
+    }
+    
+    private void restoreTaskAndResource(TaskRequest task) {
+        LOG.info("start to release resource for " + task.getRunningServer());
+        ResourceService service = ResourceProxy.get(ResourceService.class);
+        service.addResource(task.getRunningServer(), task.getJob());
+        service.decreaseTask(task.getRunningServer());
     }
 }

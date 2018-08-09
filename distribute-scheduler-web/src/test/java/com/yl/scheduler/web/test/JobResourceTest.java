@@ -44,7 +44,7 @@ public class JobResourceTest{
     public void updateTask() {
         TaskResponse task = new TaskResponse();
         task.setTaskId("1");
-        task.setStdOutputUrl("ABC");
+        task.setTaskStatus(TaskStatus.FAILED);
         Response response = JerseyClient.update("http://localhost:8085/api/task/updateTask", task);
         System.out.println(response);
     }
