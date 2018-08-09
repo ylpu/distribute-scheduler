@@ -23,7 +23,11 @@
       <dependency>
           <groupId>com.yl.distribute.scheduler</groupId>
           <artifactId>distribute-scheduler-core</artifactId>
-      </dependency>                 
+      </dependency> 
+      <dependency>
+          <groupId>dom4j</groupId>
+          <artifactId>dom4j</artifactId>
+      </dependency>                   
   </dependencies>
   <build>
         <plugins>
