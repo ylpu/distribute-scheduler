@@ -1,19 +1,20 @@
 package com.yl.distribute.scheduler.client.test;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.io.File;
+import org.dom4j.Element;
 import org.junit.Test;
 import com.yl.distribute.scheduler.client.callback.TaskResponseCallBack;
 import com.yl.distribute.scheduler.client.job.JobDriver;
+import com.yl.distribute.scheduler.client.job.JobParser;
 import com.yl.distribute.scheduler.common.bean.JobConf;
 import com.yl.distribute.scheduler.common.bean.TaskResponse;
 import com.yl.distribute.scheduler.common.enums.TaskStatus;
 
-public class JobDriverTest {   
+public class JobDriverTest {
     
     @Test
-    public void jobSubmit() throws InterruptedException {
+    public void jobDriverTest() throws InterruptedException{        
+        
         TaskResponse tr = new TaskResponse();
         tr.setTaskStatus(TaskStatus.SUBMIT);        
         TaskResponseCallBack.add("a", tr);
@@ -28,43 +29,14 @@ public class JobDriverTest {
         
         TaskResponse tr3 = new TaskResponse();
         tr3.setTaskStatus(TaskStatus.SUBMIT);        
-        TaskResponseCallBack.add("d", tr3);        
+        TaskResponseCallBack.add("d", tr3); 
         
-        List<JobConf> rootChilds = new ArrayList<JobConf>();
+        File file = new File("src/main/resources/jobplan.xml");
+        JobParser parser = new JobParser(file);
+        Element element = parser.readFile();
+        JobConf rootJob = parser.getRootJob(element);
         
-        JobConf job = new JobConf();
-        job.setJobId("a");
-        job.setCommand("execute a");
-        
-        JobConf job1 = new JobConf();
-        job1.setJobId("b");
-        job1.setCommand("execute b");
-        
-        JobConf job2 = new JobConf();
-        job2.setJobId("c");
-        job2.setCommand("execute c");
-        
-        JobConf job3 = new JobConf();
-        job3.setJobId("d");
-        job3.setCommand("execute d");
-        
-        rootChilds.add(job1);
-        rootChilds.add(job2);
-        job.getJobReleation().setParentJobs(null);
-        job.getJobReleation().setChildJobs(rootChilds);
-        
-        job1.getJobReleation().setParentJobs(Arrays.asList(job));
-        job1.getJobReleation().setChildJobs(Arrays.asList(job3));       
-        
-        job2.getJobReleation().setParentJobs(Arrays.asList(job));
-        job2.getJobReleation().setChildJobs(Arrays.asList(job3));         
-
-        job3.getJobReleation().setParentJobs(Arrays.asList(job1,job2));
-        job3.getJobReleation().setChildJobs(null); 
-        
-        JobDriver jobDriver = new JobDriver(job);        
-        
-        jobDriver.start();
+        new JobDriver(rootJob).start();
         
         //模拟5秒a任务执行完成,开始执行b,c
         Thread.sleep(5000);
@@ -83,5 +55,7 @@ public class JobDriverTest {
         TaskResponse tr6 = new TaskResponse();
         tr6.setTaskStatus(TaskStatus.SUCCESS);        
         TaskResponseCallBack.add("c", tr6);
+        
+        Thread.sleep(2000);
     }
- }
+}

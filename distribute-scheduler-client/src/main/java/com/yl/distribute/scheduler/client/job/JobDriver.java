@@ -22,7 +22,7 @@ public class JobDriver {
     private Long JOB_CHECK_INTERVAL = 1000L;
     
     private Stack<JobConf> stack = new Stack<JobConf>();
-    private static Set<JobConf> visited = new HashSet<JobConf>();
+    private static Set<String> visited = new HashSet<String>();
     
     private JobConf job;
     
@@ -45,8 +45,8 @@ public class JobDriver {
             return;
         } 
         if(job.getJobReleation().getParentJobs() == null) {
-            System.out.println("submit job " + job.getCommand());
-            LOG.info("submit job " + job.getCommand());
+            System.out.println("submit job " + job.getJobId());
+            LOG.info("submit job " + job.getJobId());
             submitJob(job);
         }
         if(job.getJobReleation().getChildJobs() != null){
@@ -54,18 +54,18 @@ public class JobDriver {
             for(JobConf jobConf : childs) {
                 parseJob(jobConf);
                 //防止重复提交,如a->b,c->d,不检查的话d会被提交两次
-                if(!visited.contains(jobConf)) {
+                if(!visited.contains(jobConf.getJobId())) {
                     //如果父任务没有完成，就推到栈顶，如果完成了就去提交
                     if(!parentsJobFinished(jobConf)){
                         stack.push(jobConf);
                     }
                     else{
-                        System.out.println("submit job " + jobConf.getCommand());
-                        LOG.info("submit job " + jobConf.getCommand());
+                        System.out.println("submit job " + jobConf.getJobId());
+                        LOG.info("submit job " + jobConf.getJobId());
                         submitJob(job);
                     }
                 }      
-                visited.add(jobConf);
+                visited.add(jobConf.getJobId());
             }   
         }
     }
@@ -110,8 +110,8 @@ public class JobDriver {
                     JobConf job = stack.pop();
                     //如果父任务执行完成就提交当前任务，如果没有完成压入栈顶，每隔1秒检查父任务是否完成
                     if (parentsJobFinished(job)){
-                        System.out.println("submit job " + job.getCommand());
-                        LOG.info("submit job " + job.getCommand());
+                        System.out.println("submit job " + job.getJobId());
+                        LOG.info("submit job " + job.getJobId());
                         submitJob(job);
                         submittedJobs += 1;
                     }else{
@@ -125,8 +125,8 @@ public class JobDriver {
                 }    
             }  
             //所有任务执行完清除callback
-            for(JobConf job : visited) {
-                TaskResponseCallBack.remove(job.getJobId());
+            for(String jobId : visited) {
+                TaskResponseCallBack.remove(jobId);
             }
         }        
     }

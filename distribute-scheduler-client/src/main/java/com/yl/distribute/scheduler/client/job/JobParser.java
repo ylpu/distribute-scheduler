@@ -17,6 +17,9 @@ import com.yl.distribute.scheduler.common.bean.JobConf;
 
 public class JobParser {
     
+    private static final String JOB_ID = "jobId";
+    private static final String JOB_DEPENDS = "depends";
+    
     private Set<String> visited = new HashSet<String>();
     
     private File jobPlanFile = null;
@@ -50,13 +53,13 @@ public class JobParser {
             job = new JobConf();
             Element jobElement = (Element) rootIt.next();
             List<Attribute> attributes = jobElement.attributes();
-            String jobName = "";
+            String jobId = "";
             for(Attribute attribute : attributes){
-                if(attribute.getName().equals("jobName")){
-                    jobName = attribute.getValue();
-                    job.setJobName(jobName);
+                if(attribute.getName().equals(JOB_ID)){
+                    jobId = attribute.getValue();
+                    job.setJobId(jobId);
                 }
-                if(attribute.getName().equals("depends")){
+                if(attribute.getName().equals(JOB_DEPENDS)){
                     String depends = attribute.getValue();
                     //depends为空表明是最上层任务
                     if(StringUtils.isBlank(depends)) {
@@ -85,24 +88,24 @@ public class JobParser {
         while(jobit.hasNext()){            
             Element jobElement = (Element) jobit.next();
             List<Attribute> attributes = jobElement.attributes();
-            String jobName = "";
+            String jobId = "";
             for(Attribute attribute : attributes){                
-                if(attribute.getName().equals("jobName")){
-                    jobName = attribute.getValue();                    
+                if(attribute.getName().equals(JOB_ID)){
+                    jobId = attribute.getValue();                    
                 }
-                if(attribute.getName().equals("depends")){
+                if(attribute.getName().equals(JOB_DEPENDS)){
                     String depends = attribute.getValue();
                     if(StringUtils.isNotBlank(depends)) {
                         List<String> dependList = Arrays.asList(depends.split(","));
-                        if(dependList.contains(currentJob.getJobName())) {
+                        if(dependList.contains(currentJob.getJobId())) {
                             job = new JobConf();
-                            job.setJobName(jobName);
+                            job.setJobId(jobId);
                             childJobs.add(job);
                             currentJob.getJobReleation().setChildJobs(childJobs);
                             //为子任务设置父任务列表
-                            for(String parentjobName : dependList) {
+                            for(String parentjobId : dependList) {
                                 JobConf parentJob = new JobConf();
-                                parentJob.setJobName(parentjobName);
+                                parentJob.setJobId(parentjobId);
                                 job.getJobReleation().getParentJobs().add(parentJob);
                             }                            
                             job.getJobReleation().setChildJobs(getChildJobs(job,rootElement));
@@ -129,11 +132,11 @@ public class JobParser {
         while(jobIt.hasNext()){
             Element jobElement = (Element) jobIt.next();
             List<Attribute> attributes = jobElement.attributes();
-            String jobName = "";
+            String jobId = "";
             for(Attribute attribute : attributes){
-                if(attribute.getName().equals("jobName")){
-                    jobName = attribute.getValue();
-                    fileJobs.add(jobName);
+                if(attribute.getName().equals(JOB_ID)){
+                    jobId = attribute.getValue();
+                    fileJobs.add(jobId);
                 }
             }                 
         }
@@ -148,13 +151,13 @@ public class JobParser {
             throw new RuntimeException("job can not empty");
         } 
         if(parentJob.getJobReleation().getParentJobs() == null) {
-            visited.add(parentJob.getJobName());
+            visited.add(parentJob.getJobId());
         }
         if(parentJob.getJobReleation().getChildJobs() != null){
             List<JobConf> childs = parentJob.getJobReleation().getChildJobs();
             for(JobConf jobConf : childs) {
                 visitJobs(jobConf);   
-                visited.add(jobConf.getJobName());              
+                visited.add(jobConf.getJobId());              
             }   
         }
     }    
