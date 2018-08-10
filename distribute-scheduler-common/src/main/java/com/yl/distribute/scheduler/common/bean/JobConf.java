@@ -3,7 +3,7 @@ package com.yl.distribute.scheduler.common.bean;
 import java.io.Serializable;
 import com.yl.distribute.scheduler.common.enums.JobType;
 
-public class JobConf implements Serializable{
+public class JobConf implements Serializable,Comparable<JobConf>{
 
     private static final long serialVersionUID = 1L;
     private String jobId;
@@ -76,5 +76,9 @@ public class JobConf implements Serializable{
     }
     public void setJobReleation(JobReleation jobReleation) {
         this.jobReleation = jobReleation;
+    }
+    @Override
+    public int compareTo(JobConf o) {
+        return (this.getJobName().compareTo(o.getJobName()));
     }    
 }

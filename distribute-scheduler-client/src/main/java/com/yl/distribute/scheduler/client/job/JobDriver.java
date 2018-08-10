@@ -1,4 +1,4 @@
-package com.yl.distribute.scheduler.client.driver;
+package com.yl.distribute.scheduler.client.job;
 
 import java.util.Date;
 import java.util.HashSet;
@@ -98,33 +98,6 @@ public class JobDriver {
         task.setStartTime(new Date()); 
         task.setTaskStatus(TaskStatus.SUBMIT);
         client.submit(task);
-    }
-    
-    /**
-     * 判断任务是否有环形依赖
-     * @param job
-     * @return
-     */
-    public boolean detectCycle(JobConf job) {
-        return detect(job, new HashSet<JobConf>());
-    }
- 
-    private boolean detect(JobConf job, HashSet<JobConf> jobs) {
-        if (job == null) {
-            return false;
-        } else if (jobs.contains(job)) {
-            return true;
-        }
-        jobs.add(job);
-        if(job.getJobReleation().getChildJobs() != null) {
-            for (JobConf child : job.getJobReleation().getChildJobs()) {
-                if (detect(child, jobs)) {
-                    return true;
-                }
-            }
-        }
-        jobs.remove(job);
-        return false;
     }
     
     private final class JobChecker implements Runnable{

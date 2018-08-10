@@ -19,6 +19,7 @@
     <protobuf.version>3.5.1</protobuf.version>
     <commons-beanutils.version>1.9.3</commons-beanutils.version>
     <commons-lang3.version>3.4</commons-lang3.version>
+    <dom4j-version>1.6.1</dom4j-version>
   </properties>
   <modules>
     <module>distribute-scheduler-client</module>
@@ -126,6 +127,11 @@
               <artifactId>commons-lang3</artifactId>
               <version>${commons-lang3.version}</version>
          </dependency> 
+         <dependency>
+              <groupId>dom4j</groupId>
+              <artifactId>dom4j</artifactId>
+              <version>${dom4j-version}</version>
+         </dependency>         
      </dependencies>
   </dependencyManagement>
 </project>
