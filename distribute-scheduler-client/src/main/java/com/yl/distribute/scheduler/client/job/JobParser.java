@@ -1,18 +1,24 @@
 package com.yl.distribute.scheduler.client.job;
 
+import java.io.ByteArrayInputStream;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
+
 import org.apache.commons.lang3.StringUtils;
 import org.dom4j.Attribute;
 import org.dom4j.Document;
 import org.dom4j.DocumentException;
 import org.dom4j.Element;
 import org.dom4j.io.SAXReader;
+
 import com.yl.distribute.scheduler.common.bean.JobConf;
 
 public class JobParser {
@@ -24,18 +30,50 @@ public class JobParser {
     
     private File jobPlanFile = null;
     
+    private InputStream is = null;
+    
+    private String content = null;
+    
+    public JobParser(InputStream is) {
+        this.is = is;
+    }  
+    
+    public JobParser(String content) {
+        this.content = content;
+    }  
+    
     public JobParser(File jobPlanFile) {
         this.jobPlanFile = jobPlanFile;
-    }       
+    }     
     
     public Element readFile() {
+        Element element = null;
+        try {
+            element = readStream(new FileInputStream(jobPlanFile));
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+            throw new RuntimeException(e);
+        }
+        return element;
+    }
+    
+    public Element readString() {
+        return readStream(new ByteArrayInputStream(content.getBytes()));
+    }
+    
+    public Element readStream() {
+        return readStream(is);
+    }
+    
+    public Element readStream(InputStream is) {
         SAXReader reader = new SAXReader();
         Element rootElement = null;
         try {
-            Document document = reader.read(jobPlanFile);
+            Document document = reader.read(is);
             rootElement = document.getRootElement();             
         } catch (DocumentException e) {
             e.printStackTrace();
+            throw new RuntimeException(e);
         }
         return rootElement;
     }

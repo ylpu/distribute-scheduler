@@ -3,28 +3,28 @@ package com.yl.distribute.scheduler.web.service;
 import org.springframework.stereotype.Component;
 
 import com.yl.distribute.scheduler.common.bean.TaskRequest;
-import com.yl.distribute.scheduler.web.task.TaskManager;
+import com.yl.distribute.scheduler.web.dao.TaskRepository;
 
 @Component
 public class TaskServiceImpl implements TaskService{
     
     public void updateTask(TaskRequest task) {
-        TaskManager.getInstance().updateTask(task);
+        TaskRepository.getInstance().updateTask(task);
     }
     
     public void insertTask(TaskRequest task) {
-        TaskManager.getInstance().addTask(task);
+        TaskRepository.getInstance().addTask(task);
     }
     
     public TaskRequest getTaskById(String id) {
-        return TaskManager.getInstance().getTask(id);
+        return TaskRepository.getInstance().getTask(id);
     }
     
     public String getErrorLog(String id) {
-        return TaskManager.getInstance().getTask(id).getErrorOutputUrl();
+        return TaskRepository.getInstance().getTask(id).getErrorOutputUrl();
     }
     
     public String getOutputLog(String id) {
-        return TaskManager.getInstance().getTask(id).getStdOutputUrl();
+        return TaskRepository.getInstance().getTask(id).getStdOutputUrl();
     }
 }

@@ -1,4 +1,4 @@
-package com.yl.distribute.scheduler.web.task;
+package com.yl.distribute.scheduler.web.dao;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -7,15 +7,15 @@ import org.apache.commons.lang3.StringUtils;
 
 import com.yl.distribute.scheduler.common.bean.TaskRequest;
 
-public class TaskManager {
+public class TaskRepository {
     
     private Map<String,TaskRequest> taskMap = new ConcurrentHashMap<String,TaskRequest>();
-    private static TaskManager taskManager = new TaskManager();
+    private static TaskRepository taskManager = new TaskRepository();
     
-    private TaskManager() {        
+    private TaskRepository() {        
     }
     
-    public static TaskManager getInstance() {
+    public static TaskRepository getInstance() {
         return taskManager;
     }    
     
