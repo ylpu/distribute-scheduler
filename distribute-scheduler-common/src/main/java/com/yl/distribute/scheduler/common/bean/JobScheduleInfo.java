@@ -7,7 +7,7 @@ public class JobScheduleInfo {
     private String triggerName;
     private String triggerGroupName;
     private String cron;
-    private Object data;
+    private JobConf data;
     
     public String getJobName() {
         return jobName;
@@ -39,11 +39,11 @@ public class JobScheduleInfo {
     public void setCron(String cron) {
         this.cron = cron;
     }
-    public Object getData() {
+    public JobConf getData() {
         return data;
     }
-    public void setData(Object data) {
+    public void setData(JobConf data) {
         this.data = data;
-    }  
+    }
 
 }

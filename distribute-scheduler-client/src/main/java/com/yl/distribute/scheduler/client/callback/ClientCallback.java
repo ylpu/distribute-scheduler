@@ -22,7 +22,15 @@ public class ClientCallback{
     public void onRead(TaskResponse response) throws Exception {
     	System.out.println(task.getTaskId() + "-" + task.getId() + "返回状态是" + response.getTaskId() + response.getTaskStatus());
     	LOG.info(task.getTaskId() + "-" + task.getId() + "返回状态是" + response.getTaskId() +  response.getTaskStatus());
-    	TaskResponseCallBack.add(task.getJob().getJobId(),response);
+    	
+    	TaskResponse taskResponse = TaskResponseCallBack.get(task.getJob().getJobId());
+        if(taskResponse == null){
+            TaskResponseCallBack.add(task.getJob().getJobId(),response);
+        }else{
+            taskResponse.setFailedTimes(response.getFailedTimes());            
+            taskResponse.setTaskStatus(response.getTaskStatus());
+        }
+        
         resubmitIfNeccesery(response);
     }
     
@@ -40,7 +48,7 @@ public class ClientCallback{
         newTask.setTaskId(task.getTaskId());
         newTask.setJob(task.getJob());
         newTask.setStartTime(new Date());
-        newTask.setEndTime(new Date());
+        newTask.setEndTime(null);
         newTask.setLastFailedServer(task.getRunningServer());
         newTask.setRunningServer("");
         newTask.setFailedTimes(task.getFailedTimes() + 1);

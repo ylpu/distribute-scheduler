@@ -19,6 +19,7 @@ public class MetricsUtils {
     }  
 
     
+    @SuppressWarnings("restriction")
     public static long getMemInfo()
     {
         OperatingSystemMXBean mem = (OperatingSystemMXBean) ManagementFactory.getOperatingSystemMXBean();

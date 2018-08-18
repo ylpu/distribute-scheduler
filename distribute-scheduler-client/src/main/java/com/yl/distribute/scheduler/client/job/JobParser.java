@@ -21,6 +21,11 @@ import org.dom4j.io.SAXReader;
 
 import com.yl.distribute.scheduler.common.bean.JobConf;
 
+/**
+ * 解析jobplan.xml病上传
+ * @author asus
+ *
+ */
 public class JobParser {
     
     private static final String JOB_ID = "jobId";

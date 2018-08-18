@@ -3,18 +3,29 @@ package com.yl.distribute.scheduler.client.job;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Properties;
 import java.util.Set;
 import java.util.Stack;
 import java.util.UUID;
+import org.apache.commons.beanutils.BeanUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
 import com.yl.distribute.scheduler.client.TaskClient;
 import com.yl.distribute.scheduler.client.callback.TaskResponseCallBack;
 import com.yl.distribute.scheduler.common.bean.JobConf;
+import com.yl.distribute.scheduler.common.bean.JobScheduleInfo;
 import com.yl.distribute.scheduler.common.bean.TaskRequest;
+import com.yl.distribute.scheduler.common.bean.TaskResponse;
 import com.yl.distribute.scheduler.common.enums.TaskStatus;
+import com.yl.distribute.scheduler.core.config.Configuration;
+import com.yl.distribute.scheduler.core.jersey.JerseyClient;
 
+/**
+ * 解析任务并提交
+ * @author
+ *
+ */
 public class JobDriver {
     
     private Log LOG = LogFactory.getLog(JobDriver.class);
@@ -77,11 +88,13 @@ public class JobDriver {
         }
         //父任务中只要有一个没有完成就退出
         for(JobConf jobConf : job.getJobReleation().getParentJobs()){
-            if(TaskResponseCallBack.get(jobConf.getJobId()) == null){
+            TaskResponse taskResponse = TaskResponseCallBack.get(jobConf.getJobId());
+            if(taskResponse == null){
                 return false;
             }
-            if(!(TaskResponseCallBack.get(jobConf.getJobId()).getTaskStatus() == TaskStatus.FAILED ||
-                    TaskResponseCallBack.get(jobConf.getJobId()).getTaskStatus() == TaskStatus.SUCCESS)){
+            if(!((taskResponse.getTaskStatus() == TaskStatus.FAILED && 
+                    taskResponse.getFailedTimes() == taskResponse.getJobConf().getRetryTimes())
+                    || taskResponse.getTaskStatus() == TaskStatus.SUCCESS)){
                 return false;
             }
         }
@@ -89,6 +102,39 @@ public class JobDriver {
     }
     
     private void submitJob(JobConf job) {
+        JobConf jobConf = getJobDetail(job.getJobId());
+        if(jobConf == null){
+            throw new RuntimeException("can not get job for jobId" + job.getJobId());
+        }
+        try {
+            BeanUtils.copyProperties(job, jobConf);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        } 
+        if(StringUtils.isNotBlank(job.getCronExpression())){
+            JobScheduleInfo scheduleInfo = new JobScheduleInfo();
+            setScheduleInfo(scheduleInfo,job);
+            JobScheduler.addJob(scheduleInfo, UserJob.class);
+        }else{
+            submitTask(job); 
+        }        
+    }
+    
+    private JobConf getJobDetail(String jobId) {
+        Properties prop = Configuration.getConfig("config.properties");        
+        String jobApi = Configuration.getString(prop, "job.web.api");
+        return JerseyClient.get(jobApi + "/getJobById/" + jobId, JobConf.class);
+    }
+    
+    private void setScheduleInfo(JobScheduleInfo scheduleInfo,JobConf job){
+        scheduleInfo.setJobName(job.getJobName());
+        scheduleInfo.setJobGroupName(job.getJobName() + "_group");
+        scheduleInfo.setTriggerName(job.getJobName() + "_trigger");
+        scheduleInfo.setTriggerGroupName(job.getJobName() + "_triggerGroup");
+        scheduleInfo.setData(job);
+    }
+    
+    private void submitTask(JobConf job){
         TaskClient client = TaskClient.getInstance();
         TaskRequest task = new TaskRequest();
         String taskId = String.valueOf(Math.random());

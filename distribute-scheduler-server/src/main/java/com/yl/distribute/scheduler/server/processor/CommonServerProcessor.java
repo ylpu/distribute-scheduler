@@ -2,8 +2,6 @@ package com.yl.distribute.scheduler.server.processor;
 
 import java.util.Date;
 import java.util.Properties;
-import java.util.Random;
-
 import javax.ws.rs.core.Response;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
@@ -33,7 +31,6 @@ public abstract class CommonServerProcessor {
         String outPutFile = task.getTaskId() + "_out";    
                       
         try {
-            Thread.sleep(new Random().nextInt(10000));
             if(StringUtils.isNotBlank(command)) {
                 
                 Process process = Runtime.getRuntime().exec(command);
@@ -86,6 +83,8 @@ public abstract class CommonServerProcessor {
         TaskResponse response = new TaskResponse();
         response.setId(task.getId());
         response.setTaskId(task.getTaskId());   
+        response.setFailedTimes(task.getFailedTimes());
+        response.setJobConf(task.getJob());
         response.setTaskStatus(taskStatus);                  
         ctx.writeAndFlush(response);
     }

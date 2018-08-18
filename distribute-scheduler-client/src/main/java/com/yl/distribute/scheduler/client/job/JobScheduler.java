@@ -32,7 +32,7 @@ public class JobScheduler {
             Scheduler sched = schedulerFactory.getScheduler();  
             // 任务名，任务组，任务执行类
             JobDetail jobDetail= JobBuilder.newJob(jobClass).withIdentity(scheduleInfo.getJobName(), scheduleInfo.getJobGroupName()).build();
-
+            jobDetail.getJobDataMap().put("data", scheduleInfo.getData());
             // 触发器  
             TriggerBuilder<Trigger> triggerBuilder = TriggerBuilder.newTrigger();
             // 触发器名,触发器组  

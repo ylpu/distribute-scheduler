@@ -2,6 +2,11 @@ package com.yl.distribute.scheduler.common.bean;
 
 import java.util.Date;
 
+/**
+ * 每次执行jobplan生成一个flow
+ * @author asus
+ *
+ */
 public class JobFlow {
     
     private String id;

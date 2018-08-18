@@ -1,6 +1,8 @@
 package com.yl.distribute.scheduler.client.test;
 
 import org.junit.Test;
+import org.quartz.CronTrigger;
+import org.quartz.impl.triggers.CronTriggerImpl;
 
 import com.yl.distribute.scheduler.client.job.JobScheduler;
 import com.yl.distribute.scheduler.client.job.UserJob;
@@ -33,7 +35,12 @@ public class JobSchedulerTest {
             Thread.sleep(6000);    
             System.out.println("【移除定时】开始...");    
             JobScheduler.removeJob(scheduleInfo);    
-            System.out.println("【移除定时】成功");    
+            System.out.println("【移除定时】成功");  
+            
+            CronTriggerImpl cronTrigger = new CronTriggerImpl(); 
+            cronTrigger.setCronExpression("0 59 2 ? * FRI"); 
+            System.out.println(cronTrigger.getNextFireTime());
+            
         } catch (Exception e) {  
             e.printStackTrace();  
         }  

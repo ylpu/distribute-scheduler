@@ -5,7 +5,6 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Properties;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 import org.I0Itec.zkclient.ZkClient;
@@ -15,7 +14,6 @@ import org.I0Itec.zkclient.IZkChildListener;
 import com.yl.distribute.scheduler.common.bean.HostInfo;
 import com.yl.distribute.scheduler.common.bean.JobConf;
 import com.yl.distribute.scheduler.common.utils.MetricsUtils;
-import com.yl.distribute.scheduler.core.config.Configuration;
 import com.yl.distribute.scheduler.core.zk.*;
 
 public class ResourceManager{
@@ -225,15 +223,10 @@ public class ResourceManager{
      * @param lastFailedServer
      * @return
      */
-    public synchronized String getIdleServer(JobConf input,String... lastFailedServers) { 
-        Properties prop = Configuration.getConfig("config.properties"); 
-        String serverStrategy = Configuration.getString(prop, "idle.server.select.strategy");
-        ServerSelectStrategy serverSelectStrategy = null;
-        try {
-            serverSelectStrategy = (ServerSelectStrategy) Class.forName(serverStrategy).newInstance();
-        } catch (Exception e) {
-            LOG.error(e);
-            throw new RuntimeException(e);
+    public synchronized String getIdleServer(JobConf input,String... lastFailedServers) {
+        ServerSelectStrategy serverSelectStrategy = ResourceStrategy.getStrategy(input.getStrategy());
+        if(serverSelectStrategy == null){
+            throw new RuntimeException("can not find strategy class for " + input.getStrategy());
         }
         return new ResourceStrategyContext(serverSelectStrategy).select(this,input,lastFailedServers);
 

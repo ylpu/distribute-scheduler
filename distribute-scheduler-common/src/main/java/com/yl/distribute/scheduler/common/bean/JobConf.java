@@ -12,7 +12,8 @@ public class JobConf implements Serializable,Comparable<JobConf>{
     private JobType jobType; 
     private String poolPath;
     private int retryTimes = 0;
-    private String cronExpression;    
+    private String cronExpression;
+    private String strategy;
     private String commandParameters;
     private String executeParameters;  
     private JobReleation jobReleation = new JobReleation();
@@ -58,6 +59,12 @@ public class JobConf implements Serializable,Comparable<JobConf>{
     }
     public void setPoolPath(String poolPath) {
         this.poolPath = poolPath;
+    }    
+    public String getStrategy() {
+        return strategy;
+    }
+    public void setStrategy(String strategy) {
+        this.strategy = strategy;
     }
     public String getCommandParameters() {
         return commandParameters;
