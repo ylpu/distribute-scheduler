@@ -9,13 +9,13 @@ import com.yl.distribute.scheduler.common.bean.TaskResponse;
 import com.yl.distribute.scheduler.common.bean.TaskRequest;
 import com.yl.distribute.scheduler.common.enums.TaskStatus;
 
-public class ClientCallback{
+public class TaskCallback{
 	
-    private static Log LOG = LogFactory.getLog(ClientCallback.class);
+    private static Log LOG = LogFactory.getLog(TaskCallback.class);
     
     private TaskRequest task;
     
-    public ClientCallback(TaskRequest task) {
+    public TaskCallback(TaskRequest task) {
         this.task = task;
     }
     
@@ -23,9 +23,9 @@ public class ClientCallback{
     	System.out.println(task.getTaskId() + "-" + task.getId() + "返回状态是" + response.getTaskId() + response.getTaskStatus());
     	LOG.info(task.getTaskId() + "-" + task.getId() + "返回状态是" + response.getTaskId() +  response.getTaskStatus());
     	
-    	TaskResponse taskResponse = TaskResponseCallBack.get(task.getJob().getJobId());
+    	TaskResponse taskResponse = TaskResponseManager.get(task.getJob().getJobId());
         if(taskResponse == null){
-            TaskResponseCallBack.add(task.getJob().getJobId(),response);
+            TaskResponseManager.add(task.getJob().getJobId(),response);
         }else{
             taskResponse.setFailedTimes(response.getFailedTimes());            
             taskResponse.setTaskStatus(response.getTaskStatus());

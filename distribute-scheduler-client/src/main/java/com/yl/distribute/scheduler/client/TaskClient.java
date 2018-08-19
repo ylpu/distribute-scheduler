@@ -6,7 +6,7 @@ import javax.ws.rs.core.Response;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import com.yl.distribute.scheduler.client.callback.ClientCallback;
+import com.yl.distribute.scheduler.client.callback.TaskCallback;
 import com.yl.distribute.scheduler.common.bean.TaskRequest;
 import com.yl.distribute.scheduler.common.utils.CallBackUtils;
 import com.yl.distribute.scheduler.core.config.Configuration;
@@ -47,7 +47,7 @@ public class TaskClient {
             
             f.addListener((FutureListener<Channel>) f1 -> {
                 if (f1.isSuccess()) {
-                    ClientCallback callback = new ClientCallback(task);                    
+                    TaskCallback callback = new TaskCallback(task);                    
                     CallBackUtils.putCallback(task.getId(), callback);
                     Channel ch = f1.getNow();                    
                     ch.writeAndFlush(task).addListener(new ChannelFutureListener() {

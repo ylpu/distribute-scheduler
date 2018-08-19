@@ -12,7 +12,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import com.yl.distribute.scheduler.client.TaskClient;
-import com.yl.distribute.scheduler.client.callback.TaskResponseCallBack;
+import com.yl.distribute.scheduler.client.callback.TaskResponseManager;
 import com.yl.distribute.scheduler.common.bean.JobConf;
 import com.yl.distribute.scheduler.common.bean.JobScheduleInfo;
 import com.yl.distribute.scheduler.common.bean.TaskRequest;
@@ -88,7 +88,7 @@ public class JobDriver {
         }
         //父任务中只要有一个没有完成就退出
         for(JobConf jobConf : job.getJobReleation().getParentJobs()){
-            TaskResponse taskResponse = TaskResponseCallBack.get(jobConf.getJobId());
+            TaskResponse taskResponse = TaskResponseManager.get(jobConf.getJobId());
             if(taskResponse == null){
                 return false;
             }
@@ -172,7 +172,7 @@ public class JobDriver {
             }  
             //所有任务执行完清除callback
             for(String jobId : visited) {
-                TaskResponseCallBack.remove(jobId);
+                TaskResponseManager.remove(jobId);
             }
         }        
     }

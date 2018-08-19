@@ -17,8 +17,12 @@ public class ResourceStrategy {
         strategyMap.put(key, serverSelectStrategy);
     }
     
-    public static ServerSelectStrategy getStrategy(String key){
-        return strategyMap.get(key);
+    public static ServerSelectStrategy getStrategy(String key){  
+        ServerSelectStrategy strategy = strategyMap.get(key);
+        if(strategy == null){
+            return new RandomStrategy();
+        }
+        return strategy;
     }
 
 }

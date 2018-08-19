@@ -1,11 +1,15 @@
 package com.yl.distribute.scheduler.client.handler;
 
+import java.net.InetSocketAddress;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import com.yl.distribute.scheduler.client.callback.ClientCallback;
+
+import com.yl.distribute.scheduler.client.callback.TaskCallback;
 import com.yl.distribute.scheduler.common.bean.TaskResponse;
 import com.yl.distribute.scheduler.common.utils.CallBackUtils;
 import com.yl.distribute.scheduler.core.handler.CommonChannelInboundHandler;
+
 import io.netty.channel.ChannelHandlerContext;
 
 public class SchedulerClientHander extends CommonChannelInboundHandler{
@@ -17,21 +21,18 @@ public class SchedulerClientHander extends CommonChannelInboundHandler{
      */
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {    
         TaskResponse output = (TaskResponse)msg;
-        ClientCallback callBack = CallBackUtils.getCallback(output.getId());        
+        TaskCallback callBack = CallBackUtils.getCallback(output.getId());        
         callBack.onRead((TaskResponse)msg);
     } 
     
-    /**
-     * if channel is inactive, then try to reconnect it
-     */
+
     public void channelInactive(ChannelHandlerContext ctx) throws Exception {
-        System.out.println("channel inactive" + ctx.channel());    
+        InetSocketAddress insocket = (InetSocketAddress) ctx.channel().remoteAddress();
+        String clientIP = insocket.getAddress().getHostAddress();
+        System.out.println("disconnected with " + clientIP);    
     }
 
 
-    /**
-     * if caught exception, then close the channel
-     */
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
         LOG.error(cause);
     }
