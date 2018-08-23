@@ -11,14 +11,14 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
-
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.dom4j.Attribute;
 import org.dom4j.Document;
 import org.dom4j.DocumentException;
 import org.dom4j.Element;
 import org.dom4j.io.SAXReader;
-
 import com.yl.distribute.scheduler.common.bean.JobConf;
 
 /**
@@ -27,6 +27,8 @@ import com.yl.distribute.scheduler.common.bean.JobConf;
  *
  */
 public class JobParser {
+    
+    private static Log LOG = LogFactory.getLog(JobParser.class);
     
     private static final String JOB_ID = "jobId";
     private static final String JOB_DEPENDS = "depends";
@@ -56,7 +58,7 @@ public class JobParser {
         try {
             element = readStream(new FileInputStream(jobPlanFile));
         } catch (FileNotFoundException e) {
-            e.printStackTrace();
+            LOG.error(e);
             throw new RuntimeException(e);
         }
         return element;
@@ -77,7 +79,7 @@ public class JobParser {
             Document document = reader.read(is);
             rootElement = document.getRootElement();             
         } catch (DocumentException e) {
-            e.printStackTrace();
+            LOG.error(e);
             throw new RuntimeException(e);
         }
         return rootElement;

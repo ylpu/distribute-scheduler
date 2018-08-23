@@ -1,9 +1,7 @@
 package com.yl.distribute.scheduler.client.test;
 
 import org.junit.Test;
-import org.quartz.CronTrigger;
 import org.quartz.impl.triggers.CronTriggerImpl;
-
 import com.yl.distribute.scheduler.client.job.JobScheduler;
 import com.yl.distribute.scheduler.client.job.UserJob;
 import com.yl.distribute.scheduler.common.bean.JobScheduleInfo;

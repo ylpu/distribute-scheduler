@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.Properties;
 import java.util.Set;
 import java.util.Stack;
-import java.util.UUID;
 import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
@@ -42,7 +41,7 @@ public class JobDriver {
     }
     
     public void start() {
-        parseJob(job);
+        startJob(job);
         new Thread(new JobChecker()).start();
     }
     
@@ -51,7 +50,7 @@ public class JobDriver {
      * @param rootTask
      * @throws Exception
      */    
-    public void parseJob(JobConf job) {
+    public void startJob(JobConf job) {
         if(job == null ) {
             return;
         } 
@@ -63,7 +62,7 @@ public class JobDriver {
         if(job.getJobReleation().getChildJobs() != null){
             List<JobConf> childs = job.getJobReleation().getChildJobs();
             for(JobConf jobConf : childs) {
-                parseJob(jobConf);
+                startJob(jobConf);
                 //防止重复提交,如a->b,c->d,不检查的话d会被提交两次
                 if(!visited.contains(jobConf.getJobId())) {
                     //如果父任务没有完成，就推到栈顶，如果完成了就去提交
@@ -137,10 +136,9 @@ public class JobDriver {
     private void submitTask(JobConf job){
         TaskClient client = TaskClient.getInstance();
         TaskRequest task = new TaskRequest();
-        String taskId = String.valueOf(Math.random());
         task.setJob(job);
-        task.setId(UUID.randomUUID().toString().replaceAll("-", ""));
-        task.setTaskId(taskId);
+        task.setId(new ObjectId().toHexString());
+        task.setTaskId(new ObjectId().toHexString());
         task.setStartTime(new Date()); 
         task.setTaskStatus(TaskStatus.SUBMIT);
         client.submit(task);
