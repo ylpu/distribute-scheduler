@@ -20,7 +20,7 @@ core主要提供了resourcemanager的rpc调用，rpc的序列化方式，zookeep
 * distribute-scheduler-web
 web主要负责任务的调度，停止，查看以及更新（目前还在开发中）
 
-# feature
+# Feature
 * 基于dag,任务被解析成有向无环图提交到资源最优的机器
 * 基于真实资源，每一次任务提交都会减少机器的真实资源
 * 基于资源池，相同类型的任务可以提交到对应的资源池
