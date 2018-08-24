@@ -15,17 +15,12 @@ import com.yl.distribute.scheduler.common.bean.JobScheduleInfo;
 
 public class JobScheduler {
     private static SchedulerFactory schedulerFactory = new StdSchedulerFactory();  
-
-    /** 
-     * @Description: 添加一个定时任务 
-     *  
-     * @param jobName 任务名 
-     * @param jobGroupName  任务组名 
-     * @param triggerName 触发器名 
-     * @param triggerGroupName 触发器组名 
-     * @param jobClass  任务 
-     * @param cron   时间设置，参考quartz说明文档  
-     */  
+    
+    /**
+     * 动态添加任务
+     * @param scheduleInfo
+     * @param jobClass
+     */
     @SuppressWarnings({ "unchecked", "rawtypes" })  
     public static void addJob(JobScheduleInfo scheduleInfo, Class jobClass) {  
         try {  
@@ -55,15 +50,10 @@ public class JobScheduler {
         }  
     }  
 
-    /** 
-     * @Description: 修改一个任务的触发时间
-     *  
-     * @param jobName 
-     * @param jobGroupName
-     * @param triggerName 触发器名
-     * @param triggerGroupName 触发器组名 
-     * @param cron   时间设置，参考quartz说明文档   
-     */  
+    /**
+     * 动态修改任务时间
+     * @param scheduleInfo
+     */
     public static void modifyJobTime(JobScheduleInfo scheduleInfo) {  
         try {  
             Scheduler sched = schedulerFactory.getScheduler();  
@@ -75,7 +65,6 @@ public class JobScheduler {
 
             String oldTime = trigger.getCronExpression();  
             if (!oldTime.equalsIgnoreCase(scheduleInfo.getCron())) { 
-                /** 方式一 ：调用 rescheduleJob 开始 */
                 // 触发器  
                 TriggerBuilder<Trigger> triggerBuilder = TriggerBuilder.newTrigger();
                 // 触发器名,触发器组  
@@ -87,28 +76,16 @@ public class JobScheduler {
                 trigger = (CronTrigger) triggerBuilder.build();
                 // 方式一 ：修改一个任务的触发时间
                 sched.rescheduleJob(triggerKey, trigger);
-                /** 方式一 ：调用 rescheduleJob 结束 */
-
-                /** 方式二：先删除，然后在创建一个新的Job  */
-                //JobDetail jobDetail = sched.getJobDetail(JobKey.jobKey(jobName, jobGroupName));  
-                //Class<? extends Job> jobClass = jobDetail.getJobClass();  
-                //removeJob(jobName, jobGroupName, triggerName, triggerGroupName);  
-                //addJob(jobName, jobGroupName, triggerName, triggerGroupName, jobClass, cron); 
-                /** 方式二 ：先删除，然后在创建一个新的Job */
             }  
         } catch (Exception e) {  
             throw new RuntimeException(e);  
         }  
     }  
 
-    /** 
-     * @Description: 移除一个任务 
-     *  
-     * @param jobName 
-     * @param jobGroupName 
-     * @param triggerName 
-     * @param triggerGroupName 
-     */  
+    /**
+     * 动态删除任务
+     * @param scheduleInfo
+     */
     public static void removeJob(JobScheduleInfo scheduleInfo) {  
         try {  
             Scheduler sched = schedulerFactory.getScheduler();  

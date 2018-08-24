@@ -39,29 +39,14 @@ public class StringUtils {
         return trimmed.substring(splashIndex);
     }
     
-    public static String getPoolServersAsString(Map<String, List<String>> map) {
+    public static <K,V> String getMapAsString(Map<K, V> map) {
         StringBuilder builder = new StringBuilder();
-        List<Map.Entry<String, List<String>>> list = new ArrayList<Map.Entry<String, List<String>>>(map.entrySet());
-        Iterator<Entry<String, List<String>>> iterator = list.iterator();
+        List<Map.Entry<K, V>> list = new ArrayList<Map.Entry<K, V>>(map.entrySet());
+        Iterator<Entry<K, V>> iterator = list.iterator();
         while(iterator.hasNext()) {
-            Entry<String, List<String>> entry = iterator.next();
+            Entry<K, V> entry = iterator.next();
             builder.append(entry.getKey() + " : ");
             builder.append(entry.getValue().toString());
-            if(iterator.hasNext()) {
-                builder.append("\n");
-            }
-        }
-        return builder.toString();
-    }
-    
-    public static String getTaskMapAsString(Map<String, Integer> map) {
-        StringBuilder builder = new StringBuilder();
-        List<Map.Entry<String, Integer>> list = new ArrayList<Map.Entry<String, Integer>>(map.entrySet());
-        Iterator<Entry<String, Integer>> iterator = list.iterator();
-        while(iterator.hasNext()) {
-            Entry<String, Integer> entry = iterator.next();
-            builder.append(entry.getKey() + " : ");
-            builder.append(entry.getValue());
             if(iterator.hasNext()) {
                 builder.append("\n");
             }
@@ -87,6 +72,5 @@ public class StringUtils {
             }
         }
         return builder.toString();
-    }
-    
+    }    
 }

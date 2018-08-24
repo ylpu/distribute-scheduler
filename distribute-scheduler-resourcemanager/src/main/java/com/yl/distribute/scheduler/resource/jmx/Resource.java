@@ -7,7 +7,7 @@ public class Resource implements ResourceMBean{
 
     @Override
     public String getPoolServers() {
-        return StringUtils.getPoolServersAsString(ResourceManager.getInstance().getPoolServers());
+        return StringUtils.getMapAsString(ResourceManager.getInstance().getPoolServers());
     }
 
     @Override
@@ -22,6 +22,6 @@ public class Resource implements ResourceMBean{
 	
     @Override
     public String getTaskMap() {
-        return StringUtils.getTaskMapAsString(ResourceManager.getInstance().getTaskMap());
+        return StringUtils.getMapAsString(ResourceManager.getInstance().getTaskMap());
     }		
 }

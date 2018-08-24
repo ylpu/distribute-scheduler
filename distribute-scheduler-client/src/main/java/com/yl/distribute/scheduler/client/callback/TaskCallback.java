@@ -1,10 +1,10 @@
 package com.yl.distribute.scheduler.client.callback;
 
 import java.util.Date;
-import java.util.UUID;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import com.yl.distribute.scheduler.client.TaskClient;
+import com.yl.distribute.scheduler.client.job.ObjectId;
 import com.yl.distribute.scheduler.common.bean.TaskResponse;
 import com.yl.distribute.scheduler.common.bean.TaskRequest;
 import com.yl.distribute.scheduler.common.enums.TaskStatus;
@@ -44,7 +44,7 @@ public class TaskCallback{
     }
     
     private void initNewTask(TaskRequest newTask) {
-        newTask.setId(UUID.randomUUID().toString().replaceAll("-", ""));
+        newTask.setId(new ObjectId().toHexString());
         newTask.setTaskId(task.getTaskId());
         newTask.setJob(task.getJob());
         newTask.setStartTime(new Date());

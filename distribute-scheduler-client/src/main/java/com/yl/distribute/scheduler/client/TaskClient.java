@@ -68,8 +68,9 @@ public class TaskClient {
             
         }catch(Exception e) {
         	LOG.error("任务 " + task.getTaskId()+ "-" + task.getId() + "第 " + task.getFailedTimes() +1 + "失败次并且找不到可运行的服务器",e);
+        	throw new RuntimeException(e);
         }
-    } 
+    }     
     
     private Response addTask(TaskRequest task) {
         Properties prop = Configuration.getConfig("config.properties");        

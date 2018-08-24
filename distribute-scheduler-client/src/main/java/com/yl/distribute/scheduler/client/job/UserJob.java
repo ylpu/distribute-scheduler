@@ -12,14 +12,20 @@ import com.yl.distribute.scheduler.common.enums.TaskStatus;
 public class UserJob implements Job{
 
     public void execute(JobExecutionContext jobExecutionContext) throws JobExecutionException {
-        JobConf data = (JobConf) jobExecutionContext.getJobDetail().getJobDataMap().get("data");
+        JobConf jobConf = (JobConf) jobExecutionContext.getJobDetail().getJobDataMap().get("data");
         TaskClient client = TaskClient.getInstance();
         TaskRequest task = new TaskRequest();
-        task.setJob(data);        
         task.setId(new ObjectId().toHexString());
         task.setTaskId(new ObjectId().toHexString());
-        task.setStartTime(new Date()); 
+        task.setJob(jobConf);
+        task.setStartTime(new Date());
+        task.setEndTime(null);
+        task.setLastFailedServer("");
+        task.setRunningServer("");
+        task.setFailedTimes(0);
+        task.setStdOutputUrl("");
+        task.setErrorOutputUrl("");
         task.setTaskStatus(TaskStatus.SUBMIT);
-        client.submit(task);        
+        client.submit(task);      
     }
 }

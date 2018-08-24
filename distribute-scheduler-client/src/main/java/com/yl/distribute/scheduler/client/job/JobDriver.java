@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.Properties;
 import java.util.Set;
 import java.util.Stack;
-import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -78,8 +77,7 @@ public class JobDriver {
                 visited.add(jobConf.getJobId());
             }   
         }
-    }
-    
+    }   
     
     private boolean parentsJobFinished(JobConf job){
         if(job.getJobReleation().getParentJobs() == null){
@@ -103,19 +101,14 @@ public class JobDriver {
     private void submitJob(JobConf job) {
         JobConf jobConf = getJobDetail(job.getJobId());
         if(jobConf == null){
-            throw new RuntimeException("can not get job for jobId" + job.getJobId());
+            throw new RuntimeException("can not get job for jobId " + job.getJobId());
         }
-        try {
-            BeanUtils.copyProperties(job, jobConf);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        } 
-        if(StringUtils.isNotBlank(job.getCronExpression())){
+        if(StringUtils.isNotBlank(jobConf.getCronExpression())){
             JobScheduleInfo scheduleInfo = new JobScheduleInfo();
-            setScheduleInfo(scheduleInfo,job);
+            setScheduleInfo(scheduleInfo,jobConf);
             JobScheduler.addJob(scheduleInfo, UserJob.class);
         }else{
-            submitTask(job); 
+            submitTask(jobConf); 
         }        
     }
     
@@ -136,10 +129,16 @@ public class JobDriver {
     private void submitTask(JobConf job){
         TaskClient client = TaskClient.getInstance();
         TaskRequest task = new TaskRequest();
-        task.setJob(job);
         task.setId(new ObjectId().toHexString());
         task.setTaskId(new ObjectId().toHexString());
-        task.setStartTime(new Date()); 
+        task.setJob(job);
+        task.setStartTime(new Date());
+        task.setEndTime(null);
+        task.setLastFailedServer("");
+        task.setRunningServer("");
+        task.setFailedTimes(0);
+        task.setStdOutputUrl("");
+        task.setErrorOutputUrl("");
         task.setTaskStatus(TaskStatus.SUBMIT);
         client.submit(task);
     }

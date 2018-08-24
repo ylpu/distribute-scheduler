@@ -22,7 +22,7 @@ import org.dom4j.io.SAXReader;
 import com.yl.distribute.scheduler.common.bean.JobConf;
 
 /**
- * 解析jobplan.xml病上传
+ * 解析jobplan.xml并上传
  * @author asus
  *
  */

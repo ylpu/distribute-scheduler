@@ -4,6 +4,10 @@ import java.io.Serializable;
 import java.util.Date;
 import com.yl.distribute.scheduler.common.enums.TaskStatus;
 
+/**
+ * 根据job生成相关task
+ *
+ */
 public class TaskRequest implements Serializable{
 
     private static final long serialVersionUID = 1L;

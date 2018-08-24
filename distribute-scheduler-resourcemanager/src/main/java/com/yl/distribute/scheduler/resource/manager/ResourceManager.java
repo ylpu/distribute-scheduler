@@ -26,7 +26,6 @@ public class ResourceManager{
     
     //key is machine pool name,value is server list
     public Map<String,List<String>> poolServers = new ConcurrentHashMap<String,List<String>>(); 
-
     
     //key is servername,value is host info
     public Map<String,HostInfo> resourceMap = new HashMap<String,HostInfo>();   
@@ -86,9 +85,9 @@ public class ResourceManager{
             }
         }
         zkClient.subscribeChildChanges(path, new IZkChildListener() {              
-            public void handleChildChange(String parentPath, List<String> currentChilds) throws Exception {  
-                System.out.println(String.format("[ZookeeperRegistry] service list change: path=%s, currentChilds=%s",
-                        parentPath, currentChilds.toString()));  
+            public void handleChildChange(String parentPath, List<String> currentChilds) throws Exception { 
+                LOG.warn(String.format("[ZookeeperRegistry] service list change: path=%s, currentChilds=%s",
+                        parentPath, currentChilds.toString())); 
                 refreshPool(zkClient,parentPath,oldChilds,currentChilds); 
                 resetOldChild(oldChilds,currentChilds);
                 System.out.println("Servers: " + poolServers.get(path).toString());  

@@ -8,6 +8,7 @@ import org.apache.commons.lang3.math.NumberUtils;
 import com.sun.management.OperatingSystemMXBean;
 import com.yl.distribute.scheduler.common.constants.GlobalConstants;
 
+@SuppressWarnings("restriction")
 public class MetricsUtils {
     
     public static void main(String[] args)
@@ -19,7 +20,6 @@ public class MetricsUtils {
     }  
 
     
-    @SuppressWarnings("restriction")
     public static long getMemInfo()
     {
         OperatingSystemMXBean mem = (OperatingSystemMXBean) ManagementFactory.getOperatingSystemMXBean();
