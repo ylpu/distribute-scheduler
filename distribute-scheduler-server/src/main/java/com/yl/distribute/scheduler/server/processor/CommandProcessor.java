@@ -20,6 +20,10 @@ public class CommandProcessor extends CommonServerProcessor implements IServerPr
 
     @Override
     public String buildCommand() {
-        return task.getJob().getCommand();
+        StringBuilder commandBuilder = new StringBuilder();
+        commandBuilder.append(task.getJob().getCommand());
+        commandBuilder.append(" ");
+        commandBuilder.append(task.getJob().getCommandParameters());
+        return commandBuilder.toString();
     }
  }

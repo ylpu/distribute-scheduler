@@ -142,7 +142,12 @@
               <groupId>org.quartz-scheduler</groupId>
               <artifactId>quartz-jobs</artifactId>
               <version>${quartz-version}</version>
-         </dependency>        
+         </dependency> 
+         <dependency>
+             <groupId>com.google.guava</groupId>
+             <artifactId>guava</artifactId>
+            <version>23.0</version>
+         </dependency>       
      </dependencies>
   </dependencyManagement>
 </project>

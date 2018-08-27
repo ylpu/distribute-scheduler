@@ -46,17 +46,17 @@ public abstract class CommonServerProcessor {
                 
                 int c = process.waitFor();
                 if(c != 0){
-                    updateAndWrite(ctx,TaskStatus.FAILED);
+                    updateAndResponse(ctx,TaskStatus.FAILED);
                 }else {
-                    updateAndWrite(ctx,TaskStatus.SUCCESS);
+                    updateAndResponse(ctx,TaskStatus.SUCCESS);
                 } 
             }else {
                 LOG.warn("command is empty for " + task.getTaskId());
-                updateAndWrite(ctx,TaskStatus.SUCCESS);
+                updateAndResponse(ctx,TaskStatus.SUCCESS);
             }
         }catch (Exception e) {
             LOG.error(e);
-            updateAndWrite(ctx,TaskStatus.FAILED);
+            updateAndResponse(ctx,TaskStatus.FAILED);
             System.out.println("after process for " +  task.getTaskId());
         }
     }
@@ -73,7 +73,7 @@ public abstract class CommonServerProcessor {
         task.setTaskStatus(TaskStatus.RUNNING);
     }
     
-    public void updateAndWrite(ChannelHandlerContext ctx,TaskStatus taskStatus) {
+    public void updateAndResponse(ChannelHandlerContext ctx,TaskStatus taskStatus) {
         long elapseTime = (System.currentTimeMillis() - task.getStartTime().getTime())/1000;
         task.setTaskStatus(taskStatus);
         task.setEndTime(new Date());

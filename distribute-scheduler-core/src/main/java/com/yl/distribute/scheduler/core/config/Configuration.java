@@ -7,7 +7,7 @@ import java.util.Properties;
 
 public class Configuration {
 	
-    private static Map<String,Properties> configMap = new HashMap<String,Properties>();
+	private static Map<String,Properties> configMap = new HashMap<String,Properties>();
     
     public static Properties getConfig(String propFileName) {
     	Properties config = configMap.get(propFileName);
