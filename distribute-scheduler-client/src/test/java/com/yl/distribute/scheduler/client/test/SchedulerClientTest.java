@@ -20,11 +20,11 @@ public class SchedulerClientTest {
     public void submitJob() throws Exception {
         
         TaskClient client = TaskClient.getInstance();        
-        for(int i = 0;i < 1; i++) {
+        for(int i = 0;i < 100; i++) {
             new ProduceThread(client,i).start();
         }
         
-        Thread.sleep(10000);
+        Thread.sleep(60000);
         
         ResourceService service = ResourceProxy.get(ResourceService.class);
         Map<String,HostInfo> map = service.getResources();
@@ -57,6 +57,7 @@ public class SchedulerClientTest {
             jobConf.setJobType(JobType.COMMAND);
             jobConf.setCommand("ls -ltr");
             jobConf.setPoolPath("/root/pool1");
+            jobConf.setStrategy("memory");
             task.setJob(jobConf);
             task.setId(UUID.randomUUID().toString().replaceAll("-", ""));
             task.setTaskId(id);

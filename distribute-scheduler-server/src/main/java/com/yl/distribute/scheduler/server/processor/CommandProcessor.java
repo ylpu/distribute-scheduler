@@ -3,7 +3,7 @@ package com.yl.distribute.scheduler.server.processor;
 import com.yl.distribute.scheduler.common.bean.*;
 import io.netty.channel.ChannelHandlerContext;
 
-public class CommandProcessor extends CommonServerProcessor implements IServerProcessor{
+public class CommandProcessor extends CommonTaskProcessor implements IServerProcessor{
     
     private TaskRequest task;
     

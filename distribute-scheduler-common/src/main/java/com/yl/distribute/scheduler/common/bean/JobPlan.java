@@ -5,6 +5,8 @@ import java.sql.Clob;
 public class JobPlan {
     
     private String id;
+    private String planName;
+    private String cron;    
     private Clob jobPlanFile;
     
     public String getId() {
@@ -19,4 +21,16 @@ public class JobPlan {
     public void setJobPlanFile(Clob jobPlanFile) {
         this.jobPlanFile = jobPlanFile;
     }
+    public String getPlanName() {
+        return planName;
+    }
+    public void setPlanName(String planName) {
+        this.planName = planName;
+    }
+    public String getCron() {
+        return cron;
+    }
+    public void setCron(String cron) {
+        this.cron = cron;
+    }   
 }

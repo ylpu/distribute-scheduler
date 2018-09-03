@@ -1,9 +1,11 @@
 package com.yl.distribute.scheduler.server.processor;
 
+import org.apache.commons.lang3.StringUtils;
+
 import com.yl.distribute.scheduler.common.bean.TaskRequest;
 import io.netty.channel.ChannelHandlerContext;
 
-public class JarProcessor extends CommonServerProcessor implements IServerProcessor{    
+public class JarProcessor extends CommonTaskProcessor implements IServerProcessor{    
  
     private TaskRequest task;
     
@@ -23,9 +25,13 @@ public class JarProcessor extends CommonServerProcessor implements IServerProces
         StringBuilder commandBuilder = new StringBuilder();
         commandBuilder.append(task.getJob().getCommand());
         commandBuilder.append(" ");
-        commandBuilder.append(task.getJob().getCommandParameters());
-        commandBuilder.append(" ");
+        if(StringUtils.isNotBlank(task.getJob().getClasspath())) {
+            commandBuilder.append("cp ").append(task.getJob().getClasspath());
+            commandBuilder.append(" ");
+        }        
         commandBuilder.append(task.getJob().getExecuteParameters());
+        commandBuilder.append(" ");
+        commandBuilder.append(task.getJob().getCommandParameters());
         return commandBuilder.toString();
     }
 }

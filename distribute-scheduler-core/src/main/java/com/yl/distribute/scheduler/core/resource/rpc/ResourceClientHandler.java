@@ -48,9 +48,10 @@ public class ResourceClientHandler extends SimpleChannelInboundHandler<ResourceR
 
 
     /**
-     * if caught exception, then close the channel
+     * if caught exception, then close the channel 
      */
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
+        System.out.println(cause);
         LOG.error(cause);
         ctx.close();
     }

@@ -4,7 +4,7 @@ import java.io.File;
 import org.dom4j.Element;
 import org.junit.Test;
 
-import com.yl.distribute.scheduler.client.job.JobParser;
+import com.yl.distribute.scheduler.client.schedule.JobParser;
 import com.yl.distribute.scheduler.common.bean.JobConf;
 
 public class JobParserTest {

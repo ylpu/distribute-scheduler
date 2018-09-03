@@ -4,6 +4,7 @@ import java.util.Properties;
 
 import javax.ws.rs.core.Response;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import com.yl.distribute.scheduler.client.callback.TaskCallback;
@@ -37,10 +38,18 @@ public class TaskClient {
     
     public void submit(TaskRequest task){        
         try {
-            addTask(task);
+            Response response = addTask(task);
+            if(response.getStatus() != Response.Status.OK.getStatusCode()) {
+                throw new RuntimeException("failed to add task");
+            }
+            
             ResourceService service = ResourceProxy.get(ResourceService.class);
-            String idleServer = service.getIdleServer(task.getJob(),task.getLastFailedServer());            
-            task.setRunningServer(idleServer);              
+            String idleServer = service.getIdleServer(task.getJob(),task.getLastFailedServer());    
+            if(StringUtils.isBlank(idleServer)) {
+                throw new RuntimeException("can not get idle server to submit task");
+            }
+            task.setRunningServer(idleServer);  
+            
             SimpleChannelPool channelPool = SchedulerClientPool.getInstance().getChannelPool(task.getJob().getPoolPath(),idleServer);
             Future<Channel> f = null;
             f = channelPool.acquire(); 
@@ -67,7 +76,7 @@ public class TaskClient {
             });
             
         }catch(Exception e) {
-        	LOG.error("任务 " + task.getTaskId()+ "-" + task.getId() + "第 " + task.getFailedTimes() +1 + "失败次并且找不到可运行的服务器",e);
+        	LOG.error(e);
         	throw new RuntimeException(e);
         }
     }     

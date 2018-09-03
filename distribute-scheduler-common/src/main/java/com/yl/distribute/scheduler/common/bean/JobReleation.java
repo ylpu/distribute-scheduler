@@ -1,10 +1,15 @@
 package com.yl.distribute.scheduler.common.bean;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-public class JobReleation {
+public class JobReleation implements Serializable{
     
+    /**
+     * 
+     */
+    private static final long serialVersionUID = 1L;
     private String jobId;
     private List<JobConf> parentJobs = new ArrayList<JobConf>();
     private List<JobConf> childJobs = new ArrayList<JobConf>();

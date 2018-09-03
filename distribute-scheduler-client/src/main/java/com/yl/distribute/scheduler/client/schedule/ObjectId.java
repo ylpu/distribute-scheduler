@@ -1,4 +1,4 @@
-package com.yl.distribute.scheduler.client.job;
+package com.yl.distribute.scheduler.client.schedule;
 
 import com.google.common.base.Objects; 
 import java.net.NetworkInterface;

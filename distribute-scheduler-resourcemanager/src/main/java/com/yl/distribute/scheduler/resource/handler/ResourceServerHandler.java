@@ -10,7 +10,7 @@ import io.netty.channel.SimpleChannelInboundHandler;
 public class ResourceServerHandler extends SimpleChannelInboundHandler<ResourceRequest> {
 
     @Override
-    public void channelRead0(final ChannelHandlerContext ctx, ResourceRequest request) throws Exception {        
+    public void channelRead0(ChannelHandlerContext ctx, ResourceRequest request) throws Exception {        
         new ResourceServerProcessor(ctx,request).process();
     }
 

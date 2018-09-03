@@ -14,7 +14,11 @@ public class JobConf implements Serializable,Comparable<JobConf>{
     private int retryTimes = 0;
     private String cronExpression;
     private String strategy;
+    //jar命令的classpath
+    private String classpath;
+    //jar或shell命令参数，如a b c;
     private String commandParameters;
+    //jar命令执行参数，如-Dparam=test -Xmx1024m
     private String executeParameters;  
     private JobReleation jobReleation = new JobReleation();
     
@@ -65,6 +69,12 @@ public class JobConf implements Serializable,Comparable<JobConf>{
     }
     public void setStrategy(String strategy) {
         this.strategy = strategy;
+    }    
+    public String getClasspath() {
+        return classpath;
+    }
+    public void setClasspath(String classpath) {
+        this.classpath = classpath;
     }
     public String getCommandParameters() {
         return commandParameters;

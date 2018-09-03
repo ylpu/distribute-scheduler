@@ -4,7 +4,7 @@ import java.util.Date;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import com.yl.distribute.scheduler.client.TaskClient;
-import com.yl.distribute.scheduler.client.job.ObjectId;
+import com.yl.distribute.scheduler.client.schedule.ObjectId;
 import com.yl.distribute.scheduler.common.bean.TaskResponse;
 import com.yl.distribute.scheduler.common.bean.TaskRequest;
 import com.yl.distribute.scheduler.common.enums.TaskStatus;
@@ -22,7 +22,7 @@ public class TaskCallback{
     public void onRead(TaskResponse response) throws Exception {
     	System.out.println(task.getTaskId() + "-" + task.getId() + "返回状态是" + response.getTaskId() + response.getTaskStatus());
     	LOG.info(task.getTaskId() + "-" + task.getId() + "返回状态是" + response.getTaskId() +  response.getTaskStatus());
-    	
+    	//根据response中任务的状态来判断dag是否往下执行
     	TaskResponse taskResponse = TaskResponseManager.get(task.getJob().getJobId());
         if(taskResponse == null){
             TaskResponseManager.add(task.getJob().getJobId(),response);
