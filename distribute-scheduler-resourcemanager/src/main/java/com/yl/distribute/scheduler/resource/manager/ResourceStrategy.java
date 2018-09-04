@@ -5,7 +5,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class ResourceStrategy {
     
-    private static Map<String,ServerSelectStrategy> strategyMap = new ConcurrentHashMap<String,ServerSelectStrategy>();
+    private static Map<String,HostSelectStrategy> strategyMap = new ConcurrentHashMap<String,HostSelectStrategy>();
     
     static{
         strategyMap.put("memory", new ResourceIdleStrategy());
@@ -13,12 +13,12 @@ public class ResourceStrategy {
         strategyMap.put("random", new RandomStrategy());
     }
     
-    public static void addStrategy(String key ,ServerSelectStrategy serverSelectStrategy){
+    public static void addStrategy(String key ,HostSelectStrategy serverSelectStrategy){
         strategyMap.put(key, serverSelectStrategy);
     }
     
-    public static ServerSelectStrategy getStrategy(String key){  
-        ServerSelectStrategy strategy = strategyMap.get(key);
+    public static HostSelectStrategy getStrategy(String key){  
+        HostSelectStrategy strategy = strategyMap.get(key);
         if(strategy == null){
             return new RandomStrategy();
         }

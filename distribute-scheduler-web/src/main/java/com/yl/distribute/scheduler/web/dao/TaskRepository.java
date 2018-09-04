@@ -38,8 +38,8 @@ public class TaskRepository {
        if(StringUtils.isNotBlank(task.getErrorOutputUrl())){
     	   newTask.setErrorOutputUrl(task.getErrorOutputUrl());
        }       
-       if (StringUtils.isNotBlank(task.getRunningServer())){
-    	   newTask.setRunningServer(task.getRunningServer());
+       if (StringUtils.isNotBlank(task.getRunningHost())){
+    	   newTask.setRunningHost(task.getRunningHost());
        }
        if(task.getStartTime() != null){
     	   newTask.setStartTime(task.getStartTime());

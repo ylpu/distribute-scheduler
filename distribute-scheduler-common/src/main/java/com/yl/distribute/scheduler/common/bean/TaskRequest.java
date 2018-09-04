@@ -15,8 +15,8 @@ public class TaskRequest implements Serializable{
     private String taskId;
     private JobConf job;
     private int failedTimes = 0;
-    private String runningServer;   
-    private String lastFailedServer;
+    private String runningHost;   
+    private String lastFailedHost;
     private TaskStatus taskStatus;
     private String errorOutputUrl;
     private String stdOutputUrl;
@@ -48,17 +48,17 @@ public class TaskRequest implements Serializable{
     public void setFailedTimes(int failedTimes) {
         this.failedTimes = failedTimes;
     }
-    public String getRunningServer() {
-        return runningServer;
+    public String getRunningHost() {
+        return runningHost;
     }
-    public void setRunningServer(String runningServer) {
-        this.runningServer = runningServer;
+    public void setRunningHost(String runningHost) {
+        this.runningHost = runningHost;
     }	
-    public String getLastFailedServer() {
-        return lastFailedServer;
+    public String getLastFailedHost() {
+        return lastFailedHost;
     }
-    public void setLastFailedServer(String lastFailedServer) {
-        this.lastFailedServer = lastFailedServer;
+    public void setLastFailedHost(String lastFailedHost) {
+        this.lastFailedHost = lastFailedHost;
     }
     public TaskStatus getTaskStatus() {
         return taskStatus;

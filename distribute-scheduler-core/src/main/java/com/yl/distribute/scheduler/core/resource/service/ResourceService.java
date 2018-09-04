@@ -6,7 +6,7 @@ import com.yl.distribute.scheduler.common.bean.JobConf;
 
 public interface ResourceService {
     
-    String getIdleServer(JobConf input,String... lastFailedServers);
+    String getIdleHost(JobConf input,String... lastFailedHosts);
     
     void addResource(String serverName,JobConf jobConf);
     

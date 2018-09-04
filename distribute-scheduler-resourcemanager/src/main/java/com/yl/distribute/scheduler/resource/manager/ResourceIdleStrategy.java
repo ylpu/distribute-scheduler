@@ -12,10 +12,10 @@ import com.yl.distribute.scheduler.common.bean.JobConf;
  * 从pool中选择资源最多的一台机器提交任务
  *
  */
-public class ResourceIdleStrategy implements ServerSelectStrategy{
+public class ResourceIdleStrategy implements HostSelectStrategy{
 
     @Override
-    public String getIdleServer(ResourceManager rm,JobConf request,String... lastFailedServers) {
+    public String getIdleHost(ResourceManager rm,JobConf request,String... lastFailedHosts) {
         List<String> servers = rm.getPoolServers().get(request.getPoolPath());
         List<HostInfo> sortedServers = new ArrayList<HostInfo>();
         if(servers != null && servers.size() > 0){
@@ -26,12 +26,12 @@ public class ResourceIdleStrategy implements ServerSelectStrategy{
             }
             Collections.sort(sortedServers);
             if(sortedServers != null && sortedServers.size() > 0) {
-                if(lastFailedServers == null || lastFailedServers.length == 0) {
+                if(lastFailedHosts == null || lastFailedHosts.length == 0) {
                     return sortedServers.get(0).getHostName();
                 }else {
                     //任务重试会选择没有失败并且资源最多的server,如果没有可用server就抛出异常
                     List<HostInfo> runningServers = sortedServers.stream().filter(
-                            hostInfo -> !Arrays.asList(lastFailedServers).contains(hostInfo.getHostName()))
+                            hostInfo -> !Arrays.asList(lastFailedHosts).contains(hostInfo.getHostName()))
                             .collect(Collectors.toList());
                     if(runningServers != null && runningServers.size() > 0) {
                         return runningServers.get(0).getHostName();

@@ -1,12 +1,15 @@
 package com.yl.distribute.scheduler.server.handler;
 
+import java.lang.reflect.Proxy;
 import java.net.InetSocketAddress;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import com.yl.distribute.scheduler.common.bean.TaskRequest;
-import com.yl.distribute.scheduler.server.processor.TaskCall;
-import com.yl.distribute.scheduler.server.processor.TaskProcessor;
+import com.yl.distribute.scheduler.server.processor.IServerProcessor;
+import com.yl.distribute.scheduler.server.processor.ProcessorManager;
+import com.yl.distribute.scheduler.server.processor.ProcessorProxy;
+import com.yl.distribute.scheduler.server.processor.TaskManager;
+
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 
@@ -30,6 +33,20 @@ public class TaskServerHandler extends SimpleChannelInboundHandler<TaskRequest> 
 
     @Override
     public void channelRead0(ChannelHandlerContext ctx, TaskRequest task) throws Exception {
-        TaskProcessor.addTask(new TaskCall(ctx,task));
+        TaskManager.addTask(task);
+        process(ctx,task);
     } 
+    
+    private void process(ChannelHandlerContext ctx, TaskRequest task) {
+        Class<?> cls = ProcessorManager.getProcessor(task.getJob().getJobType());
+        IServerProcessor processor = null;
+        try {
+            processor = (IServerProcessor) cls.getConstructor(task.getClass()).newInstance(task);
+        } catch (Exception e) { 
+            LOG.error(e);
+        }    
+        IServerProcessor processorProxy = (IServerProcessor)Proxy.newProxyInstance(processor.getClass().getClassLoader(), processor
+                .getClass().getInterfaces(), new ProcessorProxy(processor));  
+        processorProxy.execute(ctx);
+    }
 }

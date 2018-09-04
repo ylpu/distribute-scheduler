@@ -134,8 +134,8 @@ public class JobDriver {
         task.setJob(job);
         task.setStartTime(new Date());
         task.setEndTime(null);
-        task.setLastFailedServer("");
-        task.setRunningServer("");
+        task.setLastFailedHost("");
+        task.setRunningHost("");
         task.setFailedTimes(0);
         task.setStdOutputUrl("");
         task.setErrorOutputUrl("");

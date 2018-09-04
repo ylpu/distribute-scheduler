@@ -51,23 +51,25 @@ public class SchedulerClientPool {
         };
     }
     
-    public synchronized SimpleChannelPool getChannelPool(String poolPath,String serverName) {
-        SimpleChannelPool channelPool = channelPoolMap.get(serverName);
+    public synchronized SimpleChannelPool getChannelPool(String poolPath,String idleHost) {
+        SimpleChannelPool channelPool = channelPoolMap.get(idleHost);
         if(channelPool == null) {
             
             Properties prop = Configuration.getConfig("config.properties");        
             int poolNumber = Configuration.getInt(prop, "channel.pool.numbers");
-            String zkServers = Configuration.getString(prop, "zk.server.list");
-            
-            SchedulerClientPool clientPool = SchedulerClientPool.getInstance();
-            HostInfo serverData = ZKHelper.getClient(zkServers).readData(poolPath + "/" + serverName);
-            clientPool.build(poolNumber);
-            
-            String hostName = serverData.getIp().split(":")[0];
-            int port = NumberUtils.toInt(serverData.getIp().split(":")[1]);
-            SimpleChannelPool pool = clientPool.poolMap.get(new InetSocketAddress(hostName,port));                
-            channelPoolMap.put(serverName, pool);
-            channelPool = channelPoolMap.get(serverName);
+            String zkServers = Configuration.getString(prop, "zk.server.list");            
+
+            HostInfo hostInfo = ZKHelper.getClient(zkServers).readData(poolPath + "/" + idleHost);
+            if(hostInfo != null) {
+                String hostName = hostInfo.getHostName().split(":")[0];
+                int port = NumberUtils.toInt(hostInfo.getHostName().split(":")[1]);
+                
+                SchedulerClientPool clientPool = SchedulerClientPool.getInstance();            
+                clientPool.build(poolNumber);
+                SimpleChannelPool pool = clientPool.poolMap.get(new InetSocketAddress(hostName,port));                
+                channelPoolMap.put(idleHost, pool);
+                channelPool = pool; 
+            }
         }
         return channelPool;
       }

@@ -61,7 +61,6 @@ public class StringUtils {
         while(iterator.hasNext()) {
             Entry<String, HostInfo> entry = iterator.next();
             builder.append(entry.getKey() + " : [");
-            builder.append("ip : " + entry.getValue().getIp() + ", ");
             builder.append("availableCores : " + entry.getValue().getAvailableCores() + ", ");
             builder.append("availableMemory : " + entry.getValue().getAvailableMemory() + ", ");
             builder.append("totalCores : " + entry.getValue().getTotalCores() + ", ");

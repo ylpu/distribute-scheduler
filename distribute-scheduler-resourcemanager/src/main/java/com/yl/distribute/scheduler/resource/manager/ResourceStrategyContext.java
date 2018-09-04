@@ -4,13 +4,13 @@ import com.yl.distribute.scheduler.common.bean.JobConf;
 
 public class ResourceStrategyContext {
     
-    private ServerSelectStrategy strategy;
+    private HostSelectStrategy strategy;
     
-    public ResourceStrategyContext(ServerSelectStrategy strategy) {
+    public ResourceStrategyContext(HostSelectStrategy strategy) {
         this.strategy = strategy;
     }
     
-    public String select(ResourceManager rm,JobConf input,String... lastFailedServers) {
-        return strategy.getIdleServer(rm,input,lastFailedServers);
+    public String select(ResourceManager rm,JobConf input,String... lastFailedHosts) {
+        return strategy.getIdleHost(rm,input,lastFailedHosts);
     }
 }

@@ -16,10 +16,10 @@ import com.yl.distribute.scheduler.common.bean.JobConf;
  * 从pool中选择任务最少的一台机器提交任务
  *
  */
-public class TaskIdleStrategy implements ServerSelectStrategy{
+public class TaskIdleStrategy implements HostSelectStrategy{
 
     @Override
-    public String getIdleServer(ResourceManager rm,JobConf request,String... lastFailedServers) {
+    public String getIdleHost(ResourceManager rm,JobConf request,String... lastFailedHosts) {
         
         List<String> poolServers = rm.getPoolServers().get(request.getPoolPath());
         Map<String, Integer>  poolServerTasks = new HashMap<String, Integer>();
@@ -44,7 +44,7 @@ public class TaskIdleStrategy implements ServerSelectStrategy{
         if(taskSortlist != null && taskSortlist.size() > 0) {
             
             List<Entry<String, Integer>> runningServers = taskSortlist.stream().filter(
-                    entry -> !Arrays.asList(lastFailedServers).contains(entry.getKey()))
+                    entry -> !Arrays.asList(lastFailedHosts).contains(entry.getKey()))
                     .collect(Collectors.toList());
             if(runningServers != null && runningServers.size() > 0) {
                 return resourceMap.get(runningServers.get(runningServers.size()-1).getKey()).getHostName();

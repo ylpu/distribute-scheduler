@@ -49,8 +49,8 @@ public class TaskCallback{
         newTask.setJob(task.getJob());
         newTask.setStartTime(new Date());
         newTask.setEndTime(null);
-        newTask.setLastFailedServer(task.getRunningServer());
-        newTask.setRunningServer("");
+        newTask.setLastFailedHost(task.getRunningHost());
+        newTask.setRunningHost("");
         newTask.setFailedTimes(task.getFailedTimes() + 1);
         newTask.setStdOutputUrl("");
         newTask.setErrorOutputUrl("");

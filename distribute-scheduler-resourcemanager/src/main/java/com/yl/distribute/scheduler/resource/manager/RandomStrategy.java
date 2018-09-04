@@ -9,9 +9,9 @@ import com.yl.distribute.scheduler.common.bean.JobConf;
  * 从pool中随机选一台机器去提交任务
  *
  */
-public class RandomStrategy implements ServerSelectStrategy{
+public class RandomStrategy implements HostSelectStrategy{
     @Override
-    public String getIdleServer(ResourceManager rm,JobConf request,String... lastFailedServers) {
+    public String getIdleHost(ResourceManager rm,JobConf request,String... lastFailedHosts) {
         List<String> servers = rm.getPoolServers().get(request.getPoolPath());
         String idleServer = "";
         if(servers != null && servers.size() > 0){

@@ -29,7 +29,7 @@ public class TaskClient {
 
     
     private TaskClient() {
-        new ServerDisconnectedListener().init();
+        new PoolChangeListener().init();
     }
     
     public static TaskClient getInstance() {
@@ -44,13 +44,13 @@ public class TaskClient {
             }
             
             ResourceService service = ResourceProxy.get(ResourceService.class);
-            String idleServer = service.getIdleServer(task.getJob(),task.getLastFailedServer());    
-            if(StringUtils.isBlank(idleServer)) {
+            String idleHost = service.getIdleHost(task.getJob(),task.getLastFailedHost());    
+            if(StringUtils.isBlank(idleHost)) {
                 throw new RuntimeException("can not get idle server to submit task");
             }
-            task.setRunningServer(idleServer);  
+            task.setRunningHost(idleHost);  
             
-            SimpleChannelPool channelPool = SchedulerClientPool.getInstance().getChannelPool(task.getJob().getPoolPath(),idleServer);
+            SimpleChannelPool channelPool = SchedulerClientPool.getInstance().getChannelPool(task.getJob().getPoolPath(),idleHost);
             Future<Channel> f = null;
             f = channelPool.acquire(); 
             
@@ -63,11 +63,11 @@ public class TaskClient {
                         @Override
                         public void operationComplete(ChannelFuture future) throws Exception {
                             if(future.isSuccess()) {
-                                LOG.info("提交任务" + task.getTaskId() + "-" + task.getId() + "到" + idleServer);                                
-                                service.subResource(idleServer, task.getJob());  
-                                service.increaseTask(idleServer);
+                                LOG.info("提交任务" + task.getTaskId() + "-" + task.getId() + "到" + idleHost);                                
+                                service.subResource(idleHost, task.getJob());  
+                                service.increaseTask(idleHost);
                             } else {  
-                            	LOG.error("提交任务" + task.getTaskId() + "-" + task.getId() + "到" + idleServer + "失败");  
+                            	LOG.error("提交任务" + task.getTaskId() + "-" + task.getId() + "到" + idleHost + "失败");  
                             }                                
                         }  
                     });                  

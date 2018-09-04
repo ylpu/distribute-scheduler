@@ -1,7 +1,6 @@
 package com.yl.distribute.scheduler.resource.manager;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -27,10 +26,10 @@ public class ResourceManager{
     //key is machine pool name,value is server list
     public Map<String,List<String>> poolServers = new ConcurrentHashMap<String,List<String>>(); 
     
-    //key is servername,value is host info
+    //key is hostname,value is host info
     public Map<String,HostInfo> resourceMap = new HashMap<String,HostInfo>();   
     
-    //key is servername,value is tasknumbers
+    //key is hostname,value is tasknumbers
     public Map<String,Integer> taskMap = new HashMap<String,Integer>();
         
     
@@ -51,111 +50,103 @@ public class ResourceManager{
         List<String> pools = zkClient.getChildren(rootPool);
         if(pools != null && pools.size() > 0) {
             for(String poolName : pools) {
-                initPool(zkClient,rootPool + "/" + poolName);
-                addNodeChangeListener(zkClient,rootPool + "/" + poolName);  
+                String poolPath = rootPool + "/" + poolName;
+                initPool(zkClient,poolPath);
+                addNodeChangeListener(zkClient,poolPath);  
             }
         }
     }
     
-    private void initPool(ZkClient zkClient,String path) {
-        List<String> childs = zkClient.getChildren(path);  
-        List<String> servers = new ArrayList<String>();
-        servers = poolServers.get(path);
+    private void initPool(ZkClient zkClient,String poolPath) {          
+        List<String> servers = poolServers.get(poolPath);
         if(servers == null) {
             servers = new ArrayList<String>();
-            poolServers.put(path, servers);
+            poolServers.put(poolPath, servers);
         }
-        if(childs != null && childs.size() > 0) {
-            for(String childPath : childs) { 
-                servers.add(childPath);  
-                addServers(zkClient,path,Arrays.asList(childPath));
+        List<String> children = zkClient.getChildren(poolPath);
+        if(children != null && children.size() > 0) {
+            for(String nodePath : children) { 
+                servers.add(nodePath);  
+                setResource(zkClient,poolPath,nodePath);
             }
         }         
     }
     /**
      * zk中节点有变动更新pool中机器
      * @param zkClient
-     * @param path
+     * @param poolPath
      */
-    public void addNodeChangeListener(final ZkClient zkClient,final String path) {
-        List<String> oldChilds = new ArrayList<String>();
-        if(poolServers.get(path) != null) {
-            for(String childPath : poolServers.get(path)) {
-                oldChilds.add(childPath);
+    public void addNodeChangeListener(final ZkClient zkClient,final String poolPath) {
+        List<String> oldChildren = new ArrayList<String>();
+        List<String> children = zkClient.getChildren(poolPath);        
+        if(children != null && children.size() > 0) {
+            for(String childPath : children) {
+                oldChildren.add(childPath);
             }
         }
-        zkClient.subscribeChildChanges(path, new IZkChildListener() {              
-            public void handleChildChange(String parentPath, List<String> currentChilds) throws Exception { 
-                LOG.warn(String.format("[ZookeeperRegistry] service list change: path=%s, currentChilds=%s",
-                        parentPath, currentChilds.toString())); 
-                refreshPool(zkClient,parentPath,oldChilds,currentChilds); 
-                resetOldChild(oldChilds,currentChilds);
-                System.out.println("Servers: " + poolServers.get(path).toString());  
+        zkClient.subscribeChildChanges(poolPath, new IZkChildListener() {              
+            public void handleChildChange(String parentPath, List<String> currentChildren) throws Exception { 
+                LOG.warn(String.format("[ZookeeperRegistry] service list change: path=%s, currentChildren=%s",
+                        parentPath, currentChildren.toString())); 
+                refreshPool(zkClient,parentPath,oldChildren,currentChildren); 
+                resetOldChild(oldChildren,currentChildren);
             }  
         });          
     }  
     /**
      * 把新的节点付给老的节点
-     * @param oldChilds
-     * @param currentChilds
+     * @param oldChildren
+     * @param currentChildren
      */
-    private void resetOldChild(List<String> oldChilds,List<String> currentChilds) {
-        oldChilds.clear();
-        if(currentChilds != null && currentChilds.size() > 0) {
-            for(String child : currentChilds) {
-                oldChilds.add(child);
+    private void resetOldChild(List<String> oldChildren,List<String> currentChildren) {
+        oldChildren.clear();
+        if(currentChildren != null && currentChildren.size() > 0) {
+            for(String child : currentChildren) {
+                oldChildren.add(child);
             }
         }
     }
     /**
      * 刷新pool
-     * 给新节点加上channel池
-     * 关闭断掉的节点连接池
      * @param zkClient
-     * @param parentPath
-     * @param oldChilds
-     * @param currentChilds
+     * @param poolPath
+     * @param oldChildren
+     * @param currentChildren
      */
-    public synchronized void refreshPool(ZkClient zkClient,String parentPath,List<String> oldChilds,final List<String> currentChilds) {
-        List<String> servers = poolServers.get(parentPath);
-        servers.clear();  
-        if(currentChilds != null && currentChilds.size() > 0) {
-            for(String child : currentChilds) {  
-                servers.add(child);  
-            }
-        }        
-        List<String> newChilds = getNewChilds(oldChilds,currentChilds);
-        addServers(zkClient,parentPath,newChilds);
-        List<String> disconnectedChilds = getDisconnectedChilds(oldChilds,currentChilds);
-        removeServers(disconnectedChilds);
+    public synchronized void refreshPool(ZkClient zkClient,String poolPath,List<String> oldChildren,List<String> currentChildren) { 
+        poolServers.put(poolPath, currentChildren);
+        List<String> newChildren = getNewChildren(oldChildren,currentChildren);
+        setResource(zkClient,poolPath,newChildren.toArray(new String[newChildren.size()]));
+        List<String> disconnectedChildren = getRemovedChildren(oldChildren,currentChildren);
+        removeResource(disconnectedChildren);
     }
     
-    private List<String> getDisconnectedChilds(List<String> oldChilds,List<String> currentChilds){
-        return oldChilds.stream().filter(t-> !currentChilds.contains(t)).collect(Collectors.toList());
+    private List<String> getRemovedChildren(List<String> oldChildren,List<String> currentChildren){
+        return oldChildren.stream().filter(t-> !currentChildren.contains(t)).collect(Collectors.toList());
     }
     
-    private List<String> getNewChilds(List<String> oldChilds,List<String> currentChilds){
-        return currentChilds.stream().filter(t-> !oldChilds.contains(t)).collect(Collectors.toList());
+    private List<String> getNewChildren(List<String> oldChildren,List<String> currentChildren){
+        return currentChildren.stream().filter(t-> !oldChildren.contains(t)).collect(Collectors.toList());
     }
     
-    private synchronized void removeServers(List<String> disconnectedChilds) {
-        if(disconnectedChilds != null && disconnectedChilds.size() > 0) {
-            for(String child : disconnectedChilds) {
+    private synchronized void removeResource(List<String> disconnectedChildren) {
+        if(disconnectedChildren != null && disconnectedChildren.size() > 0) {
+            for(String child : disconnectedChildren) {
                 resourceMap.remove(child);
             }
         }
     }
     /**
-     * 为每台机器添加固定个channel池
+     * 为每台机器添加资源信息
      * @param zkClient
-     * @param path
-     * @param childs
+     * @param poolPath
+     * @param children
      */
-    private synchronized void addServers(ZkClient zkClient,String path,List<String> childs) {
-        if(childs != null && childs.size() > 0) {
-            for(String child : childs) {                
-                HostInfo serverData = zkClient.readData(path + "/" + child);             
-                resourceMap.put(child, serverData);     
+    private synchronized void setResource(ZkClient zkClient,String poolPath,String... children) {
+        if(children != null && children.length > 0) {
+            for(String child : children) {                
+                HostInfo hostInfo = zkClient.readData(poolPath + "/" + child);             
+                resourceMap.put(child, hostInfo);     
             }
         }
     }
@@ -219,15 +210,15 @@ public class ResourceManager{
     /**
      * 根据策略获取pool中的空闲机器 
      * @param input
-     * @param lastFailedServer
+     * @param lastFailedHosts
      * @return
      */
-    public synchronized String getIdleServer(JobConf input,String... lastFailedServers) {
-        ServerSelectStrategy serverSelectStrategy = ResourceStrategy.getStrategy(input.getStrategy());
-        if(serverSelectStrategy == null){
+    public synchronized String getIdleHost(JobConf input,String... lastFailedHosts) {
+        HostSelectStrategy hostSelectStrategy = ResourceStrategy.getStrategy(input.getStrategy());
+        if(hostSelectStrategy == null){
             throw new RuntimeException("can not find strategy class for " + input.getStrategy());
         }
-        return new ResourceStrategyContext(serverSelectStrategy).select(this,input,lastFailedServers);
+        return new ResourceStrategyContext(hostSelectStrategy).select(this,input,lastFailedHosts);
 
     }
 

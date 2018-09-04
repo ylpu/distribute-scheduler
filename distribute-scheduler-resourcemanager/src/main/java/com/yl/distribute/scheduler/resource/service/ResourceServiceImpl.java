@@ -10,8 +10,8 @@ import com.yl.distribute.scheduler.resource.manager.ResourceManager;
 public class ResourceServiceImpl implements ResourceService{
 
     @Override
-    public String getIdleServer(JobConf input, String... lastFailedServer) {
-        return ResourceManager.getInstance().getIdleServer(input, lastFailedServer);
+    public String getIdleHost(JobConf input, String... lastFailedHosts) {
+        return ResourceManager.getInstance().getIdleHost(input, lastFailedHosts);
     }
     
     public void addResource(String serverName,JobConf jobConf) {

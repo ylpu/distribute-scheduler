@@ -24,7 +24,8 @@ public class ResourceServerProcessor {
             Object result = invoke(request);
             response.setResult(result);
         } catch (Exception e) {
-            response.setError(e.getMessage());
+            response.setErrorCode(500);
+            response.setErrorMsg(e.getMessage());
         }
         ctx.writeAndFlush(response);
     }

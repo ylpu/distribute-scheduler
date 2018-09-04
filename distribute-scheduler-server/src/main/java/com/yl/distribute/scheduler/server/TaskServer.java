@@ -4,8 +4,8 @@ import java.io.FileInputStream;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Properties;
-import java.util.concurrent.LinkedBlockingQueue;
 import org.I0Itec.zkclient.ZkClient;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.apache.commons.logging.Log;
@@ -23,8 +23,7 @@ import com.yl.distribute.scheduler.core.resource.rpc.ResourceProxy;
 import com.yl.distribute.scheduler.core.resource.service.ResourceService;
 import com.yl.distribute.scheduler.core.zk.ZKHelper;
 import com.yl.distribute.scheduler.server.handler.TaskServerHandler;
-import com.yl.distribute.scheduler.server.processor.TaskCall;
-import com.yl.distribute.scheduler.server.processor.TaskProcessor;
+import com.yl.distribute.scheduler.server.processor.TaskManager;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelInitializer;
@@ -44,10 +43,10 @@ public class TaskServer {
     
     private static Log LOG = LogFactory.getLog(TaskServer.class);
     
-    private int zkPort;
+    private int serverPort;
     
-    public TaskServer(int zkPort) {
-        this.zkPort = zkPort;
+    public TaskServer(int serverPort) {
+        this.serverPort = serverPort;
     }
     
     public void start() throws Exception {
@@ -71,7 +70,7 @@ public class TaskServer {
                     })
                     .option(ChannelOption.SO_BACKLOG, 128)
                     .childOption(ChannelOption.SO_KEEPALIVE, true);
-            ChannelFuture future = b.bind(zkPort).sync();
+            ChannelFuture future = b.bind(serverPort).sync();
             future.channel().closeFuture().sync();
         } finally {
             bossGroup.shutdownGracefully();
@@ -99,8 +98,8 @@ public class TaskServer {
         hostInfo.setTotalMemory(MetricsUtils.getMemInfo());
         hostInfo.setAvailableCores(MetricsUtils.getAvailiableProcessors());
         hostInfo.setAvailableMemory(MetricsUtils.getMemInfo());
-        hostInfo.setIp(MetricsUtils.getHostIpAddress() + ":" + zkPort);
-        hostInfo.setHostName(MetricsUtils.getHostName() + "-" + zkPort);
+        hostInfo.setIp(MetricsUtils.getHostIpAddress() + ":" + serverPort);
+        hostInfo.setHostName(MetricsUtils.getHostName() + ":" + serverPort);
     }
     
     /**
@@ -128,29 +127,29 @@ public class TaskServer {
     }  
     
     /**
-     * 系统异常结束释放资源并更新任务状态
+     * 系统异常结束释放资源并更新任务状态为失败
      * @throws Exception
      */
     public void addShutDownHook() throws Exception {
         Runtime.getRuntime().addShutdownHook(
         new Thread(new Runnable() {
             public void run(){   
-                TaskCall call = null;
-                LinkedBlockingQueue<TaskCall> queue = TaskProcessor.getQueue();
-                while ((call = queue.poll()) != null) {            
-                    LOG.info("start to release resource for " + call.getTask().getRunningServer());
-                    releaseResource(call);
-                    updateTask(call.getTask());
-             }
+                Map<String,TaskRequest> taskMap = TaskManager.getTaskMap();
+                if(taskMap != null && taskMap.size() > 0) {
+                    for(Entry<String, TaskRequest> entry : taskMap.entrySet()) {
+                        releaseResource(entry.getValue());
+                        updateTask(entry.getValue());
+                    }
+                }       
           }
       }));
     }
     
-    private void releaseResource(TaskCall call) {
-        LOG.info("start to release resource for " + call.getTask().getRunningServer());
+    private void releaseResource(TaskRequest task) {
+        LOG.info("start to release resource for " + task.getRunningHost());
         ResourceService service = ResourceProxy.get(ResourceService.class);
-        service.addResource(call.getTask().getRunningServer(), call.getTask().getJob());
-        service.decreaseTask(call.getTask().getRunningServer());
+        service.addResource(task.getRunningHost(), task.getJob());
+        service.decreaseTask(task.getRunningHost());
     }
     /**
      * server异常终止更新任务为失败
@@ -167,8 +166,8 @@ public class TaskServer {
     }
     
     public static void start(Map<String,Object> parameterMap) throws Exception{
-        String path = parameterMap.get("poolPath") + MetricsUtils.getHostName() + "-" + parameterMap.get("zkPort").toString(); 
-        TaskServer server = new TaskServer(NumberUtils.toInt(parameterMap.get("zkPort").toString()));
+        String path = parameterMap.get("serverPoolPath") + MetricsUtils.getHostName() + ":" + parameterMap.get("serverPort").toString(); 
+        TaskServer server = new TaskServer(NumberUtils.toInt(parameterMap.get("serverPort").toString()));
         server.regServer(parameterMap.get("zkServers").toString(),path);
         server.startJettyServer(NumberUtils.toInt(parameterMap.get("jettyPort").toString()));
         server.addShutDownHook();
@@ -177,20 +176,20 @@ public class TaskServer {
     
     public static void main(String[] args) throws Exception {
         Properties prop = Configuration.getConfig("config.properties");        
-        int zkPort = Configuration.getInt(prop, "zk.regist.default.port");
-        int jettyPort = Configuration.getInt(prop, "jetty.server.port");
-        String poolPath = Configuration.getString(prop, "zk.regist.default.pool.path");
+        int serverPort = Configuration.getInt(prop, "server.regist.default.port");
+        String serverPoolPath = Configuration.getString(prop, "server.regist.default.pool.path");
+        int jettyPort = Configuration.getInt(prop, "jetty.server.port");       
         
         if (args.length > 1) {           
-           zkPort = NumberUtils.toInt(args[0],zkPort);   
-           poolPath = args[1];             
+            serverPort = NumberUtils.toInt(args[0],serverPort);   
+            serverPoolPath = args[1];             
         }
         
         String zkServers = Configuration.getString(prop, "zk.server.list");
         Map<String,Object> parameterMap = new HashMap<String,Object>();
-        parameterMap.put("zkPort", zkPort);
-        parameterMap.put("jettyPort", jettyPort);
-        parameterMap.put("poolPath", poolPath);
+        parameterMap.put("serverPort", serverPort);
+        parameterMap.put("serverPoolPath", serverPoolPath);
+        parameterMap.put("jettyPort", jettyPort);        
         parameterMap.put("zkServers", zkServers);
         start(parameterMap);   
     }

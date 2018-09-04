@@ -8,12 +8,9 @@ public class ResourceResponse implements Serializable {
      */
     private static final long serialVersionUID = 1L;
     private Long id;
-    private String error;
+    private int errorCode = 200;
+    private String errorMsg;
     private Object result;
- 
-    public boolean isError() {
-        return error != null;
-    }
  
     public Long getId() {
         return id;
@@ -21,16 +18,24 @@ public class ResourceResponse implements Serializable {
 
     public void setId(Long id) {
         this.id = id;
+    }    
+    
+    public int getErrorCode() {
+        return errorCode;
     }
 
-    public String getError() {
-        return error;
+    public void setErrorCode(int errorCode) {
+        this.errorCode = errorCode;
     }
- 
-    public void setError(String error) {
-        this.error = error;
+
+    public String getErrorMsg() {
+        return errorMsg;
     }
- 
+
+    public void setErrorMsg(String errorMsg) {
+        this.errorMsg = errorMsg;
+    }
+
     public Object getResult() {
         return result;
     }

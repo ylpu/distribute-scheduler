@@ -31,8 +31,10 @@ public class ProcessorProxy implements InvocationHandler{
             LOG.error(e);
             throw new RuntimeException(e);
         }finally {
-            try {
-                restoreTaskAndResource(task);
+            try {                
+                releaseResource(task);
+                //释放资源后清理任务
+                TaskManager.removeTask(task.getId());
             } catch (Exception e) {
                 LOG.error(e);
                 throw new RuntimeException(e);
@@ -41,10 +43,10 @@ public class ProcessorProxy implements InvocationHandler{
         return null;
     }
     
-    private void restoreTaskAndResource(TaskRequest task) {
-        LOG.info("start to release resource for " + task.getRunningServer());
+    private void releaseResource(TaskRequest task) {
+        LOG.info("start to release resource for " + task.getRunningHost());
         ResourceService service = ResourceProxy.get(ResourceService.class);
-        service.addResource(task.getRunningServer(), task.getJob());
-        service.decreaseTask(task.getRunningServer());
+        service.addResource(task.getRunningHost(), task.getJob());
+        service.decreaseTask(task.getRunningHost());
     }
 }
