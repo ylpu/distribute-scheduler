@@ -8,6 +8,7 @@ import com.yl.distribute.scheduler.common.bean.TaskRequest;
 import com.yl.distribute.scheduler.server.processor.IServerProcessor;
 import com.yl.distribute.scheduler.server.processor.ProcessorManager;
 import com.yl.distribute.scheduler.server.processor.ProcessorProxy;
+import com.yl.distribute.scheduler.server.processor.TaskCall;
 import com.yl.distribute.scheduler.server.processor.TaskManager;
 
 import io.netty.channel.ChannelHandlerContext;
@@ -33,7 +34,7 @@ public class TaskServerHandler extends SimpleChannelInboundHandler<TaskRequest> 
 
     @Override
     public void channelRead0(ChannelHandlerContext ctx, TaskRequest task) throws Exception {
-        TaskManager.addTask(task);
+        TaskManager.addTask(new TaskCall(ctx,task));
         process(ctx,task);
     } 
     

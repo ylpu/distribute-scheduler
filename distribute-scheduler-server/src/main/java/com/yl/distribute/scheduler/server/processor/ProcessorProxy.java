@@ -31,10 +31,9 @@ public class ProcessorProxy implements InvocationHandler{
             LOG.error(e);
             throw new RuntimeException(e);
         }finally {
-            try {                
+            try {
+                TaskManager.removeTask(task);
                 releaseResource(task);
-                //释放资源后清理任务
-                TaskManager.removeTask(task.getId());
             } catch (Exception e) {
                 LOG.error(e);
                 throw new RuntimeException(e);

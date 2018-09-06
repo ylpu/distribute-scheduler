@@ -5,6 +5,8 @@ import org.I0Itec.zkclient.ZkClient;
 import org.apache.zookeeper.CreateMode;
 import org.apache.zookeeper.KeeperException;
 import org.apache.zookeeper.ZooDefs.Ids;
+import com.yl.distribute.scheduler.common.bean.HostInfo;
+import com.yl.distribute.scheduler.common.utils.MetricsUtils;
 
 public class ZKHelper {
     
@@ -18,16 +20,24 @@ public class ZKHelper {
         return new ZkClient(zkServers, 60000, 1000,new ZkObjectSerializer());
     }
     
-    public static void createNode(ZkClient zk,String node,byte[] data){
-        createNode(zk,node,data,CreateMode.PERSISTENT);
+    public static void createNode(ZkClient zk,String path,Object data){
+        createNode(zk,path,data,CreateMode.PERSISTENT);
     }
     
-    public static void createEphemeralNode(ZkClient zk,String node,byte[] data){
-        createNode(zk,node,data,CreateMode.EPHEMERAL);
+    public static void createEphemeralNode(ZkClient zk,String path,byte[] data){
+        createNode(zk,path,data,CreateMode.EPHEMERAL);
     }
     
-    public static void createNode(ZkClient zk,String node,byte[] data,CreateMode mode){
-        zk.create(node,data,Ids.OPEN_ACL_UNSAFE,mode);
+    public static void createNode(ZkClient zk,String path,Object data,CreateMode mode){
+        zk.create(path,data,Ids.OPEN_ACL_UNSAFE,mode);
+    }
+    
+    public static void setData(ZkClient zk,String path,Object data){
+        zk.writeData(path, data);
+    }
+    
+    public static Object getData(ZkClient zk,String path){
+        return zk.readData(path, true);
     }
     
     public static void delete(ZkClient zk,String path){
@@ -36,6 +46,28 @@ public class ZKHelper {
     
     public static void main(String[] args) throws IOException, KeeperException, InterruptedException{
        ZkClient zkClient = ZKHelper.getClient();
-       ZKHelper.delete(zkClient,"/root/defaultpool/BIH-D-6253-8081");
+       HostInfo hostInfo = new HostInfo();
+       hostInfo.setTotalCores(MetricsUtils.getAvailiableProcessors());
+       hostInfo.setTotalMemory(MetricsUtils.getMemInfo());
+       hostInfo.setAvailableCores(MetricsUtils.getAvailiableProcessors());
+       hostInfo.setAvailableMemory(MetricsUtils.getMemInfo());
+       hostInfo.setIp(MetricsUtils.getHostIpAddress() + ":" + 8081);
+       hostInfo.setHostName(MetricsUtils.getHostName() + ":" + 8081);
+       zkClient.createEphemeral("/root/pool1/BIH-D-6253:8081", hostInfo);
+       
+       
+       HostInfo hostInfo1 = new HostInfo();
+       hostInfo1.setTotalCores(MetricsUtils.getAvailiableProcessors());
+       hostInfo1.setTotalMemory(MetricsUtils.getMemInfo());
+       hostInfo1.setAvailableCores(MetricsUtils.getAvailiableProcessors());
+       hostInfo1.setAvailableMemory(MetricsUtils.getMemInfo());
+       hostInfo1.setIp(MetricsUtils.getHostIpAddress() + ":" + 8083);
+       hostInfo1.setHostName(MetricsUtils.getHostName() + ":" + 8083);
+       
+       ZKHelper.setData(zkClient, "/root/pool1/BIH-D-6253:8081", hostInfo1);
+       HostInfo obj = (HostInfo) ZKHelper.getData(zkClient, "/root/pool1/BIH-D-6253:8081");
+       System.out.println(obj.getHostName());
+       
+       ZKHelper.delete(zkClient, "/root/pool1/BIH-D-6253:8081");
     }
 }

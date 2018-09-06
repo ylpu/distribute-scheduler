@@ -15,17 +15,18 @@ import org.eclipse.jetty.webapp.WebAppContext;
 import org.eclipse.jetty.xml.XmlConfiguration;
 import com.yl.distribute.scheduler.common.bean.HostInfo;
 import com.yl.distribute.scheduler.common.bean.TaskRequest;
+import com.yl.distribute.scheduler.common.bean.TaskResponse;
 import com.yl.distribute.scheduler.common.enums.TaskStatus;
 import com.yl.distribute.scheduler.common.utils.MetricsUtils;
 import com.yl.distribute.scheduler.core.config.Configuration;
 import com.yl.distribute.scheduler.core.jersey.JerseyClient;
-import com.yl.distribute.scheduler.core.resource.rpc.ResourceProxy;
-import com.yl.distribute.scheduler.core.resource.service.ResourceService;
 import com.yl.distribute.scheduler.core.zk.ZKHelper;
 import com.yl.distribute.scheduler.server.handler.TaskServerHandler;
+import com.yl.distribute.scheduler.server.processor.TaskCall;
 import com.yl.distribute.scheduler.server.processor.TaskManager;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.ChannelFuture;
+import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelOption;
 import io.netty.channel.EventLoopGroup;
@@ -134,22 +135,25 @@ public class TaskServer {
         Runtime.getRuntime().addShutdownHook(
         new Thread(new Runnable() {
             public void run(){   
-                Map<String,TaskRequest> taskMap = TaskManager.getTaskMap();
+                Map<TaskRequest,ChannelHandlerContext> taskMap = TaskManager.getTaskMap();
                 if(taskMap != null && taskMap.size() > 0) {
-                    for(Entry<String, TaskRequest> entry : taskMap.entrySet()) {
-                        releaseResource(entry.getValue());
-                        updateTask(entry.getValue());
+                    for(Entry<TaskRequest,ChannelHandlerContext> entry : taskMap.entrySet()) {                        
+                        writeResponse(new TaskCall(entry.getValue(),entry.getKey()));
+                        updateTask(entry.getKey());
                     }
                 }       
           }
       }));
     }
     
-    private void releaseResource(TaskRequest task) {
-        LOG.info("start to release resource for " + task.getRunningHost());
-        ResourceService service = ResourceProxy.get(ResourceService.class);
-        service.addResource(task.getRunningHost(), task.getJob());
-        service.decreaseTask(task.getRunningHost());
+    private void writeResponse(TaskCall call) {
+        TaskResponse response = new TaskResponse();
+        response.setId(call.getTaskRequest().getId());
+        response.setTaskId(call.getTaskRequest().getTaskId());   
+        response.setFailedTimes(call.getTaskRequest().getFailedTimes());
+        response.setJobConf(call.getTaskRequest().getJob());
+        response.setTaskStatus(TaskStatus.FAILED);                  
+        call.getCtx().writeAndFlush(response);
     }
     /**
      * server异常终止更新任务为失败

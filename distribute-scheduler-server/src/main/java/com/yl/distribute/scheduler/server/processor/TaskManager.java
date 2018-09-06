@@ -4,28 +4,26 @@ import java.util.HashMap;
 import java.util.Map;
 import com.yl.distribute.scheduler.common.bean.TaskRequest;
 
+import io.netty.channel.ChannelHandlerContext;
+
 /**
  * 任务管理
  *
  */
 public class TaskManager {    
     
-    private static Map<String,TaskRequest> taskMap = new HashMap<String,TaskRequest>();
+    private static Map<TaskRequest,ChannelHandlerContext> taskMap = new HashMap<TaskRequest,ChannelHandlerContext>();
     
 
-    public static void addTask(TaskRequest task) {
-        taskMap.put(task.getId(), task);
+    public static void addTask(TaskCall call) {
+        taskMap.put(call.getTaskRequest(), call.getCtx());
     }
 
-    public static void removeTask(String id) {
-        taskMap.remove(id);
+    public static void removeTask(TaskRequest task) {
+        taskMap.remove(task);
     }
     
-    public static Map<String, TaskRequest> getTaskMap() {
+    public static Map<TaskRequest, ChannelHandlerContext> getTaskMap() {
         return taskMap;
-    }
-
-    public static void setTaskMap(Map<String, TaskRequest> taskMap) {
-        TaskManager.taskMap = taskMap;
-    }   
+    }  
 }
