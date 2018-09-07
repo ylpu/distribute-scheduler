@@ -1,5 +1,5 @@
 # Introduction
-distribute-scheduler是yl基于zookeeper和netty自主研发的一款分布式任务调度系统，系统目前支持命令方式和jar方式提交任务，系统提供了根据pool的最优调度，重试，监控，告警等一些列功能。
+distribute-scheduler是基于zookeeper和netty的工作流调度系统，系统目前支持命令方式和jar方式提交任务，系统提供了任务dag解析，pool的最优调度，重试，监控，告警等一些列功能。
 # Architecture
 ![image](https://github.com/ylpu/distribute-scheduler/blob/master/files/arch.png)
 # Component
