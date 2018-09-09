@@ -39,14 +39,14 @@ public class JobDriverTest {
         new JobDriver(rootJob).start();
         
         //模拟5秒a任务执行完成,开始执行b,c
-        Thread.sleep(5000);
+        Thread.sleep(3000);
         
         TaskResponse tr4 = new TaskResponse();
         tr4.setTaskStatus(TaskStatus.SUCCESS);        
         TaskResponseManager.add("a", tr4);
         
         //模拟10秒b,c任务执行完成,开始执行d任务
-        Thread.sleep(10000);
+        Thread.sleep(5000);
         
         TaskResponse tr5 = new TaskResponse();
         tr5.setTaskStatus(TaskStatus.SUCCESS);        

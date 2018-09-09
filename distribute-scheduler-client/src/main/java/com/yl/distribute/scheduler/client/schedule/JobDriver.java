@@ -53,33 +53,28 @@ public class JobDriver {
         if(job == null ) {
             return;
         } 
+        //root任务
         if(job.getJobReleation().getParentJobs() == null) {
-            System.out.println("submit job " + job.getJobId());
-            LOG.info("submit job " + job.getJobId());
-            submitJob(job);
+            if(!jobHasFinished(job)){
+                System.out.println("submit job " + job.getJobId());
+                LOG.info("submit job " + job.getJobId());
+                submitJob(job);
+            }
+            visited.add(job.getJobId());
         }
         if(job.getJobReleation().getChildJobs() != null){
             List<JobConf> childs = job.getJobReleation().getChildJobs();
             for(JobConf jobConf : childs) {
                 startJob(jobConf);
-                //防止重复提交,如a->b,c->d,不检查的话d会被提交两次
                 if(!visited.contains(jobConf.getJobId())) {
-                    //如果父任务没有完成，就推到栈顶，如果完成了就去提交
-                    if(!parentsJobFinished(jobConf)){
-                        stack.push(jobConf);
-                    }
-                    else{
-                        System.out.println("submit job " + jobConf.getJobId());
-                        LOG.info("submit job " + jobConf.getJobId());
-                        submitJob(job);
-                    }
-                }      
-                visited.add(jobConf.getJobId());
+                    stack.push(jobConf);
+                    visited.add(jobConf.getJobId());
+                }                
             }   
         }
     }   
     
-    private boolean parentsJobFinished(JobConf job){
+    private boolean parentJobsHaveFinished(JobConf job){
         if(job.getJobReleation().getParentJobs() == null){
             return true;
         }
@@ -89,13 +84,24 @@ public class JobDriver {
             if(taskResponse == null){
                 return false;
             }
-            if(!((taskResponse.getTaskStatus() == TaskStatus.FAILED && 
-                    taskResponse.getFailedTimes() == taskResponse.getJobConf().getRetryTimes())
-                    || taskResponse.getTaskStatus() == TaskStatus.SUCCESS)){
+            if(!((taskResponse.getTaskStatus() == TaskStatus.FAILED )
+                    || (taskResponse.getTaskStatus() == TaskStatus.SUCCESS))){
                 return false;
             }
         }
         return true;
+    }
+    
+    
+    private boolean jobHasFinished(JobConf job){
+        TaskResponse taskResponse = TaskResponseManager.get(job.getJobId());
+        if(taskResponse != null){            
+            if((taskResponse.getTaskStatus() == TaskStatus.FAILED )
+                    || (taskResponse.getTaskStatus() == TaskStatus.SUCCESS)){
+                return true;
+            }
+        }
+        return false;
     }
     
     private void submitJob(JobConf job) {
@@ -146,17 +152,19 @@ public class JobDriver {
     private final class JobChecker implements Runnable{
 
         public void run() {
-            int submittedJobs = 0;
+            int jobCount = 0;
             //任务是否遍历完
-            while(submittedJobs < visited.size()){
+            while(jobCount < visited.size()-1){
                 if(!stack.empty()){
                     JobConf job = stack.pop();
                     //如果父任务执行完成就提交当前任务，如果没有完成压入栈顶，每隔1秒检查父任务是否完成
-                    if (parentsJobFinished(job)){
-                        System.out.println("submit job " + job.getJobId());
-                        LOG.info("submit job " + job.getJobId());
-                        submitJob(job);
-                        submittedJobs += 1;
+                    if (parentJobsHaveFinished(job)){
+                        if(!jobHasFinished(job)){
+                            System.out.println("submit job " + job.getJobId());
+                            LOG.info("submit job " + job.getJobId());
+                            submitJob(job);
+                        }
+                        jobCount += 1;
                     }else{
                         stack.push(job);
                         try {
@@ -169,6 +177,7 @@ public class JobDriver {
             }  
             //所有任务执行完清除callback
             for(String jobId : visited) {
+                System.out.println("remove job " + jobId);
                 TaskResponseManager.remove(jobId);
             }
         }        
