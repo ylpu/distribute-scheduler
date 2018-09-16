@@ -23,20 +23,14 @@ public class TaskCallback{
     	System.out.println(task.getTaskId() + "-" + task.getId() + "返回状态是" + response.getTaskId() + response.getTaskStatus());
     	LOG.info(task.getTaskId() + "-" + task.getId() + "返回状态是" + response.getTaskId() +  response.getTaskStatus());
     	//根据response中任务的状态来判断dag是否往下执行
-    	TaskResponse taskResponse = TaskResponseManager.get(task.getJob().getJobId());
-        if(taskResponse == null){
-            TaskResponseManager.add(task.getJob().getJobId(),response);
-        }else{
-            taskResponse.setFailedTimes(response.getFailedTimes());            
-            taskResponse.setTaskStatus(response.getTaskStatus());
-        }
-        
+    	TaskResponseManager.add(task.getJob().getJobId(),response);        
         resubmitIfNeccesery(response);
     }
     
-    private void resubmitIfNeccesery(TaskResponse responseTask) throws Exception {
-        if(responseTask.getTaskStatus() == TaskStatus.FAILED
+    private void resubmitIfNeccesery(TaskResponse response) throws Exception {
+        if(response.getTaskStatus() == TaskStatus.FAILED
                 && task.getFailedTimes() < task.getJob().getRetryTimes()) {   
+            System.out.println("retry " + task.getFailedTimes() + " for " + task.getJob().getJobId());
             TaskRequest newTask = new TaskRequest();
             initNewTask(newTask);            
             TaskClient.getInstance().submit(newTask);            

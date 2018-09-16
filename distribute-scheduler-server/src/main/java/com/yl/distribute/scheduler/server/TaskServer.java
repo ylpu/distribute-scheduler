@@ -1,7 +1,6 @@
 package com.yl.distribute.scheduler.server;
 
 import java.io.FileInputStream;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -19,11 +18,11 @@ import com.yl.distribute.scheduler.common.bean.TaskResponse;
 import com.yl.distribute.scheduler.common.enums.TaskStatus;
 import com.yl.distribute.scheduler.common.utils.MetricsUtils;
 import com.yl.distribute.scheduler.core.config.Configuration;
-import com.yl.distribute.scheduler.core.jersey.JerseyClient;
+import com.yl.distribute.scheduler.core.task.TaskManager;
 import com.yl.distribute.scheduler.core.zk.ZKHelper;
 import com.yl.distribute.scheduler.server.handler.TaskServerHandler;
 import com.yl.distribute.scheduler.server.processor.TaskCall;
-import com.yl.distribute.scheduler.server.processor.TaskManager;
+import com.yl.distribute.scheduler.server.processor.TaskTracker;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelHandlerContext;
@@ -90,7 +89,7 @@ public class TaskServer {
         }
         HostInfo hostInfo = new HostInfo();
         setRegistData(hostInfo);
-        client.createEphemeral(path, hostInfo); 
+        ZKHelper.createEphemeralNode(client,path, hostInfo); 
     } 
     
     
@@ -128,18 +127,18 @@ public class TaskServer {
     }  
     
     /**
-     * 系统异常结束释放资源并更新任务状态为失败
+     * 系统异常结束更新任务状态为失败
      * @throws Exception
      */
     public void addShutDownHook() throws Exception {
         Runtime.getRuntime().addShutdownHook(
         new Thread(new Runnable() {
             public void run(){   
-                Map<TaskRequest,ChannelHandlerContext> taskMap = TaskManager.getTaskMap();
+                Map<TaskRequest,ChannelHandlerContext> taskMap = TaskTracker.getTaskMap();
                 if(taskMap != null && taskMap.size() > 0) {
                     for(Entry<TaskRequest,ChannelHandlerContext> entry : taskMap.entrySet()) {                        
                         writeResponse(new TaskCall(entry.getValue(),entry.getKey()));
-                        updateTask(entry.getKey());
+                        TaskManager.getInstance().updateTask(entry.getKey(),TaskStatus.FAILED);
                     }
                 }       
           }
@@ -154,20 +153,7 @@ public class TaskServer {
         response.setJobConf(call.getTaskRequest().getJob());
         response.setTaskStatus(TaskStatus.FAILED);                  
         call.getCtx().writeAndFlush(response);
-    }
-    /**
-     * server异常终止更新任务为失败
-     * @param taskRequest
-     */
-    private void updateTask(TaskRequest taskRequest) {
-        Properties prop = Configuration.getConfig("config.properties");        
-        String taskApi = Configuration.getString(prop, "task.web.api");
-        long elapseTime = (System.currentTimeMillis() - taskRequest.getStartTime().getTime())/1000;
-        taskRequest.setTaskStatus(TaskStatus.FAILED);
-        taskRequest.setEndTime(new Date());
-        taskRequest.setElapseTime(elapseTime);
-        JerseyClient.update(taskApi + "/" + "updateTask", taskRequest);
-    }
+    }  
     
     public static void start(Map<String,Object> parameterMap) throws Exception{
         String path = parameterMap.get("serverPoolPath") + MetricsUtils.getHostName() + ":" + parameterMap.get("serverPort").toString(); 

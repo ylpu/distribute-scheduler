@@ -17,14 +17,14 @@ public class ZKHelper {
     }
     
     public static ZkClient getClient(String zkServers) {
-        return new ZkClient(zkServers, 60000, 1000,new ZkObjectSerializer());
+        return new ZkClient(zkServers, 60000, 5000,new ZkObjectSerializer());
     }
     
     public static void createNode(ZkClient zk,String path,Object data){
         createNode(zk,path,data,CreateMode.PERSISTENT);
     }
     
-    public static void createEphemeralNode(ZkClient zk,String path,byte[] data){
+    public static void createEphemeralNode(ZkClient zk,String path,Object data){
         createNode(zk,path,data,CreateMode.EPHEMERAL);
     }
     
@@ -54,7 +54,7 @@ public class ZKHelper {
        hostInfo.setIp(MetricsUtils.getHostIpAddress() + ":" + 8081);
        hostInfo.setHostName(MetricsUtils.getHostName() + ":" + 8081);
        zkClient.createEphemeral("/root/pool1/BIH-D-6253:8081", hostInfo);
-       
+       hostInfo.setAvailableMemory(MetricsUtils.getMemInfo() - 1000);
        
        HostInfo hostInfo1 = new HostInfo();
        hostInfo1.setTotalCores(MetricsUtils.getAvailiableProcessors());
@@ -64,10 +64,9 @@ public class ZKHelper {
        hostInfo1.setIp(MetricsUtils.getHostIpAddress() + ":" + 8083);
        hostInfo1.setHostName(MetricsUtils.getHostName() + ":" + 8083);
        
-       ZKHelper.setData(zkClient, "/root/pool1/BIH-D-6253:8081", hostInfo1);
+       ZKHelper.setData(zkClient, "/root/pool1/BIH-D-6253:8081", hostInfo);
        HostInfo obj = (HostInfo) ZKHelper.getData(zkClient, "/root/pool1/BIH-D-6253:8081");
-       System.out.println(obj.getHostName());
+       System.out.println(obj.getAvailableMemory());
        
-       ZKHelper.delete(zkClient, "/root/pool1/BIH-D-6253:8081");
     }
 }

@@ -1,6 +1,5 @@
 package com.yl.distribute.scheduler.server.processor;
 
-import java.util.Date;
 import java.util.Properties;
 import javax.ws.rs.core.Response;
 import org.apache.commons.lang3.StringUtils;
@@ -12,7 +11,7 @@ import com.yl.distribute.scheduler.common.enums.TaskStatus;
 import com.yl.distribute.scheduler.common.utils.IOUtils;
 import com.yl.distribute.scheduler.common.utils.MetricsUtils;
 import com.yl.distribute.scheduler.core.config.Configuration;
-import com.yl.distribute.scheduler.core.jersey.JerseyClient;
+import com.yl.distribute.scheduler.core.task.TaskManager;
 import io.netty.channel.ChannelHandlerContext;
 
 public abstract class CommonTaskProcessor {
@@ -38,7 +37,7 @@ public abstract class CommonTaskProcessor {
                 IOUtils.writeOuput(process.getErrorStream(),errorFile);  
                 //update task to running
                 setRunningTask(outPutFile,errorFile);
-                Response updateResponse = updateTask(task);
+                Response updateResponse = TaskManager.getInstance().updateTask(task);
                 
                 if(updateResponse.getStatus() != Response.Status.OK.getStatusCode()) {
                     throw new RuntimeException("failed to update task for " + task.getTaskId());
@@ -74,12 +73,7 @@ public abstract class CommonTaskProcessor {
     }
     
     public void updateAndResponse(ChannelHandlerContext ctx,TaskStatus taskStatus) {
-        long elapseTime = (System.currentTimeMillis() - task.getStartTime().getTime())/1000;
-        task.setTaskStatus(taskStatus);
-        task.setEndTime(new Date());
-        task.setElapseTime(elapseTime);
-        updateTask(task);
-        
+        TaskManager.getInstance().updateTask(task, taskStatus);        
         TaskResponse response = new TaskResponse();
         response.setId(task.getId());
         response.setTaskId(task.getTaskId());   
@@ -87,11 +81,5 @@ public abstract class CommonTaskProcessor {
         response.setJobConf(task.getJob());
         response.setTaskStatus(taskStatus);                  
         ctx.writeAndFlush(response);
-    }
-    
-    public Response updateTask(TaskRequest task) {
-        Properties prop = Configuration.getConfig("config.properties");        
-        String taskApi = Configuration.getString(prop, "task.web.api");
-        return JerseyClient.update(taskApi + "/" + "updateTask", task);
     }
 }

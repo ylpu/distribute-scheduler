@@ -2,13 +2,17 @@ package com.yl.distribute.scheduler.client.schedule;
 
 import java.util.Date;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Properties;
+import java.util.Queue;
 import java.util.Set;
 import java.util.Stack;
+
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
 import com.yl.distribute.scheduler.client.TaskClient;
 import com.yl.distribute.scheduler.client.callback.TaskResponseManager;
 import com.yl.distribute.scheduler.common.bean.JobConf;
@@ -33,6 +37,10 @@ public class JobDriver {
     private Stack<JobConf> stack = new Stack<JobConf>();
     private static Set<String> visited = new HashSet<String>();
     
+    private Queue<JobConf> queue = new LinkedList<JobConf>();
+    private Queue<JobConf> bfsQueue = new LinkedList<JobConf>();
+    private static Set<String> bfsVisited = new HashSet<String>();
+    
     private JobConf job;
     
     public JobDriver(JobConf job){
@@ -40,8 +48,11 @@ public class JobDriver {
     }
     
     public void start() {
-        startJob(job);
-        new Thread(new JobChecker()).start();
+//        startJob(job);
+//        new Thread(new DFSJobChecker()).start();
+        bfsSearch(job);
+        new Thread(new BFSJobChecker()).start();
+        
     }
     
     /**
@@ -62,9 +73,9 @@ public class JobDriver {
             }
             visited.add(job.getJobId());
         }
-        if(job.getJobReleation().getChildJobs() != null){
-            List<JobConf> childs = job.getJobReleation().getChildJobs();
-            for(JobConf jobConf : childs) {
+        List<JobConf> childrenJob = job.getJobReleation().getChildJobs();
+        if(childrenJob != null){
+            for(JobConf jobConf : childrenJob) {
                 startJob(jobConf);
                 if(!visited.contains(jobConf.getJobId())) {
                     stack.push(jobConf);
@@ -73,6 +84,30 @@ public class JobDriver {
             }   
         }
     }   
+    
+    
+    public void bfsSearch(JobConf job) {
+        queue.offer(job);
+        bfsVisited.add(job.getJobId());
+        bfsLoop();
+    }
+
+    private void bfsLoop() {
+        JobConf currentJob = queue.poll(); //出队
+        bfsQueue.offer(currentJob);
+        List<JobConf> childrenJob = currentJob.getJobReleation().getChildJobs();
+        if(childrenJob != null && childrenJob.size() > 0){
+            for (JobConf job : childrenJob) {
+                if(!bfsVisited.contains(job.getJobId())) {
+                    bfsVisited.add(job.getJobId());
+                    queue.offer(job);
+                }            
+            }  
+        }
+        if (!queue.isEmpty()) {  //如果队列不为空继续遍历
+            bfsLoop();
+        }
+    }
     
     private boolean parentJobsHaveFinished(JobConf job){
         if(job.getJobReleation().getParentJobs() == null){
@@ -149,34 +184,63 @@ public class JobDriver {
         client.submit(task);
     }
     
-    private final class JobChecker implements Runnable{
+    private final class DFSJobChecker implements Runnable{
 
         public void run() {
-            int jobCount = 0;
             //任务是否遍历完
-            while(jobCount < visited.size()-1){
-                if(!stack.empty()){
-                    JobConf job = stack.pop();
-                    //如果父任务执行完成就提交当前任务，如果没有完成压入栈顶，每隔1秒检查父任务是否完成
+            while(!stack.isEmpty()){
+                JobConf job = stack.peek();
+                //如果父任务执行完成就提交当前任务，如果没有完成压入栈顶，每隔1秒检查父任务是否完成
+                if(job != null){
                     if (parentJobsHaveFinished(job)){
                         if(!jobHasFinished(job)){
                             System.out.println("submit job " + job.getJobId());
                             LOG.info("submit job " + job.getJobId());
                             submitJob(job);
                         }
-                        jobCount += 1;
-                    }else{
-                        stack.push(job);
-                        try {
-                            Thread.sleep(JOB_CHECK_INTERVAL);
-                        } catch (InterruptedException e) {
-                            LOG.error(e);
-                        }
-                    }
-                }    
+                        stack.pop();
+                    }   
+                }
+ 
+                try {
+                    Thread.sleep(JOB_CHECK_INTERVAL);
+                } catch (InterruptedException e) {
+                    LOG.error(e);
+                }
             }  
             //所有任务执行完清除callback
             for(String jobId : visited) {
+                System.out.println("remove job " + jobId);
+                TaskResponseManager.remove(jobId);
+            }
+        }        
+    }
+    private final class BFSJobChecker implements Runnable{
+
+        public void run() {
+            //任务是否遍历完
+            while(!bfsQueue.isEmpty()){
+                JobConf job = bfsQueue.peek();
+                //如果父任务执行完成就提交当前任务，如果没有完成压入栈顶，每隔1秒检查父任务是否完成
+                if(job != null){
+                    if (parentJobsHaveFinished(job)){
+                        if(!jobHasFinished(job)){
+                            System.out.println("submit job " + job.getJobId());
+                            LOG.info("submit job " + job.getJobId());
+                            submitJob(job);
+                        }
+                        bfsQueue.poll();
+                    }   
+                }
+ 
+                try {
+                    Thread.sleep(JOB_CHECK_INTERVAL);
+                } catch (InterruptedException e) {
+                    LOG.error(e);
+                }
+            }  
+            //所有任务执行完清除callback
+            for(String jobId : bfsVisited) {
                 System.out.println("remove job " + jobId);
                 TaskResponseManager.remove(jobId);
             }

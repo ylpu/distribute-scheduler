@@ -1,19 +1,19 @@
 package com.yl.distribute.scheduler.client;
 
-import java.util.Properties;
-
 import javax.ws.rs.core.Response;
-
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import com.yl.distribute.scheduler.client.callback.TaskCallback;
+import com.yl.distribute.scheduler.client.callback.TaskResponseManager;
 import com.yl.distribute.scheduler.common.bean.TaskRequest;
+import com.yl.distribute.scheduler.common.bean.TaskResponse;
+import com.yl.distribute.scheduler.common.enums.TaskStatus;
 import com.yl.distribute.scheduler.common.utils.CallBackUtils;
-import com.yl.distribute.scheduler.core.config.Configuration;
-import com.yl.distribute.scheduler.core.jersey.JerseyClient;
 import com.yl.distribute.scheduler.core.resource.rpc.ResourceProxy;
 import com.yl.distribute.scheduler.core.resource.service.ResourceService;
+import com.yl.distribute.scheduler.core.task.TaskManager;
+import com.yl.distribute.scheduler.core.zk.ZKResourceManager;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelFutureListener;
@@ -38,7 +38,7 @@ public class TaskClient {
     
     public void submit(TaskRequest task){        
         try {
-            Response response = addTask(task);
+            Response response = TaskManager.getInstance().addTask(task);
             if(response.getStatus() != Response.Status.OK.getStatusCode()) {
                 throw new RuntimeException("failed to add task");
             }
@@ -63,7 +63,8 @@ public class TaskClient {
                         @Override
                         public void operationComplete(ChannelFuture future) throws Exception {
                             if(future.isSuccess()) {
-                                LOG.info("提交任务" + task.getTaskId() + "-" + task.getId() + "到" + idleHost);                                
+                                LOG.info("提交任务" + task.getTaskId() + "-" + task.getId() + "到" + idleHost);
+                                ZKResourceManager.subZkResource(task);
                                 service.subResource(idleHost, task.getJob());  
                                 service.increaseTask(idleHost);
                             } else {  
@@ -77,13 +78,18 @@ public class TaskClient {
             
         }catch(Exception e) {
         	LOG.error(e);
-        	throw new RuntimeException(e);
+        	updateTaskStatus(task,TaskStatus.FAILED);
         }
-    }     
+    } 
     
-    private Response addTask(TaskRequest task) {
-        Properties prop = Configuration.getConfig("config.properties");        
-        String taskApi = Configuration.getString(prop, "task.web.api");
-        return JerseyClient.add(taskApi + "/" + "addTask", task);
+    private void updateTaskStatus(TaskRequest task,TaskStatus taskStatus){        
+        TaskResponse response = new TaskResponse();
+        response.setId(task.getId());
+        response.setTaskId(task.getTaskId());   
+        response.setFailedTimes(task.getFailedTimes());
+        response.setJobConf(task.getJob());
+        response.setTaskStatus(taskStatus);
+        TaskResponseManager.add(task.getJob().getJobId(),response);   
+        TaskManager.getInstance().updateTask(task, taskStatus);
     }
 }

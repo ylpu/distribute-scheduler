@@ -8,6 +8,7 @@ import com.yl.distribute.scheduler.core.resource.rpc.ResourceProxy;
 import com.yl.distribute.scheduler.common.bean.TaskRequest;
 import com.yl.distribute.scheduler.common.utils.ReflectUtils;
 import com.yl.distribute.scheduler.core.resource.service.ResourceService;
+import com.yl.distribute.scheduler.core.zk.ZKResourceManager;
 
 public class ProcessorProxy implements InvocationHandler{
     
@@ -32,7 +33,8 @@ public class ProcessorProxy implements InvocationHandler{
             throw new RuntimeException(e);
         }finally {
             try {
-                TaskManager.removeTask(task);
+                TaskTracker.removeTask(task);
+                ZKResourceManager.restoreZkResource(task);
                 releaseResource(task);
             } catch (Exception e) {
                 LOG.error(e);
@@ -40,8 +42,8 @@ public class ProcessorProxy implements InvocationHandler{
             }
         }        
         return null;
-    }
-    
+    }    
+
     private void releaseResource(TaskRequest task) {
         LOG.info("start to release resource for " + task.getRunningHost());
         ResourceService service = ResourceProxy.get(ResourceService.class);
