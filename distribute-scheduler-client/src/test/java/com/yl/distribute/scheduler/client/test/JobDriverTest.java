@@ -12,7 +12,7 @@ import com.yl.distribute.scheduler.common.enums.TaskStatus;
 
 public class JobDriverTest {
     
-    @Test
+//    @Test
     public void jobDriverTest() throws InterruptedException{        
         
         TaskResponse tr = new TaskResponse();
@@ -57,5 +57,16 @@ public class JobDriverTest {
         TaskResponseManager.add("c", tr6);
         
         Thread.sleep(2000);
+    }
+    
+    @Test
+    public void jobDriverTest1() throws InterruptedException{
+        
+        File file = new File("src/main/resources/jobplan.xml");
+        JobParser parser = new JobParser(file);
+        Element element = parser.readFile();
+        JobConf rootJob = parser.getRootJob(element);        
+        new JobDriver(rootJob).start();
+        Thread.sleep(10000);
     }
 }

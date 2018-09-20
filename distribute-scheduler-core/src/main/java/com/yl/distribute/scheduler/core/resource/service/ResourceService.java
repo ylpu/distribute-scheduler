@@ -12,10 +12,6 @@ public interface ResourceService {
     
     void subResource(String serverName,JobConf jobConf);
     
-    void increaseTask(String serverName);
-    
-    void decreaseTask(String serverName);
-    
     Map<String,HostInfo> getResources();
     
     Map<String,Integer> getTasks();

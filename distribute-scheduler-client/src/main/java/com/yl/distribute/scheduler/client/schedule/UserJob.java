@@ -19,7 +19,6 @@ public class UserJob implements Job{
         JobConf jobConf = (JobConf) jobExecutionContext.getJobDetail().getJobDataMap().get("data");
         TaskClient client = TaskClient.getInstance();
         TaskRequest task = new TaskRequest();
-        task.setId(new ObjectId().toHexString());
         task.setTaskId(new ObjectId().toHexString());
         task.setJob(jobConf);
         task.setStartTime(new Date());

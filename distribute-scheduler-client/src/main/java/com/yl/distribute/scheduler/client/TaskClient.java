@@ -57,7 +57,7 @@ public class TaskClient {
             f.addListener((FutureListener<Channel>) f1 -> {
                 if (f1.isSuccess()) {
                     TaskCallback callback = new TaskCallback(task);                    
-                    CallBackUtils.putCallback(task.getId(), callback);
+                    CallBackUtils.putCallback(task.getTaskId(), callback);
                     Channel ch = f1.getNow();                    
                     ch.writeAndFlush(task).addListener(new ChannelFutureListener() {
                         @Override
@@ -66,7 +66,6 @@ public class TaskClient {
                                 LOG.info("提交任务" + task.getTaskId() + "-" + task.getId() + "到" + idleHost);
                                 ZKResourceManager.subZkResource(task);
                                 service.subResource(idleHost, task.getJob());  
-                                service.increaseTask(idleHost);
                             } else {  
                             	LOG.error("提交任务" + task.getTaskId() + "-" + task.getId() + "到" + idleHost + "失败");  
                             }                                
@@ -87,7 +86,7 @@ public class TaskClient {
         response.setId(task.getId());
         response.setTaskId(task.getTaskId());   
         response.setFailedTimes(task.getFailedTimes());
-        response.setJobConf(task.getJob());
+        response.setJobId(task.getJob().getJobId());
         response.setTaskStatus(taskStatus);
         TaskResponseManager.add(task.getJob().getJobId(),response);   
         TaskManager.getInstance().updateTask(task, taskStatus);

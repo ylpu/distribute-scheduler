@@ -11,8 +11,9 @@ import com.yl.distribute.scheduler.common.enums.TaskStatus;
 public class TaskRequest implements Serializable{
 
     private static final long serialVersionUID = 1L;
-	private String id;
+	private Integer id;	
     private String taskId;
+    private Integer flowId;
     private JobConf job;
     private int failedTimes = 0;
     private String runningHost;   
@@ -24,19 +25,25 @@ public class TaskRequest implements Serializable{
     private Date endTime;
     private long elapseTime;
     
-    public String getId() {
+    public Integer getId() {
         return id;
     }
-    public void setId(String id) {
+    public void setId(Integer id) {
         this.id = id;
-    }
-    public String getTaskId() {
+    }    
+	public String getTaskId() {
         return taskId;
     }
     public void setTaskId(String taskId) {
         this.taskId = taskId;
-    }
-    public JobConf getJob() {
+    } 
+	public Integer getFlowId() {
+		return flowId;
+	}
+	public void setFlowId(Integer flowId) {
+		this.flowId = flowId;
+	}
+	public JobConf getJob() {
         return job;
     }
     public void setJob(JobConf job) {

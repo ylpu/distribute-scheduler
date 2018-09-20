@@ -5,11 +5,11 @@ import org.apache.commons.lang3.StringUtils;
 import com.yl.distribute.scheduler.common.bean.TaskRequest;
 import io.netty.channel.ChannelHandlerContext;
 
-public class JarProcessor extends CommonTaskProcessor implements IServerProcessor{    
+public class JavaProcessor extends CommonTaskProcessor implements IServerProcessor{    
  
     private TaskRequest task;
     
-    public JarProcessor(TaskRequest task) {        
+    public JavaProcessor(TaskRequest task) {        
         super(task);
         this.task = task;
     }

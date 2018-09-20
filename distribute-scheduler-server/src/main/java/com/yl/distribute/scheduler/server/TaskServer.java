@@ -20,9 +20,9 @@ import com.yl.distribute.scheduler.common.utils.MetricsUtils;
 import com.yl.distribute.scheduler.core.config.Configuration;
 import com.yl.distribute.scheduler.core.task.TaskManager;
 import com.yl.distribute.scheduler.core.zk.ZKHelper;
+import com.yl.distribute.scheduler.server.handler.TaskCall;
 import com.yl.distribute.scheduler.server.handler.TaskServerHandler;
-import com.yl.distribute.scheduler.server.processor.TaskCall;
-import com.yl.distribute.scheduler.server.processor.TaskTracker;
+import com.yl.distribute.scheduler.server.handler.TaskTracker;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelHandlerContext;
@@ -150,7 +150,7 @@ public class TaskServer {
         response.setId(call.getTaskRequest().getId());
         response.setTaskId(call.getTaskRequest().getTaskId());   
         response.setFailedTimes(call.getTaskRequest().getFailedTimes());
-        response.setJobConf(call.getTaskRequest().getJob());
+        response.setJobId(call.getTaskRequest().getJob().getJobId());
         response.setTaskStatus(TaskStatus.FAILED);                  
         call.getCtx().writeAndFlush(response);
     }  

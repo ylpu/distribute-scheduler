@@ -7,24 +7,24 @@ import java.util.Date;
  * @author asus
  *
  */
-public class JobPlanInstance {
+public class WorkFlow {
     
-    private String id;
-    private JobPlan jobPlan;
+    private Integer id;
+    private WorkPlan jobPlan;
     private String status;
-    private Date startDate;
-    private Date endDate;
+    private Date startTime;
+    private Date endTime;
     
-    public String getId() {
+    public Integer getId() {
         return id;
     }
-    public void setId(String id) {
+    public void setId(Integer id) {
         this.id = id;
     }
-    public JobPlan getJobPlan() {
+    public WorkPlan getJobPlan() {
         return jobPlan;
     }
-    public void setJobPlan(JobPlan jobPlan) {
+    public void setJobPlan(WorkPlan jobPlan) {
         this.jobPlan = jobPlan;
     }
     public String getStatus() {
@@ -33,16 +33,16 @@ public class JobPlanInstance {
     public void setStatus(String status) {
         this.status = status;
     }
-    public Date getStartDate() {
-        return startDate;
-    }
-    public void setStartDate(Date startDate) {
-        this.startDate = startDate;
-    }
-    public Date getEndDate() {
-        return endDate;
-    }
-    public void setEndDate(Date endDate) {
-        this.endDate = endDate;
-    }      
+	public Date getStartTime() {
+		return startTime;
+	}
+	public void setStartTime(Date startTime) {
+		this.startTime = startTime;
+	}
+	public Date getEndTime() {
+		return endTime;
+	}
+	public void setEndTime(Date endTime) {
+		this.endTime = endTime;
+	}     
 }

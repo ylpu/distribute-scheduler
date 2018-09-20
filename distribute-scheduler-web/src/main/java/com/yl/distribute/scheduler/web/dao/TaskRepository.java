@@ -20,18 +20,18 @@ public class TaskRepository {
     }    
     
     public void addTask(TaskRequest task) {
-    	taskMap.put(task.getId(), task);
+    	taskMap.put(task.getTaskId(), task);
     }
     
-    public void removeTask(String id) {
-    	taskMap.remove(id);
+    public void removeTask(String taskId) {
+    	taskMap.remove(taskId);
     }
     
     public void updateTask(TaskRequest task) {
-       if(task == null || StringUtils.isEmpty(task.getId())){
+       if(task == null || StringUtils.isEmpty(task.getTaskId())){
     	   throw new RuntimeException("task can not empty");
        }
-       TaskRequest newTask = taskMap.get(task.getId());
+       TaskRequest newTask = taskMap.get(task.getTaskId());
        if(task.getEndTime() != null){
     	   newTask.setEndTime(task.getEndTime());
        }
@@ -53,7 +53,7 @@ public class TaskRepository {
        newTask.setFailedTimes(task.getFailedTimes());
     }
     
-    public TaskRequest getTask(String id) {
-        return taskMap.get(id);
+    public TaskRequest getTask(String taskId) {
+        return taskMap.get(taskId);
     }
 }

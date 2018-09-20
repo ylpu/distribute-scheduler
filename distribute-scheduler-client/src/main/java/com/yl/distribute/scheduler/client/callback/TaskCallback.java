@@ -20,7 +20,7 @@ public class TaskCallback{
     }
     
     public void onRead(TaskResponse response) throws Exception {
-    	System.out.println(task.getTaskId() + "-" + task.getId() + "返回状态是" + response.getTaskId() + response.getTaskStatus());
+    	System.out.println(task.getTaskId() + "返回状态是" + response.getTaskId() + response.getTaskStatus());
     	LOG.info(task.getTaskId() + "-" + task.getId() + "返回状态是" + response.getTaskId() +  response.getTaskStatus());
     	//根据response中任务的状态来判断dag是否往下执行
     	TaskResponseManager.add(task.getJob().getJobId(),response);        
@@ -38,8 +38,7 @@ public class TaskCallback{
     }
     
     private void initNewTask(TaskRequest newTask) {
-        newTask.setId(new ObjectId().toHexString());
-        newTask.setTaskId(task.getTaskId());
+        newTask.setTaskId(new ObjectId().toHexString());
         newTask.setJob(task.getJob());
         newTask.setStartTime(new Date());
         newTask.setEndTime(null);

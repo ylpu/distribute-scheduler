@@ -18,13 +18,13 @@ import com.yl.distribute.scheduler.core.jersey.JerseyClient;
  */
 public class JobResourceTest{
 
-//    @Test
+    @Test
     public void getTask() {
-        TaskRequest task = JerseyClient.get("http://localhost:8085/api/task/1", TaskRequest.class);
+    	JobConf task = JerseyClient.get("http://localhost:8085/api/job/getJobById/a", JobConf.class);
         System.out.println(task);
     }
     
-    @Test
+//    @Test
     public void addTask() {
     	String id = "1";
         JobConf jobConf = new JobConf();
@@ -40,7 +40,7 @@ public class JobResourceTest{
         System.out.println(response);
     }
     
-    @Test
+//    @Test
     public void updateTask() {
         TaskResponse task = new TaskResponse();
         task.setTaskId("1");

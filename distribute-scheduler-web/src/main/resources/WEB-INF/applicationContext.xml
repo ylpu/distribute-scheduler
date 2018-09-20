@@ -10,7 +10,6 @@
         http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-4.0.xsd">          
     
     <context:component-scan base-package="com.yl.distribute.scheduler.web"/>
-
     <context:property-placeholder location="classpath:db.properties"/>
 
     <bean id="dataSource" class="com.mchange.v2.c3p0.ComboPooledDataSource">
@@ -52,5 +51,5 @@
     <!-- 5. 配置 SpringData,需要加入  jpa 的命名空间 -->
     <!-- base-package: 扫描 Repository Bean 所在的 package -->
     <jpa:repositories base-package="com.yl.distribute.scheduler.web.dao" entity-manager-factory-ref="entityManagerFactory">
-    </jpa:repositories>    
+    </jpa:repositories>        
 </beans>

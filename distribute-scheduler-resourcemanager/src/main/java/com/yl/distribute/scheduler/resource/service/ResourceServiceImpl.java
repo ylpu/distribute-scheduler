@@ -16,18 +16,12 @@ public class ResourceServiceImpl implements ResourceService{
     
     public void addResource(String serverName,JobConf jobConf) {
         ResourceManager.getInstance().addResource(serverName, jobConf);
+        ResourceManager.getInstance().decreaseTask(serverName);
     }
     
     public void subResource(String serverName,JobConf jobConf) {
         ResourceManager.getInstance().subResource(serverName, jobConf);
-    }
-    
-    public void increaseTask(String serverName) {
         ResourceManager.getInstance().increaseTask(serverName);
-    }
-    
-    public void decreaseTask(String serverName) {
-        ResourceManager.getInstance().decreaseTask(serverName);
     }
     
     public Map<String,HostInfo> getResources() {

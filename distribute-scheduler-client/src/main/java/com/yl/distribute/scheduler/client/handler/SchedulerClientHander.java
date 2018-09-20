@@ -21,7 +21,7 @@ public class SchedulerClientHander extends CommonChannelInboundHandler{
      */
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {    
         TaskResponse output = (TaskResponse)msg;
-        TaskCallback callBack = CallBackUtils.getCallback(output.getId());        
+        TaskCallback callBack = CallBackUtils.getCallback(output.getTaskId());        
         callBack.onRead((TaskResponse)msg);
     } 
     

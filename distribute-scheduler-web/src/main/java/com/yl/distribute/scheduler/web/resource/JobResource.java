@@ -32,10 +32,10 @@ public class JobResource {
     }
     
     @GET
-    @Path("{id}")
+    @Path("getJobById/{id}")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public Response getJobById(@PathParam("id") String jobId) {
-       return Response.ok(jobService.getJobById(jobId)).build();
+    public Response getJobById(@PathParam("id") String id) {
+       return Response.ok(jobService.getJobById(id)).build();
     }
 }

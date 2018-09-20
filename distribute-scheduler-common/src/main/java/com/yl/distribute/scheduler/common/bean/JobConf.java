@@ -6,6 +6,7 @@ import com.yl.distribute.scheduler.common.enums.JobType;
 public class JobConf implements Serializable,Comparable<JobConf>{
 
     private static final long serialVersionUID = 1L;
+    private Integer id;
     private String jobId;
     private String jobName;
     private String command;   
@@ -20,9 +21,15 @@ public class JobConf implements Serializable,Comparable<JobConf>{
     private String commandParameters;
     //jar命令执行参数，如-Dparam=test -Xmx1024m
     private String executeParameters;  
-    private JobReleation jobReleation = new JobReleation();
+    private JobReleation jobReleation = new JobReleation();    
     
-    public int getRetryTimes() {
+    public Integer getId() {
+		return id;
+	}
+	public void setId(Integer id) {
+		this.id = id;
+	}
+	public int getRetryTimes() {
         return retryTimes;
     }
     public void setRetryTimes(int retryTimes) {

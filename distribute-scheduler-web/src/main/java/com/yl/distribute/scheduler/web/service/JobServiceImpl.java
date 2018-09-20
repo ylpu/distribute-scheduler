@@ -1,8 +1,10 @@
 package com.yl.distribute.scheduler.web.service;
 
+import org.springframework.stereotype.Component;
+
 import com.yl.distribute.scheduler.common.bean.JobConf;
 import com.yl.distribute.scheduler.web.dao.JobRepository;
-
+@Component
 public class JobServiceImpl implements JobService{
 
     @Override

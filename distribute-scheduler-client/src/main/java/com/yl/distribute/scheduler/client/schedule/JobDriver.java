@@ -170,7 +170,6 @@ public class JobDriver {
     private void submitTask(JobConf job){
         TaskClient client = TaskClient.getInstance();
         TaskRequest task = new TaskRequest();
-        task.setId(new ObjectId().toHexString());
         task.setTaskId(new ObjectId().toHexString());
         task.setJob(job);
         task.setStartTime(new Date());
@@ -221,7 +220,7 @@ public class JobDriver {
             //任务是否遍历完
             while(!bfsQueue.isEmpty()){
                 JobConf job = bfsQueue.peek();
-                //如果父任务执行完成就提交当前任务，如果没有完成压入栈顶，每隔1秒检查父任务是否完成
+                //如果父任务执行完成就提交当前任务，如果没有完成压入队列顶，每隔1秒检查父任务是否完成
                 if(job != null){
                     if (parentJobsHaveFinished(job)){
                         if(!jobHasFinished(job)){

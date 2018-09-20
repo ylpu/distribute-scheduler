@@ -73,7 +73,6 @@ public class ResourceServer {
         }    
         //start jmx monitor
         new ResourceManagerAgent().start();
-        System.out.println("start resource manager");
         ResourceServer server = new ResourceServer(port);
         server.start();         
     }

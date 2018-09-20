@@ -2,11 +2,8 @@ package com.yl.distribute.scheduler.client.test;
 
 import java.util.Date;
 import java.util.Map;
-import java.util.UUID;
 import java.util.Map.Entry;
-
 import org.junit.Test;
-
 import com.yl.distribute.scheduler.client.TaskClient;
 import com.yl.distribute.scheduler.common.bean.HostInfo;
 import com.yl.distribute.scheduler.common.bean.JobConf;
@@ -15,7 +12,6 @@ import com.yl.distribute.scheduler.common.enums.JobType;
 import com.yl.distribute.scheduler.common.enums.TaskStatus;
 import com.yl.distribute.scheduler.core.resource.rpc.ResourceProxy;
 import com.yl.distribute.scheduler.core.resource.service.ResourceService;
-import com.yl.distribute.scheduler.core.zk.ZKHelper;
 
 public class SchedulerClientTest {
     
@@ -27,7 +23,7 @@ public class SchedulerClientTest {
             new ProduceThread(client,i).start();
         }
         
-        Thread.sleep(80000);
+        Thread.sleep(30000);
         
         ResourceService service = ResourceProxy.get(ResourceService.class);
         Map<String,HostInfo> map = service.getResources();
@@ -40,9 +36,6 @@ public class SchedulerClientTest {
         for(Entry<String,Integer> entry : tasks.entrySet()) {
             System.out.println("host is " + entry.getKey() +  ",task number is " + entry.getValue()); 
         } 
-        
-        HostInfo obj = (HostInfo) ZKHelper.getData(ZKHelper.getClient(), "/root/pool1/asus-PC:8081");
-        System.out.println(obj.getHostName() + " available memory is " + obj.getAvailableMemory());
     }
     
     public static class ProduceThread extends Thread{
@@ -65,7 +58,6 @@ public class SchedulerClientTest {
             jobConf.setPoolPath("/root/pool1");
             jobConf.setStrategy("memory");
             task.setJob(jobConf);
-            task.setId(UUID.randomUUID().toString().replaceAll("-", ""));
             task.setTaskId(id);
             task.setStartTime(new Date()); 
             task.setTaskStatus(TaskStatus.SUBMIT);

@@ -1,9 +1,10 @@
-package com.yl.distribute.scheduler.server.processor;
+package com.yl.distribute.scheduler.server.handler;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-
 import com.yl.distribute.scheduler.common.enums.JobType;
+import com.yl.distribute.scheduler.server.processor.IServerProcessor;
+import com.yl.distribute.scheduler.server.processor.*;
 
 public class ProcessorManager {
     
@@ -11,7 +12,7 @@ public class ProcessorManager {
 
     static {
         map.put(JobType.COMMAND, CommandProcessor.class);
-        map.put(JobType.JAR, JarProcessor.class);
+        map.put(JobType.JAVA, JavaProcessor.class);
     }
     
     public static Class<?> getProcessor(JobType jobType) {

@@ -2,17 +2,17 @@ package com.yl.distribute.scheduler.common.bean;
 
 import java.sql.Clob;
 
-public class JobPlan {
+public class WorkPlan {
     
-    private String id;
+    private Integer id;
     private String planName;
     private String cron;    
     private Clob jobPlanFile;
     
-    public String getId() {
+    public Integer getId() {
         return id;
     }
-    public void setId(String id) {
+    public void setId(Integer id) {
         this.id = id;
     }
     public Clob getJobPlanFile() {

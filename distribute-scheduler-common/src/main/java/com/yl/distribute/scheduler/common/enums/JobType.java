@@ -3,7 +3,7 @@ package com.yl.distribute.scheduler.common.enums;
 public enum JobType { 
     
     COMMAND,
-    JAR;
+    JAVA;
     
     public static JobType getTaskType(String taskType) {
         for(JobType tt : JobType.values()) {

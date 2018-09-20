@@ -1,6 +1,7 @@
 package com.yl.distribute.scheduler.server.processor;
 
 import java.util.Properties;
+import java.util.Random;
 import javax.ws.rs.core.Response;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
@@ -30,6 +31,7 @@ public abstract class CommonTaskProcessor {
         String outPutFile = "./WebContent/jobfiles/" + task.getTaskId() + "_out";    
                       
         try {
+//        	Thread.sleep(new Random().nextInt(20000));
             if(StringUtils.isNotBlank(command)) {
                 
                 Process process = Runtime.getRuntime().exec(command);
@@ -75,10 +77,9 @@ public abstract class CommonTaskProcessor {
     public void updateAndResponse(ChannelHandlerContext ctx,TaskStatus taskStatus) {
         TaskManager.getInstance().updateTask(task, taskStatus);        
         TaskResponse response = new TaskResponse();
-        response.setId(task.getId());
         response.setTaskId(task.getTaskId());   
         response.setFailedTimes(task.getFailedTimes());
-        response.setJobConf(task.getJob());
+        response.setJobId(task.getJob().getJobId());
         response.setTaskStatus(taskStatus);                  
         ctx.writeAndFlush(response);
     }

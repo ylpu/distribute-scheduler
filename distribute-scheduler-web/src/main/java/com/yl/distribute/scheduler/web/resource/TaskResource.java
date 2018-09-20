@@ -49,7 +49,7 @@ public class TaskResource {
     }
     
     @GET
-    @Path("{id}")
+    @Path("getTaskById/{id}")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public Response getTaskById(@PathParam("id") String id) {

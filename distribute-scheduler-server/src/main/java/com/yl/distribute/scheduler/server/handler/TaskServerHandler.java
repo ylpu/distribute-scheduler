@@ -6,11 +6,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import com.yl.distribute.scheduler.common.bean.TaskRequest;
 import com.yl.distribute.scheduler.server.processor.IServerProcessor;
-import com.yl.distribute.scheduler.server.processor.ProcessorManager;
-import com.yl.distribute.scheduler.server.processor.ProcessorProxy;
-import com.yl.distribute.scheduler.server.processor.TaskCall;
-import com.yl.distribute.scheduler.server.processor.TaskTracker;
-
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 
