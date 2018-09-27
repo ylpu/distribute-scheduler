@@ -36,7 +36,7 @@ public class ZKHelper {
         zk.writeData(path, data);
     }
     
-    public static Object getData(ZkClient zk,String path){
+    public static <T> T getData(ZkClient zk,String path){
         return zk.readData(path, true);
     }
     
@@ -65,7 +65,7 @@ public class ZKHelper {
        hostInfo1.setHostName(MetricsUtils.getHostName() + ":" + 8083);
        
        ZKHelper.setData(zkClient, "/root/pool1/BIH-D-6253:8081", hostInfo);
-       HostInfo obj = (HostInfo) ZKHelper.getData(zkClient, "/root/pool1/BIH-D-6253:8081");
+       HostInfo obj = ZKHelper.getData(zkClient, "/root/pool1/BIH-D-6253:8081");
        System.out.println(obj.getAvailableMemory());
        
     }

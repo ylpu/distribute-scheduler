@@ -13,6 +13,8 @@ import java.net.InetSocketAddress;
 import java.util.Map;
 import java.util.Properties;
 import java.util.concurrent.ConcurrentHashMap;
+
+import org.I0Itec.zkclient.ZkClient;
 import org.apache.commons.lang3.math.NumberUtils;
 import com.yl.distribute.scheduler.common.bean.HostInfo;
 import com.yl.distribute.scheduler.core.config.Configuration;
@@ -57,19 +59,26 @@ public class SchedulerClientPool {
             
             Properties prop = Configuration.getConfig("config.properties");        
             int poolNumber = Configuration.getInt(prop, "channel.pool.numbers");
-            String zkServers = Configuration.getString(prop, "zk.server.list");            
-
-            HostInfo hostInfo = ZKHelper.getClient(zkServers).readData(poolPath + "/" + idleHost);
-            if(hostInfo != null) {
-                String hostName = hostInfo.getHostName().split(":")[0];
-                int port = NumberUtils.toInt(hostInfo.getHostName().split(":")[1]);
-                
-                SchedulerClientPool clientPool = SchedulerClientPool.getInstance();            
-                clientPool.build(poolNumber);
-                SimpleChannelPool pool = clientPool.poolMap.get(new InetSocketAddress(hostName,port));                
-                channelPoolMap.put(idleHost, pool);
-                channelPool = pool; 
+            String zkServers = Configuration.getString(prop, "zk.server.list");  
+            ZkClient zkclient = ZKHelper.getClient(zkServers);
+            try {                
+                HostInfo hostInfo = ZKHelper.getData(zkclient, poolPath + "/" + idleHost);
+                if(hostInfo != null) {
+                    String hostName = hostInfo.getHostName().split(":")[0];
+                    int port = NumberUtils.toInt(hostInfo.getHostName().split(":")[1]);
+                    
+                    SchedulerClientPool clientPool = SchedulerClientPool.getInstance();            
+                    clientPool.build(poolNumber);
+                    SimpleChannelPool pool = clientPool.poolMap.get(new InetSocketAddress(hostName,port));                
+                    channelPoolMap.put(idleHost, pool);
+                    channelPool = pool; 
+                }
+            }finally {
+            	if(zkclient != null) {
+            		zkclient.close();
+            	}
             }
+
         }
         return channelPool;
       }

@@ -10,7 +10,7 @@ public class ZKResourceManager {
     public static synchronized void subZkResource(TaskRequest task){
         String path = task.getJob().getPoolPath() + "/" + task.getRunningHost();
         ZkClient zkClient = ZKHelper.getClient();        
-        HostInfo hostInfo = (HostInfo) ZKHelper.getData(zkClient, path);
+        HostInfo hostInfo = ZKHelper.getData(zkClient, path);
         long usedMemory = MetricsUtils.getTaskMemory(task.getJob().getExecuteParameters());
         System.out.println("host memory sub " + (hostInfo.getAvailableMemory() - usedMemory) + " for task " + task.getTaskId());
         hostInfo.setAvailableMemory(hostInfo.getAvailableMemory() - usedMemory);
@@ -21,7 +21,7 @@ public class ZKResourceManager {
     public static synchronized void restoreZkResource(TaskRequest task){
         String path = task.getJob().getPoolPath() + "/" + task.getRunningHost();
         ZkClient zkClient = ZKHelper.getClient();        
-        HostInfo hostInfo = (HostInfo) ZKHelper.getData(zkClient, path);
+        HostInfo hostInfo = ZKHelper.getData(zkClient, path);
         long usedMemory = MetricsUtils.getTaskMemory(task.getJob().getExecuteParameters());
         System.out.println("host memory add " + (hostInfo.getAvailableMemory() + usedMemory) + " for task " + task.getTaskId());
         hostInfo.setAvailableMemory(hostInfo.getAvailableMemory() + usedMemory);        
