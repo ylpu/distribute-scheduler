@@ -102,52 +102,52 @@
             <groupId>com.yl.distribute.scheduler</groupId>
             <artifactId>distribute-scheduler-common</artifactId>
             <version>0.0.1-SNAPSHOT</version>
-        </dependency>         
+       </dependency>         
+       <dependency>
+            <groupId>com.esotericsoftware.kryo</groupId>
+            <artifactId>kryo</artifactId>
+            <version>${kryo.version}</version>
+       </dependency>
+       <dependency>
+            <groupId>de.javakaffee</groupId>
+            <artifactId>kryo-serializers</artifactId>
+            <version>${kryo-serializers.version}</version>
+       </dependency>		
+       <dependency>
+            <groupId>com.google.protobuf</groupId>
+            <artifactId>protobuf-java</artifactId>
+            <version>${protobuf.version}</version>
+       </dependency>          
+       <dependency>        
+            <groupId>commons-beanutils</groupId>
+            <artifactId>commons-beanutils</artifactId>
+            <version>${commons-beanutils.version}</version>
+       </dependency>
+       <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-lang3</artifactId>
+            <version>${commons-lang3.version}</version>
+        </dependency> 
         <dependency>
-			<groupId>com.esotericsoftware.kryo</groupId>
-			<artifactId>kryo</artifactId>
-			<version>${kryo.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>de.javakaffee</groupId>
-			<artifactId>kryo-serializers</artifactId>
-			<version>${kryo-serializers.version}</version>
-		</dependency>		
-		<dependency>
-		    <groupId>com.google.protobuf</groupId>
-		    <artifactId>protobuf-java</artifactId>
-		    <version>${protobuf.version}</version>
-        </dependency>          
-        <dependency>        
-             <groupId>commons-beanutils</groupId>
-             <artifactId>commons-beanutils</artifactId>
-             <version>${commons-beanutils.version}</version>
+            <groupId>dom4j</groupId>
+            <artifactId>dom4j</artifactId>
+            <version>${dom4j-version}</version>
         </dependency>
         <dependency>
-              <groupId>org.apache.commons</groupId>
-              <artifactId>commons-lang3</artifactId>
-              <version>${commons-lang3.version}</version>
-         </dependency> 
-         <dependency>
-              <groupId>dom4j</groupId>
-              <artifactId>dom4j</artifactId>
-              <version>${dom4j-version}</version>
-         </dependency>
-         <dependency>
-              <groupId>org.quartz-scheduler</groupId>
-              <artifactId>quartz</artifactId>
-              <version>${quartz-version}</version>
-         </dependency> 
-         <dependency>
-              <groupId>org.quartz-scheduler</groupId>
-              <artifactId>quartz-jobs</artifactId>
-              <version>${quartz-version}</version>
-         </dependency> 
-         <dependency>
-             <groupId>com.google.guava</groupId>
-             <artifactId>guava</artifactId>
+            <groupId>org.quartz-scheduler</groupId>
+            <artifactId>quartz</artifactId>
+            <version>${quartz-version}</version>
+        </dependency> 
+        <dependency>
+            <groupId>org.quartz-scheduler</groupId>
+            <artifactId>quartz-jobs</artifactId>
+            <version>${quartz-version}</version>
+        </dependency> 
+        <dependency>
+            <groupId>com.google.guava</groupId>
+            <artifactId>guava</artifactId>
             <version>23.0</version>
-         </dependency>       
+        </dependency>       
      </dependencies>
   </dependencyManagement>
 </project>
