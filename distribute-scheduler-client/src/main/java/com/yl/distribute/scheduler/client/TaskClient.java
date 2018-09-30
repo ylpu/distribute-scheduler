@@ -54,6 +54,9 @@ public class TaskClient {
             task.setRunningHost(idleHost);  
             
             SimpleChannelPool channelPool = SchedulerClientPool.getInstance().getChannelPool(task.getJob().getPoolPath(),idleHost);
+            if(channelPool == null) {
+            	throw new RuntimeException("can not get channel from server " + idleHost);
+            }
             Future<Channel> f = null;
             f = channelPool.acquire(); 
             

@@ -19,7 +19,7 @@ public class SchedulerClientTest {
     public void submitJob() throws Exception {
         
         TaskClient client = TaskClient.getInstance();        
-        for(int i = 0;i < 1; i++) {
+        for(int i = 0;i < 100; i++) {
             new ProduceThread(client,i).start();
         }
         
@@ -57,7 +57,7 @@ public class SchedulerClientTest {
             jobConf.setCommand("ls -ltr");
             jobConf.setPoolPath("/root/pool1");
             jobConf.setStrategy("memory");
-            jobConf.setRetryTimes(3);
+            jobConf.setRetryTimes(0);
             task.setJob(jobConf);
             task.setTaskId(id);
             task.setStartTime(new Date()); 
