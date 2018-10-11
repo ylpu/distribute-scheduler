@@ -17,7 +17,7 @@ public class TaskCallback{
         this.task = task;
     }
     
-    public void onRead(TaskResponse response) throws Exception {
+    public void onRead(TaskResponse response){
     	System.out.println(task.getTaskId() + "返回状态是" + response.getTaskId() + response.getTaskStatus());
     	LOG.info(task.getTaskId() + "-" + task.getId() + "返回状态是" + response.getTaskId() +  response.getTaskStatus());
     	//根据response中任务的状态来判断dag是否往下执行
@@ -25,7 +25,7 @@ public class TaskCallback{
         resubmitIfNeccesery(response);
     }
     
-    private void resubmitIfNeccesery(TaskResponse response) throws Exception {
+    private void resubmitIfNeccesery(TaskResponse response){
         if(response.getTaskStatus() == TaskStatus.FAILED
                 && task.getFailedTimes() < task.getJob().getRetryTimes()) {   
             System.out.println("retry " + task.getFailedTimes() + " for " + task.getJob().getJobId());

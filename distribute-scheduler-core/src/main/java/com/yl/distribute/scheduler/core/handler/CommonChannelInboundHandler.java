@@ -8,8 +8,7 @@ import io.netty.handler.timeout.IdleStateEvent;
 public class CommonChannelInboundHandler extends ChannelInboundHandlerAdapter{
     
     @Override
-    public void userEventTriggered(ChannelHandlerContext ctx, Object evt)
-            throws Exception {    
+    public void userEventTriggered(ChannelHandlerContext ctx, Object evt) throws Exception {    
         
         if (evt instanceof IdleStateEvent) {
             IdleStateEvent event = (IdleStateEvent) evt;

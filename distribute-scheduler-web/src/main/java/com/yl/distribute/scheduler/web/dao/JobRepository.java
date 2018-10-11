@@ -4,6 +4,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import com.yl.distribute.scheduler.common.bean.JobConf;
 import com.yl.distribute.scheduler.common.enums.JobType;
+import com.yl.distribute.scheduler.common.enums.TaskStrategy;
 
 public class JobRepository {
     
@@ -18,7 +19,7 @@ public class JobRepository {
         joba.setJobType(JobType.COMMAND);
         joba.setCommand("cmd /c echo abc");
         joba.setPoolPath("/root/pool1");
-        joba.setStrategy("memory");
+        joba.setTaskStrategy(TaskStrategy.MEMORY);
         jobMap.put(joba.getJobId(), joba);
         
         JobConf jobb = new JobConf();
@@ -26,7 +27,7 @@ public class JobRepository {
         jobb.setJobType(JobType.COMMAND);
         jobb.setCommand("cmd /c echo abc");
         jobb.setPoolPath("/root/pool1");
-        jobb.setStrategy("memory");
+        jobb.setTaskStrategy(TaskStrategy.MEMORY);
         jobMap.put(jobb.getJobId(), jobb);
         
         JobConf jobc = new JobConf();
@@ -34,7 +35,7 @@ public class JobRepository {
         jobc.setJobType(JobType.COMMAND);
         jobc.setCommand("cmd /c echo abc");
         jobc.setPoolPath("/root/pool1");
-        jobc.setStrategy("memory");
+        jobc.setTaskStrategy(TaskStrategy.MEMORY);
         jobMap.put(jobc.getJobId(), jobc);
         
         JobConf jobd = new JobConf();
@@ -42,7 +43,7 @@ public class JobRepository {
         jobd.setJobType(JobType.COMMAND);
         jobd.setCommand("cmd /c echo abc");
         jobd.setPoolPath("/root/pool1");
-        jobd.setStrategy("memory");
+        jobd.setTaskStrategy(TaskStrategy.MEMORY);
         jobMap.put(jobd.getJobId(), jobd);
     }
     

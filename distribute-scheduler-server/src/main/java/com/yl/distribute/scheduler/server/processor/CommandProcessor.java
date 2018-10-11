@@ -14,16 +14,13 @@ public class CommandProcessor extends CommonTaskProcessor implements IServerProc
     
     @Override
     public void execute(ChannelHandlerContext ctx){        
-        executeTask(ctx,buildCommand());
-       
+        executeTask(ctx,buildCommand());       
     }
 
     @Override
     public String buildCommand() {
         StringBuilder commandBuilder = new StringBuilder();
         commandBuilder.append(task.getJob().getCommand());
-        commandBuilder.append(" ");
-        commandBuilder.append(task.getJob().getCommandParameters());
         return commandBuilder.toString();
     }
  }

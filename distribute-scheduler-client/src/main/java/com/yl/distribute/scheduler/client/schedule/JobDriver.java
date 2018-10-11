@@ -8,11 +8,9 @@ import java.util.Properties;
 import java.util.Queue;
 import java.util.Set;
 import java.util.Stack;
-
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
 import com.yl.distribute.scheduler.client.TaskClient;
 import com.yl.distribute.scheduler.client.callback.TaskResponseManager;
 import com.yl.distribute.scheduler.common.bean.JobConf;
@@ -50,7 +48,7 @@ public class JobDriver {
     public void start() {
 //        startJob(job);
 //        new Thread(new DFSJobChecker()).start();
-        bfsSearch(job);
+    	bfsVisit(job);
         new Thread(new BFSJobChecker()).start();
         
     }
@@ -59,7 +57,8 @@ public class JobDriver {
      * 解析任务并交给TaskClient去提交
      * @param rootTask
      * @throws Exception
-     */    
+     */ 
+    @Deprecated
     public void startJob(JobConf job) {
         if(job == null ) {
             return;
@@ -86,7 +85,7 @@ public class JobDriver {
     }   
     
     
-    public void bfsSearch(JobConf job) {
+    public void bfsVisit(JobConf job) {
         queue.offer(job);
         bfsVisited.add(job.getJobId());
         bfsLoop();
@@ -115,13 +114,8 @@ public class JobDriver {
         }
         //父任务中只要有一个没有完成就退出
         for(JobConf jobConf : job.getJobReleation().getParentJobs()){
-            TaskResponse taskResponse = TaskResponseManager.get(jobConf.getJobId());
-            if(taskResponse == null){
-                return false;
-            }
-            if(!((taskResponse.getTaskStatus() == TaskStatus.FAILED )
-                    || (taskResponse.getTaskStatus() == TaskStatus.SUCCESS))){
-                return false;
+            if(!jobHasFinished(jobConf)) {
+            	return false;
             }
         }
         return true;
@@ -182,7 +176,7 @@ public class JobDriver {
         task.setTaskStatus(TaskStatus.SUBMIT);
         client.submit(task);
     }
-    
+    @Deprecated
     private final class DFSJobChecker implements Runnable{
 
         public void run() {
@@ -217,32 +211,39 @@ public class JobDriver {
     private final class BFSJobChecker implements Runnable{
 
         public void run() {
-            //任务是否遍历完
-            while(!bfsQueue.isEmpty()){
-                JobConf job = bfsQueue.peek();
-                //如果父任务执行完成就提交当前任务，如果没有完成压入队列顶，每隔1秒检查父任务是否完成
-                if(job != null){
-                    if (parentJobsHaveFinished(job)){
-                        if(!jobHasFinished(job)){
-                            System.out.println("submit job " + job.getJobId());
-                            LOG.info("submit job " + job.getJobId());
-                            submitJob(job);
-                        }
-                        bfsQueue.poll();
-                    }   
-                }
- 
-                try {
-                    Thread.sleep(JOB_CHECK_INTERVAL);
-                } catch (InterruptedException e) {
-                    LOG.error(e);
-                }
-            }  
+        	try {
+                //任务是否遍历完
+                while(!bfsQueue.isEmpty()){
+                    JobConf job = bfsQueue.peek();
+                    //如果父任务执行完成就提交当前任务，如果没有完成压入队列顶，每隔1秒检查父任务是否完成
+                    if(job != null){
+                        if (parentJobsHaveFinished(job)){
+                            if(!jobHasFinished(job)){
+                                System.out.println("submit job " + job.getJobId());
+                                LOG.info("submit job " + job.getJobId());
+                                submitJob(job);
+                            }
+                            bfsQueue.poll();
+                        }   
+                    }
+     
+                    try {
+                        Thread.sleep(JOB_CHECK_INTERVAL);
+                    } catch (InterruptedException e) {
+                        LOG.error(e);
+                    }
+                } 
+        	}finally {
+        		cleanCallBack();
+        	}            
+        }   
+        
+        private void cleanCallBack() {
             //所有任务执行完清除callback
             for(String jobId : bfsVisited) {
                 System.out.println("remove job " + jobId);
                 TaskResponseManager.remove(jobId);
             }
-        }        
+        }
     }
 }

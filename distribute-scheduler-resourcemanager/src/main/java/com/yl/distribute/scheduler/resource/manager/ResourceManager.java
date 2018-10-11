@@ -159,7 +159,7 @@ public class ResourceManager{
         long usedMemory = 0;
         synchronized(resourceMap){
             HostInfo hostInfo = resourceMap.get(serverName);
-            usedMemory = MetricsUtils.getTaskMemory(jobConf.getExecuteParameters());
+            usedMemory = MetricsUtils.getTaskMemory(jobConf);
             hostInfo.setAvailableCores(hostInfo.getAvailableCores() - 1);
             hostInfo.setAvailableMemory(hostInfo.getAvailableMemory() - usedMemory);  
         }
@@ -174,7 +174,7 @@ public class ResourceManager{
         long usedMemory = 0;
         synchronized(resourceMap){
             HostInfo hostInfo = resourceMap.get(serverName);
-            usedMemory = MetricsUtils.getTaskMemory(jobConf.getExecuteParameters());
+            usedMemory = MetricsUtils.getTaskMemory(jobConf);
             hostInfo.setAvailableCores(hostInfo.getAvailableCores() + 1);
             hostInfo.setAvailableMemory(hostInfo.getAvailableMemory() + usedMemory); 
         }
@@ -214,9 +214,9 @@ public class ResourceManager{
      * @return
      */
     public synchronized String getIdleHost(JobConf input,String... lastFailedHosts) {
-        HostSelectStrategy hostSelectStrategy = ResourceStrategy.getStrategy(input.getStrategy());
+        HostSelectStrategy hostSelectStrategy = ResourceStrategy.getStrategy(input.getTaskStrategy());
         if(hostSelectStrategy == null){
-            throw new RuntimeException("can not find strategy class for " + input.getStrategy());
+            throw new RuntimeException("can not find strategy class for " + input.getTaskStrategy());
         }
         return new ResourceStrategyContext(hostSelectStrategy).select(this,input,lastFailedHosts);
 

@@ -4,8 +4,11 @@ import java.lang.management.ManagementFactory;
 import java.net.InetAddress;
 import java.util.Arrays;
 import java.util.List;
+
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
 import com.sun.management.OperatingSystemMXBean;
+import com.yl.distribute.scheduler.common.bean.JobConf;
 import com.yl.distribute.scheduler.common.constants.GlobalConstants;
 
 @SuppressWarnings("restriction")
@@ -17,6 +20,10 @@ public class MetricsUtils {
         System.out.println(getAvailiableProcessors());
         getHostName();
         getHostIpAddress();
+        JobConf jobConf = new JobConf();
+        jobConf.setCommand("java -jar abc.jar");
+        jobConf.setResourceParameters("-memory1024m -cpu4");
+        System.out.println(getTaskMemory(jobConf));
     }  
 
     
@@ -54,16 +61,33 @@ public class MetricsUtils {
         return ip;
     }
     
-    public static long getTaskMemory(String args) {
-        if(args != null && args.length() > 0) {
-            List<String> parameters = Arrays.asList(args.split("\\s+"));
-            for(String parameter : parameters) {
-                if(parameter.startsWith("-Xmx")) {
-                    return NumberUtils.toInt(parameter.substring(4,parameter.length()-1));
-                }
-            }
-            return GlobalConstants.DEFAUTL_MEMEORY;
+    public static long getTaskMemory(JobConf jobConf) {
+    	long memory = 0;
+    	if(StringUtils.isNotBlank(jobConf.getCommand())) {
+    		if(jobConf.getCommand().indexOf("-Xmx") > 0) {
+    			memory = extractMemoryInfo(jobConf.getCommand(),"-Xmx");
+    			if(memory > 0 ) {
+    				return memory;
+    			}
+    		}
+    	}
+    	
+        if(StringUtils.isNotBlank(jobConf.getResourceParameters())) {
+        	memory = extractMemoryInfo(jobConf.getResourceParameters(),"-memory");
+			if(memory > 0 ) {
+				return memory;
+			}
         }
         return GlobalConstants.DEFAUTL_MEMEORY;
+    }
+    
+    private static long extractMemoryInfo(String command,String key) {
+        List<String> parameters = Arrays.asList(command.split("\\s+"));
+        for(String parameter : parameters) {
+            if(parameter.startsWith(key)) {
+                return NumberUtils.toInt(parameter.substring(key.length(),parameter.length()-1));
+            }
+        }
+        return 0;
     }
 }

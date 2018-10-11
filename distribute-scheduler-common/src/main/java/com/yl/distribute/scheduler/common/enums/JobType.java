@@ -11,6 +11,6 @@ public enum JobType {
                 return tt;
             }
         }
-        throw new RuntimeException("can not find task type " + taskType);
+        throw new RuntimeException("does not support task type " + taskType);
     }
 }

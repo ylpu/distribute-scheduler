@@ -10,6 +10,7 @@ import com.yl.distribute.scheduler.common.bean.JobConf;
 import com.yl.distribute.scheduler.common.bean.TaskRequest;
 import com.yl.distribute.scheduler.common.enums.JobType;
 import com.yl.distribute.scheduler.common.enums.TaskStatus;
+import com.yl.distribute.scheduler.common.enums.TaskStrategy;
 import com.yl.distribute.scheduler.core.resource.rpc.ResourceProxy;
 import com.yl.distribute.scheduler.core.resource.service.ResourceService;
 
@@ -56,7 +57,7 @@ public class SchedulerClientTest {
             jobConf.setJobType(JobType.COMMAND);
             jobConf.setCommand("ls -ltr");
             jobConf.setPoolPath("/root/pool1");
-            jobConf.setStrategy("memory");
+            jobConf.setTaskStrategy(TaskStrategy.MEMORY);
             jobConf.setRetryTimes(0);
             task.setJob(jobConf);
             task.setTaskId(id);
