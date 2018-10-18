@@ -2,6 +2,7 @@ package com.yl.distribute.scheduler.core.zk;
 
 import java.io.IOException;
 import org.I0Itec.zkclient.ZkClient;
+import org.I0Itec.zkclient.exception.ZkNodeExistsException;
 import org.apache.zookeeper.CreateMode;
 import org.apache.zookeeper.KeeperException;
 import org.apache.zookeeper.ZooDefs.Ids;
@@ -53,20 +54,22 @@ public class ZKHelper {
        hostInfo.setAvailableMemory(MetricsUtils.getMemInfo());
        hostInfo.setIp(MetricsUtils.getHostIpAddress() + ":" + 8081);
        hostInfo.setHostName(MetricsUtils.getHostName() + ":" + 8081);
-       zkClient.createEphemeral("/root/pool1/BIH-D-6253:8081", hostInfo);
+//       zkClient.createEphemeral("/root/pool1/BIH-D-6253:8081", hostInfo);
        hostInfo.setAvailableMemory(MetricsUtils.getMemInfo() - 1000);
        
-       HostInfo hostInfo1 = new HostInfo();
-       hostInfo1.setTotalCores(MetricsUtils.getAvailiableProcessors());
-       hostInfo1.setTotalMemory(MetricsUtils.getMemInfo());
-       hostInfo1.setAvailableCores(MetricsUtils.getAvailiableProcessors());
-       hostInfo1.setAvailableMemory(MetricsUtils.getMemInfo());
-       hostInfo1.setIp(MetricsUtils.getHostIpAddress() + ":" + 8083);
-       hostInfo1.setHostName(MetricsUtils.getHostName() + ":" + 8083);
+       try {
+    	   ZKHelper.createEphemeralNode(zkClient, "/root", null); 
+       }catch(Exception e) {
+    	   if(e instanceof ZkNodeExistsException) {
+    		   ZkNodeExistsException nee = (ZkNodeExistsException)e;
+    		   System.out.println(nee);
+    	   }
+       }
        
-       ZKHelper.setData(zkClient, "/root/pool1/BIH-D-6253:8081", hostInfo);
-       HostInfo obj = ZKHelper.getData(zkClient, "/root/pool1/BIH-D-6253:8081");
-       System.out.println(obj.getAvailableMemory());
+       
+//       ZKHelper.setData(zkClient, "/root/pool1/BIH-D-6253:8081", hostInfo);
+//       HostInfo obj = ZKHelper.getData(zkClient, "/root/pool1/BIH-D-6253:8081");
+//       System.out.println(obj.getAvailableMemory());
        
     }
 }

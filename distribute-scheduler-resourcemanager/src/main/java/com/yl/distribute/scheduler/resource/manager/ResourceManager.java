@@ -1,5 +1,6 @@
 package com.yl.distribute.scheduler.resource.manager;
 
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -40,8 +41,47 @@ public class ResourceManager{
         return resourceManager;
     }
     
-    public void init() {
-        init(rootPool);
+    /**
+     * 竞选节点为active resource manager
+     */
+    public void compainAndInit() {
+    	compainAndInit(rootPool);
+    }
+    
+    /**
+     * 竞选节点为active resource manager
+     * @param rootPool
+     */    
+    public void compainAndInit(String rootPool) {
+        ZkClient zkClient = ZKHelper.getClient();
+        
+        List<String> root = zkClient.getChildren("/");
+        if(root == null || !root.contains("root")) {
+        	ZKHelper.createNode(zkClient, rootPool, null);        	
+        }
+        
+        List<String> children = zkClient.getChildren(rootPool);
+        if(children == null || !children.contains("rm")) {
+        	ZKHelper.createNode(zkClient, rootPool + "/rm", null);        	
+        }
+        List<String> rmChildren = zkClient.getChildren(rootPool + "/rm");
+        if(rmChildren == null || rmChildren.size() == 0) {
+        	ZKHelper.createEphemeralNode(zkClient, rootPool + "/rm/" + MetricsUtils.getHostName() + ":8088", null);
+        	init(rootPool);
+        }else {
+        	zkClient.subscribeChildChanges(rootPool + "/rm", new IZkChildListener() {              
+                public void handleChildChange(String parentPath, List<String> currentChildren) throws Exception { 
+                    LOG.warn(String.format("[ZookeeperRegistry] service list change: path=%s, currentChildren=%s",
+                            parentPath, currentChildren.toString()));                    
+                    try {
+                 	   ZKHelper.createEphemeralNode(zkClient, parentPath + "/" + MetricsUtils.getHostName() + ":8088", null); 
+                 	   init(rootPool);
+                    }catch(Exception e) {
+                    	LOG.warn(MessageFormat.format("{0} can not compain as an active resourcemanager with exception {1}", MetricsUtils.getHostName(),e.getMessage()));
+                    }
+                }  
+            });  
+        }
     }
     
     public void init(String rootPool) {

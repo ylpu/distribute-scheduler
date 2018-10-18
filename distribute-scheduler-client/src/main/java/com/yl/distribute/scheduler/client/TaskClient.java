@@ -1,7 +1,6 @@
 package com.yl.distribute.scheduler.client;
 
 import java.util.Date;
-
 import javax.ws.rs.core.Response;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
@@ -16,7 +15,6 @@ import com.yl.distribute.scheduler.common.utils.CallBackUtils;
 import com.yl.distribute.scheduler.core.resource.rpc.ResourceProxy;
 import com.yl.distribute.scheduler.core.resource.service.ResourceService;
 import com.yl.distribute.scheduler.core.task.TaskManager;
-import com.yl.distribute.scheduler.core.zk.ZKResourceManager;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelFutureListener;
@@ -69,8 +67,7 @@ public class TaskClient {
                         @Override
                         public void operationComplete(ChannelFuture future) throws Exception {
                             if(future.isSuccess()) {
-                                LOG.info("提交任务" + task.getTaskId() + "-" + task.getId() + "到" + idleHost);
-                                ZKResourceManager.subZkResource(task);
+                                LOG.info("提交任务" + task.getTaskId() + "-" + task.getId() + "到" + idleHost);                                
                                 service.subResource(idleHost, task.getJob());  
                             } else {  
                             	LOG.error("提交任务" + task.getTaskId() + "-" + task.getId() + "到" + idleHost + "失败");  

@@ -17,7 +17,9 @@ public class JobConf implements Serializable,Comparable<JobConf>{
     private TaskStrategy taskStrategy;
     private String cronExpression;    
     private String command;
-    private String resourceParameters;  
+    private String alertEmail;
+    private String owner;
+    private String resourceParameters;      
     private JobReleation jobReleation = new JobReleation();    
     
     public Integer getId() {
@@ -79,6 +81,18 @@ public class JobConf implements Serializable,Comparable<JobConf>{
 	}
 	public void setTaskStrategy(TaskStrategy taskStrategy) {
 		this.taskStrategy = taskStrategy;
+	}	
+	public String getAlertEmail() {
+		return alertEmail;
+	}
+	public void setAlertEmail(String alertEmail) {
+		this.alertEmail = alertEmail;
+	}
+	public String getOwner() {
+		return owner;
+	}
+	public void setOwner(String owner) {
+		this.owner = owner;
 	}
 	public JobReleation getJobReleation() {
         return jobReleation;

@@ -67,9 +67,9 @@ public class ResourceServer {
             rootPool = args[1];     
         }        
         if(StringUtils.isEmpty(rootPool)) {
-            ResourceManager.getInstance().init();
+            ResourceManager.getInstance().compainAndInit();
         }else {
-            ResourceManager.getInstance().init(rootPool);
+            ResourceManager.getInstance().compainAndInit(rootPool);
         }    
         //start jmx monitor
         new ResourceManagerAgent().start();

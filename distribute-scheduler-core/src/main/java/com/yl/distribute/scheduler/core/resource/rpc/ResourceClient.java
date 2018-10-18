@@ -1,11 +1,16 @@
 package com.yl.distribute.scheduler.core.resource.rpc;
 
 import java.util.*;
+
+import org.I0Itec.zkclient.ZkClient;
+import org.apache.commons.lang3.math.NumberUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import com.yl.distribute.scheduler.common.bean.ResourceRequest;
 import com.yl.distribute.scheduler.common.bean.ResourceResponse;
 import com.yl.distribute.scheduler.core.config.Configuration;
+import com.yl.distribute.scheduler.core.zk.ZKHelper;
+
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelFuture;
@@ -33,8 +38,18 @@ public class ResourceClient {
     public ResourceClient connect() throws InterruptedException {
         
         Properties prop = Configuration.getConfig("config.properties");        
-        String resourceServer = Configuration.getString(prop, "resource.manager.server");
-        int resourcePort = Configuration.getInt(prop, "resource.manager.port");
+        String zklist = Configuration.getString(prop, "zk.server.list");
+        
+        ZkClient zkClient = ZKHelper.getClient(zklist);        
+        List<String> rmList = zkClient.getChildren("/root/rm");
+        
+        if(rmList == null) {
+        	throw new RuntimeException("can not get active resource manager");
+        }
+        
+    	String[] resource = rmList.get(0).split(":");
+    	String resourceServer =  resource[0];
+    	int resourcePort = NumberUtils.toInt(resource[1]);
         
         ResourceClient client = new ResourceClient();         
         EventLoopGroup group = new NioEventLoopGroup();
