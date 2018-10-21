@@ -14,11 +14,13 @@ import org.I0Itec.zkclient.IZkChildListener;
 import com.yl.distribute.scheduler.common.bean.HostInfo;
 import com.yl.distribute.scheduler.common.bean.JobConf;
 import com.yl.distribute.scheduler.common.utils.MetricsUtils;
+import com.yl.distribute.scheduler.core.config.Configuration;
+import com.yl.distribute.scheduler.core.redis.RedisClient;
 import com.yl.distribute.scheduler.core.zk.*;
 
 public class ResourceManager{
     
-    private static Log LOG = LogFactory.getLog(ResourceManager.class);
+    private static Log LOG = LogFactory.getLog(ResourceManager.class);   
     
     private static ResourceManager resourceManager = new ResourceManager(); 
     
@@ -32,6 +34,8 @@ public class ResourceManager{
     
     //key is hostname,value is tasknumbers
     public Map<String,Integer> taskMap = new HashMap<String,Integer>();
+    
+    private static final String REDIS_CONFIG = "redis.properties";
         
     
     private ResourceManager() {        
@@ -60,16 +64,15 @@ public class ResourceManager{
         	ZKHelper.createNode(zkClient, rootPool, null);        	
         }
         
-        List<String> children = zkClient.getChildren(rootPool);
-        if(children == null || !children.contains("rm")) {
-        	ZKHelper.createNode(zkClient, rootPool + "/rm", null);        	
+        if(root == null || !root.contains("rm")) {
+        	ZKHelper.createNode(zkClient, "/rm", null);        	
         }
-        List<String> rmChildren = zkClient.getChildren(rootPool + "/rm");
+        List<String> rmChildren = zkClient.getChildren("/rm");
         if(rmChildren == null || rmChildren.size() == 0) {
-        	ZKHelper.createEphemeralNode(zkClient, rootPool + "/rm/" + MetricsUtils.getHostName() + ":8088", null);
+        	ZKHelper.createEphemeralNode(zkClient, "/rm/" + MetricsUtils.getHostName() + ":8088", null);
         	init(rootPool);
         }else {
-        	zkClient.subscribeChildChanges(rootPool + "/rm", new IZkChildListener() {              
+        	zkClient.subscribeChildChanges("/rm", new IZkChildListener() {              
                 public void handleChildChange(String parentPath, List<String> currentChildren) throws Exception { 
                     LOG.warn(String.format("[ZookeeperRegistry] service list change: path=%s, currentChildren=%s",
                             parentPath, currentChildren.toString()));                    
@@ -172,7 +175,8 @@ public class ResourceManager{
     private synchronized void removeResource(List<String> disconnectedChildren) {
         if(disconnectedChildren != null && disconnectedChildren.size() > 0) {
             for(String child : disconnectedChildren) {
-                resourceMap.remove(child);
+                RedisClient.getInstance(Configuration.getConfig(REDIS_CONFIG)).del(child.getBytes());
+                resourceMap.remove(child);                
             }
         }
     }
@@ -185,8 +189,9 @@ public class ResourceManager{
     private synchronized void setResource(ZkClient zkClient,String poolPath,String... children) {
         if(children != null && children.length > 0) {
             for(String child : children) {                
-                HostInfo hostInfo = zkClient.readData(poolPath + "/" + child);             
-                resourceMap.put(child, hostInfo);     
+//                HostInfo hostInfo = zkClient.readData(poolPath + "/" + child);   
+                HostInfo redisHostInfo = RedisClient.getInstance(Configuration.getConfig(REDIS_CONFIG)).getObject(child);
+                resourceMap.put(child, redisHostInfo);     
             }
         }
     }

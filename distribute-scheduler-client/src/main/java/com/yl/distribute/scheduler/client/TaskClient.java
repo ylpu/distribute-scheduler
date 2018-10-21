@@ -68,7 +68,7 @@ public class TaskClient {
                         public void operationComplete(ChannelFuture future) throws Exception {
                             if(future.isSuccess()) {
                                 LOG.info("提交任务" + task.getTaskId() + "-" + task.getId() + "到" + idleHost);                                
-                                service.subResource(idleHost, task.getJob());  
+                                service.subResource(idleHost, task);  
                             } else {  
                             	LOG.error("提交任务" + task.getTaskId() + "-" + task.getId() + "到" + idleHost + "失败");  
                             }                                

@@ -45,6 +45,6 @@ public class ProcessorProxy implements InvocationHandler{
     private void releaseResource(TaskRequest task) {
         LOG.info("start to release resource for " + task.getRunningHost());
         ResourceService service = ResourceProxy.get(ResourceService.class);
-        service.addResource(task.getRunningHost(), task.getJob());
+        service.addResource(task.getRunningHost(), task);
     }
 }

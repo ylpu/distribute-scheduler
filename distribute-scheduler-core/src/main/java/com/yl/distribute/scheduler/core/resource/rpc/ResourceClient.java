@@ -6,9 +6,11 @@ import org.I0Itec.zkclient.ZkClient;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
 import com.yl.distribute.scheduler.common.bean.ResourceRequest;
 import com.yl.distribute.scheduler.common.bean.ResourceResponse;
 import com.yl.distribute.scheduler.core.config.Configuration;
+import com.yl.distribute.scheduler.core.resource.ResouceServerChangeListener;
 import com.yl.distribute.scheduler.core.zk.ZKHelper;
 
 import io.netty.bootstrap.Bootstrap;
@@ -37,19 +39,10 @@ public class ResourceClient {
 
     public ResourceClient connect() throws InterruptedException {
         
-        Properties prop = Configuration.getConfig("config.properties");        
-        String zklist = Configuration.getString(prop, "zk.server.list");
-        
-        ZkClient zkClient = ZKHelper.getClient(zklist);        
-        List<String> rmList = zkClient.getChildren("/root/rm");
-        
-        if(rmList == null) {
-        	throw new RuntimeException("can not get active resource manager");
-        }
-        
-    	String[] resource = rmList.get(0).split(":");
-    	String resourceServer =  resource[0];
-    	int resourcePort = NumberUtils.toInt(resource[1]);
+        String resourceServer = getResourceServer();        
+    	String[] serverAndPort = resourceServer.split(":");
+    	String server =  serverAndPort[0];
+    	int port = NumberUtils.toInt(serverAndPort[1]);
         
         ResourceClient client = new ResourceClient();         
         EventLoopGroup group = new NioEventLoopGroup();
@@ -70,12 +63,12 @@ public class ResourceClient {
             }
         });
 
-        ChannelFuture future = bootstrap.connect(resourceServer, resourcePort).addListener(new ChannelFutureListener(){
+        ChannelFuture future = bootstrap.connect(server, port).addListener(new ChannelFutureListener(){
             public void operationComplete(ChannelFuture future)
                     throws Exception {
                 if (!future.isSuccess()){
-                     System.out.println("can not connect to " + resourceServer + ":" + resourcePort);
-                     LOG.warn("can not connect to " + resourceServer + ":" + resourcePort);
+                     System.out.println("can not connect to " + server + ":" + port);
+                     LOG.warn("can not connect to " + server + ":" + port);
                      future.channel().close();
                   }
                }            
@@ -84,6 +77,13 @@ public class ResourceClient {
         client.setChannel(c);
         client.setGroup(group);
         return client;
+    }
+    
+    private String getResourceServer(){
+        Properties prop = Configuration.getConfig("config.properties");        
+        String zklist = Configuration.getString(prop, "zk.server.list");
+        String rmServer = ResouceServerChangeListener.getInstance(zklist).getRmServer(); 
+        return rmServer;
     }
 
     public ResourceResponse invoke(ResourceRequest request) throws Exception {

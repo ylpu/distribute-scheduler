@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Properties;
+
 import org.I0Itec.zkclient.ZkClient;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.apache.commons.logging.Log;
@@ -12,17 +13,20 @@ import org.apache.commons.logging.LogFactory;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.webapp.WebAppContext;
 import org.eclipse.jetty.xml.XmlConfiguration;
+
 import com.yl.distribute.scheduler.common.bean.HostInfo;
 import com.yl.distribute.scheduler.common.bean.TaskRequest;
 import com.yl.distribute.scheduler.common.bean.TaskResponse;
 import com.yl.distribute.scheduler.common.enums.TaskStatus;
 import com.yl.distribute.scheduler.common.utils.MetricsUtils;
 import com.yl.distribute.scheduler.core.config.Configuration;
+import com.yl.distribute.scheduler.core.redis.RedisClient;
 import com.yl.distribute.scheduler.core.task.TaskManager;
 import com.yl.distribute.scheduler.core.zk.ZKHelper;
 import com.yl.distribute.scheduler.server.handler.TaskCall;
 import com.yl.distribute.scheduler.server.handler.TaskServerHandler;
 import com.yl.distribute.scheduler.server.handler.TaskTracker;
+
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelHandlerContext;
@@ -42,6 +46,8 @@ import io.netty.util.concurrent.DefaultEventExecutorGroup;
 public class TaskServer {
     
     private static Log LOG = LogFactory.getLog(TaskServer.class);
+    
+    private static final String REDIS_CONFIG = "redis.properties";
     
     private int serverPort;
     
@@ -78,7 +84,8 @@ public class TaskServer {
         }
     }
     /**
-     * 注册server的信息到zk上
+     * 注册server路径信息到zk上
+     * 注册server数据信息到redis
      * @param zkServers
      * @param path
      */
@@ -89,7 +96,10 @@ public class TaskServer {
         }
         HostInfo hostInfo = new HostInfo();
         setRegistData(hostInfo);
-        ZKHelper.createEphemeralNode(client,path, hostInfo); 
+        ZKHelper.createEphemeralNode(client,path, hostInfo);
+        
+        RedisClient redisClient = RedisClient.getInstance(Configuration.getConfig(REDIS_CONFIG));        
+        redisClient.setObject(MetricsUtils.getHostName() + ":" + serverPort, hostInfo, 0);        
     } 
     
     
