@@ -26,8 +26,8 @@ public class ResourceServiceImpl implements ResourceService{
      */
     public void addResource(String serverName,TaskRequest taskRequest) {
         
-//        Properties prop = Configuration.getConfig(REDIS_CONFIG);
-//        RedisClient.getInstance(prop).getAndInc(taskRequest);
+        Properties prop = Configuration.getConfig(REDIS_CONFIG);
+        RedisClient.getInstance(prop).getAndInc(taskRequest);
         
         ResourceManager.getInstance().addResource(serverName, taskRequest.getJob());
         ResourceManager.getInstance().decreaseTask(serverName);
@@ -40,8 +40,8 @@ public class ResourceServiceImpl implements ResourceService{
      */
     public void subResource(String serverName,TaskRequest taskRequest) {
         
-//        Properties prop = Configuration.getConfig(REDIS_CONFIG);
-//        RedisClient.getInstance(prop).getAndSub(taskRequest);
+        Properties prop = Configuration.getConfig(REDIS_CONFIG);
+        RedisClient.getInstance(prop).getAndSub(taskRequest);
         
         ResourceManager.getInstance().subResource(serverName, taskRequest.getJob());
         ResourceManager.getInstance().increaseTask(serverName);

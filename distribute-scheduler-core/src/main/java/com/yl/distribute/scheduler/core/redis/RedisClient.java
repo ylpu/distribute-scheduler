@@ -5,15 +5,13 @@ import java.io.ByteArrayOutputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.Properties;
-
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
-
 import com.yl.distribute.scheduler.common.bean.HostInfo;
+import com.yl.distribute.scheduler.common.bean.JobConf;
 import com.yl.distribute.scheduler.common.bean.TaskRequest;
 import com.yl.distribute.scheduler.common.utils.MetricsUtils;
 import com.yl.distribute.scheduler.core.config.Configuration;
-
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
 import redis.clients.jedis.JedisPoolConfig;
@@ -133,7 +131,6 @@ public class RedisClient {
         try {
             if (jedisPool != null) {
                 Jedis resource = jedisPool.getResource();
-                resource.select(1);             
                 return resource;
             } else {
                 System.out.println("can not get redis pool");
@@ -375,7 +372,7 @@ public class RedisClient {
         HostInfo hostInfo = RedisClient.getInstance(null).getObject(taskRequest.getRunningHost());
         hostInfo.setAvailableMemory(hostInfo.getAvailableMemory() + MetricsUtils.getTaskMemory(taskRequest.getJob()));
         hostInfo.setAvailableCores(hostInfo.getAvailableCores() + 1);
-        RedisClient.getInstance(null).setObject(taskRequest.getRunningHost(), host,0);   
+        RedisClient.getInstance(null).setObject(taskRequest.getRunningHost(), hostInfo,0);   
         RedisLock.releaseLock(jedis, taskRequest.getRunningHost(), identifier);
         jedis.close();
     }
@@ -388,7 +385,7 @@ public class RedisClient {
         HostInfo hostInfo = RedisClient.getInstance(null).getObject(taskRequest.getRunningHost());
         hostInfo.setAvailableMemory(hostInfo.getAvailableMemory() - MetricsUtils.getTaskMemory(taskRequest.getJob()));
         hostInfo.setAvailableCores(hostInfo.getAvailableCores() - 1);
-        RedisClient.getInstance(null).setObject(taskRequest.getRunningHost(), host,0);        
+        RedisClient.getInstance(null).setObject(taskRequest.getRunningHost(), hostInfo,0);        
         RedisLock.releaseLock(jedis, taskRequest.getRunningHost(), identifier);
         jedis.close();
     }
@@ -431,37 +428,42 @@ public class RedisClient {
         return null;
     }
     
-    public void closePool(){
+    public void close(){
         if(jedisPool != null){
             jedisPool.close();
         }
     }
     
     public static void main(String[] args){
+    	
+        HostInfo redisHostInfo = RedisClient.getInstance(null).getObject("ppd-02020301:8081");
+        System.out.println(redisHostInfo.getAvailableMemory());
        
-//        for(int i =0; i< 5; i++){        
-//            
-//            Thread t = new Thread(new Runnable(){
-//                
-//                TaskRequest tr = new TaskRequest();
-//
-//                @Override
-//                public void run() {
-//                    RedisClient.getInstance(null).getAndInc(tr);
-//                }
-//                
-//            });
-//            t.start();
-//            System.out.println("started thread " + t.getName());
-//        }
-//        
-//        try {
-//            Thread.sleep(1000);
-//        } catch (InterruptedException e) {
-//            e.printStackTrace();
-//        }
-      HostInfo redisHostInfo = RedisClient.getInstance(null).getObject("asus-PC:8081");
-      System.out.println(redisHostInfo.getAvailableMemory());
+        for(int i =0; i< 100; i++){       	
+            TaskRequest tr = new TaskRequest();
+            JobConf jc = new JobConf();            
+            jc.setCommand("java -jar abc.jar");
+            jc.setResourceParameters("-memory100m -cpu4");
+            tr.setJob(jc);
+            tr.setRunningHost("ppd-02020301:8081");
+            
+            Thread t = new Thread(new Runnable(){
+            	@Override
+                public void run() {
+                    RedisClient.getInstance(null).getAndInc(tr);
+                }
+                
+            });
+            t.start();            
+        }
+        
+        try {
+            Thread.sleep(10000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+      HostInfo redisHostInfo1 = RedisClient.getInstance(null).getObject("ppd-02020301:8081");
+      System.out.println(redisHostInfo1.getAvailableMemory());
 //      RedisClient.getInstance(null).del("asus-PC:8081".getBytes());
     } 
 }

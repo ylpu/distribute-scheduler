@@ -97,9 +97,13 @@ public class TaskServer {
         HostInfo hostInfo = new HostInfo();
         setRegistData(hostInfo);
         ZKHelper.createEphemeralNode(client,path, hostInfo);
-        
-        RedisClient redisClient = RedisClient.getInstance(Configuration.getConfig(REDIS_CONFIG));        
-        redisClient.setObject(MetricsUtils.getHostName() + ":" + serverPort, hostInfo, 0);        
+        RedisClient redisClient = null;
+        try {
+            redisClient = RedisClient.getInstance(Configuration.getConfig(REDIS_CONFIG));        
+            redisClient.setObject(MetricsUtils.getHostName() + ":" + serverPort, hostInfo, 0);
+        }finally {
+        	redisClient.close();
+        }
     } 
     
     

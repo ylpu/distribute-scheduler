@@ -53,7 +53,7 @@ public class ResouceServerChangeListener {
         zkClient.subscribeChildChanges(rmPath, new IZkChildListener() {              
             public void handleChildChange(String parentPath, List<String> currentChildren) throws Exception {  
                 System.out.println(String.format("[ZookeeperRegistry] service list change: path=%s, currentChilds=%s",
-                        parentPath, currentChildren.toString())); 
+                        parentPath, currentChildren.toString()));
                 if(currentChildren != null && currentChildren.size() >0){
                     rmServer = currentChildren.get(0);
                 } else{
