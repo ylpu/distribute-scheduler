@@ -17,19 +17,14 @@ import io.netty.handler.codec.LengthFieldPrepender;
 import io.netty.handler.codec.serialization.ClassResolvers;
 import io.netty.handler.codec.serialization.ObjectDecoder;
 import io.netty.handler.codec.serialization.ObjectEncoder;
-
 import java.net.InetSocketAddress;
 import java.util.Map;
 import java.util.Properties;
 import java.util.concurrent.ConcurrentHashMap;
-
-import org.I0Itec.zkclient.ZkClient;
 import org.apache.commons.lang3.math.NumberUtils;
-
 import com.yl.distribute.scheduler.client.handler.SchedulerClientHander;
-import com.yl.distribute.scheduler.common.bean.HostInfo;
 import com.yl.distribute.scheduler.core.config.Configuration;
-import com.yl.distribute.scheduler.core.zk.ZKHelper;
+
 
 
 public class SchedulerClientPool {   
@@ -66,30 +61,19 @@ public class SchedulerClientPool {
     
     public synchronized SimpleChannelPool getChannelPool(String poolPath,String idleHost) {
         SimpleChannelPool channelPool = channelPoolMap.get(idleHost);
-        if(channelPool == null) {
+        if(channelPool == null) {            
+            Properties configProp = Configuration.getConfig("Config.properties");
+            int poolNumber = Configuration.getInt(configProp, "channel.pool.numbers");
+            String[] hostAndPort = idleHost.split(":");
+            String hostName = hostAndPort[0];
+            int port = NumberUtils.toInt(hostAndPort[1]);
             
-            Properties prop = Configuration.getConfig("config.properties");        
-            int poolNumber = Configuration.getInt(prop, "channel.pool.numbers");
-            String zkServers = Configuration.getString(prop, "zk.server.list");  
-            ZkClient zkclient = ZKHelper.getClient(zkServers);
-            HostInfo hostInfo = null;
-            try {                
-                 hostInfo = ZKHelper.getData(zkclient, poolPath + "/" + idleHost);
-            }finally {
-                if(zkclient != null) {
-                   zkclient.close();
-                }
-            }
-            if(hostInfo != null) {
-                String hostName = hostInfo.getHostName().split(":")[0];
-                int port = NumberUtils.toInt(hostInfo.getHostName().split(":")[1]);
-                
-                SchedulerClientPool clientPool = SchedulerClientPool.getInstance();            
-                clientPool.build(poolNumber);
-                SimpleChannelPool pool = clientPool.poolMap.get(new InetSocketAddress(hostName,port));                
-                channelPoolMap.put(idleHost, pool);
-                channelPool = pool; 
-            }
+            SchedulerClientPool clientPool = SchedulerClientPool.getInstance();            
+            clientPool.build(poolNumber);
+            SimpleChannelPool pool = clientPool.poolMap.get(new InetSocketAddress(hostName,port));                
+            channelPoolMap.put(idleHost, pool);
+            channelPool = pool; 
+
         }
         return channelPool;
       }

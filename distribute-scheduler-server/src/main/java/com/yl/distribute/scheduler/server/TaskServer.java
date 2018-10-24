@@ -5,7 +5,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Properties;
-
 import org.I0Itec.zkclient.ZkClient;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.apache.commons.logging.Log;
@@ -13,7 +12,6 @@ import org.apache.commons.logging.LogFactory;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.webapp.WebAppContext;
 import org.eclipse.jetty.xml.XmlConfiguration;
-
 import com.yl.distribute.scheduler.common.bean.HostInfo;
 import com.yl.distribute.scheduler.common.bean.TaskRequest;
 import com.yl.distribute.scheduler.common.bean.TaskResponse;
@@ -26,7 +24,6 @@ import com.yl.distribute.scheduler.core.zk.ZKHelper;
 import com.yl.distribute.scheduler.server.handler.TaskCall;
 import com.yl.distribute.scheduler.server.handler.TaskServerHandler;
 import com.yl.distribute.scheduler.server.handler.TaskTracker;
-
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelHandlerContext;
@@ -89,14 +86,18 @@ public class TaskServer {
      * @param zkServers
      * @param path
      */
-    public void regServer(String zkServers, String path) {  
-        ZkClient client = ZKHelper.getClient(zkServers);          
-        if(client.exists(path)) {     
-            ZKHelper.delete(client, path);     
+    public void regServer(ZkClient client, Map<String,Object> parameterMap) {  
+    	String poolPath = parameterMap.get("serverPoolPath").toString();
+        if(!client.exists(poolPath)) {     
+            ZKHelper.createNode(client, poolPath,null);     
+        }
+        String serverPath = poolPath + "/" + MetricsUtils.getHostName() + ":" + parameterMap.get("serverPort").toString();
+        if(client.exists(serverPath)) {     
+            ZKHelper.delete(client, serverPath);     
         }
         HostInfo hostInfo = new HostInfo();
         setRegistData(hostInfo);
-        ZKHelper.createEphemeralNode(client,path, hostInfo);
+        ZKHelper.createEphemeralNode(client,serverPath, hostInfo);
         RedisClient redisClient = null;
         try {
             redisClient = RedisClient.getInstance(Configuration.getConfig(REDIS_CONFIG));        
@@ -170,16 +171,18 @@ public class TaskServer {
     }  
     
     public static void start(Map<String,Object> parameterMap) throws Exception{
-        String path = parameterMap.get("serverPoolPath") + MetricsUtils.getHostName() + ":" + parameterMap.get("serverPort").toString(); 
         TaskServer server = new TaskServer(NumberUtils.toInt(parameterMap.get("serverPort").toString()));
-        server.regServer(parameterMap.get("zkServers").toString(),path);
+        
+        ZkClient client = ZKHelper.getClient(parameterMap.get("zkServers").toString());
+//        String path = parameterMap.get("serverPoolPath") + MetricsUtils.getHostName() + ":" + parameterMap.get("serverPort").toString();
+        server.regServer(client,parameterMap);
         server.startJettyServer(NumberUtils.toInt(parameterMap.get("jettyPort").toString()));
         server.addShutDownHook();
         server.start();
     }
     
     public static void main(String[] args) throws Exception {
-        Properties prop = Configuration.getConfig("config.properties");        
+        Properties prop = Configuration.getConfig("Config.properties");        
         int serverPort = Configuration.getInt(prop, "server.regist.default.port");
         String serverPoolPath = Configuration.getString(prop, "server.regist.default.pool.path");
         int jettyPort = Configuration.getInt(prop, "jetty.server.port");       

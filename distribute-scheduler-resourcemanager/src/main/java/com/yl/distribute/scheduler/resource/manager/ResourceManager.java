@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 import org.I0Itec.zkclient.ZkClient;
@@ -49,28 +50,26 @@ public class ResourceManager{
      * 竞选节点为active resource manager
      */
     public void compainAndInit() {
-    	compainAndInit(rootPool);
+    	Properties prop = new Properties();
+    	prop.put("zk.server.list", "127.0.0.1:2181");
+    	compainAndInit(rootPool,prop);
     }
     
     /**
      * 竞选节点为active resource manager
      * @param rootPool
      */    
-    public void compainAndInit(String rootPool) {
-        ZkClient zkClient = ZKHelper.getClient();
+    public void compainAndInit(String rootPool,Properties prop) {
+        ZkClient zkClient = ZKHelper.getClient(prop.getProperty("zk.server.list"));
         
-        List<String> root = zkClient.getChildren("/");
-        if(root == null || !root.contains("root")) {
-        	ZKHelper.createNode(zkClient, rootPool, null);        	
-        }
-        
+        List<String> root = zkClient.getChildren("/");      
         if(root == null || !root.contains("rm")) {
         	ZKHelper.createNode(zkClient, "/rm", null);        	
         }
         List<String> rmChildren = zkClient.getChildren("/rm");
         if(rmChildren == null || rmChildren.size() == 0) {
         	ZKHelper.createEphemeralNode(zkClient, "/rm/" + MetricsUtils.getHostName() + ":8088", null);
-        	init(rootPool);
+        	init(rootPool,prop);
         }else {
         	zkClient.subscribeChildChanges("/rm", new IZkChildListener() {              
                 public void handleChildChange(String parentPath, List<String> currentChildren) throws Exception { 
@@ -78,7 +77,7 @@ public class ResourceManager{
                             parentPath, currentChildren.toString()));                    
                     try {
                  	   ZKHelper.createEphemeralNode(zkClient, parentPath + "/" + MetricsUtils.getHostName() + ":8088", null); 
-                 	   init(rootPool);
+                 	   init(rootPool,prop);
                     }catch(Exception e) {
                     	LOG.warn(MessageFormat.format("{0} can not compain as an active resourcemanager with exception {1}", MetricsUtils.getHostName(),e.getMessage()));
                     }
@@ -87,9 +86,9 @@ public class ResourceManager{
         }
     }
     
-    public void init(String rootPool) {
+    public void init(String rootPool,Properties prop) {
         this.rootPool = rootPool;
-        ZkClient zkClient = ZKHelper.getClient();
+        ZkClient zkClient = ZKHelper.getClient(prop.getProperty("zk.server.list"));
         List<String> pools = zkClient.getChildren(rootPool);
         if(pools != null && pools.size() > 0) {
             for(String poolName : pools) {

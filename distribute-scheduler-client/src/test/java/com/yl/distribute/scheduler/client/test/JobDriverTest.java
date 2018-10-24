@@ -67,6 +67,6 @@ public class JobDriverTest {
         Element element = parser.readFile();
         JobConf rootJob = parser.getRootJob(element);        
         new JobDriver(rootJob).start();
-        Thread.sleep(15000);
+        Thread.sleep(60000);
     }
 }

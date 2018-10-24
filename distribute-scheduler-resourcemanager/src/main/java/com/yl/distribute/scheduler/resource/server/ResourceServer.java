@@ -15,9 +15,12 @@ import io.netty.handler.codec.serialization.ObjectDecoder;
 import io.netty.handler.codec.serialization.ObjectEncoder;
 import io.netty.util.concurrent.DefaultEventExecutorGroup;
 
+import java.util.Properties;
+
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
 
+import com.yl.distribute.scheduler.core.config.Configuration;
 import com.yl.distribute.scheduler.resource.handler.ResourceServerHandler;
 import com.yl.distribute.scheduler.resource.jmx.ResourceManagerAgent;
 import com.yl.distribute.scheduler.resource.manager.ResourceManager;
@@ -66,10 +69,11 @@ public class ResourceServer {
             port = NumberUtils.toInt(args[0]); 
             rootPool = args[1];     
         }        
-        if(StringUtils.isEmpty(rootPool)) {
+        if(StringUtils.isEmpty(rootPool)) {        	
             ResourceManager.getInstance().compainAndInit();
         }else {
-            ResourceManager.getInstance().compainAndInit(rootPool);
+        	Properties prop = Configuration.getConfig("Config.properties");
+            ResourceManager.getInstance().compainAndInit(rootPool,prop);
         }    
         //start jmx monitor
         new ResourceManagerAgent().start();

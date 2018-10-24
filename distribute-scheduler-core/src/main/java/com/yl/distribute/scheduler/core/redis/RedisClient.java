@@ -369,10 +369,10 @@ public class RedisClient {
         Jedis jedis = getJedis();        
         String identifier = RedisLock.acquireLockWithTimeout(
                 jedis,taskRequest.getRunningHost(),ACQUIER_LOCK_TIME,LOCK_TIME);
-        HostInfo hostInfo = RedisClient.getInstance(null).getObject(taskRequest.getRunningHost());
+        HostInfo hostInfo = getObject(taskRequest.getRunningHost());
         hostInfo.setAvailableMemory(hostInfo.getAvailableMemory() + MetricsUtils.getTaskMemory(taskRequest.getJob()));
         hostInfo.setAvailableCores(hostInfo.getAvailableCores() + 1);
-        RedisClient.getInstance(null).setObject(taskRequest.getRunningHost(), hostInfo,0);   
+        setObject(taskRequest.getRunningHost(), hostInfo,0);   
         RedisLock.releaseLock(jedis, taskRequest.getRunningHost(), identifier);
         jedis.close();
     }
@@ -382,10 +382,10 @@ public class RedisClient {
         Jedis jedis = getJedis();        
         String identifier = RedisLock.acquireLockWithTimeout(
                 jedis,taskRequest.getRunningHost(),ACQUIER_LOCK_TIME,LOCK_TIME);
-        HostInfo hostInfo = RedisClient.getInstance(null).getObject(taskRequest.getRunningHost());
+        HostInfo hostInfo = getObject(taskRequest.getRunningHost());
         hostInfo.setAvailableMemory(hostInfo.getAvailableMemory() - MetricsUtils.getTaskMemory(taskRequest.getJob()));
         hostInfo.setAvailableCores(hostInfo.getAvailableCores() - 1);
-        RedisClient.getInstance(null).setObject(taskRequest.getRunningHost(), hostInfo,0);        
+        setObject(taskRequest.getRunningHost(), hostInfo,0);        
         RedisLock.releaseLock(jedis, taskRequest.getRunningHost(), identifier);
         jedis.close();
     }

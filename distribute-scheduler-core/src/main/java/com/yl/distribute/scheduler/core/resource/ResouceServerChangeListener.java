@@ -9,8 +9,6 @@ import com.yl.distribute.scheduler.core.zk.ZKHelper;
 
 public class ResouceServerChangeListener {  
     
-    private static final String DEFAULT_ZKSERVERS = "127.0.0.1:2181";
-    
     public String rmPath = "/rm"; 
    
     private String rmServer = "";
@@ -19,17 +17,6 @@ public class ResouceServerChangeListener {
    
     private ResouceServerChangeListener(String zookeeperServers){
         init(zookeeperServers);
-    }
-    
-    private ResouceServerChangeListener(){
-        init(DEFAULT_ZKSERVERS);
-    }
-    
-    public static synchronized ResouceServerChangeListener getInstance() {
-        if(resouceServerChangeListener == null){
-            resouceServerChangeListener = new ResouceServerChangeListener();
-        }
-        return resouceServerChangeListener;
     }
     
     public static synchronized ResouceServerChangeListener getInstance(String zookeeperServers) {
@@ -68,6 +55,5 @@ public class ResouceServerChangeListener {
     }
     
     public static void main(String[] args){
-        System.out.println(ResouceServerChangeListener.getInstance().getRmServer());
     }
 }
