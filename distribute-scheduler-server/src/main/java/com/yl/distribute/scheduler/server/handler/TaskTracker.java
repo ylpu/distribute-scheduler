@@ -8,6 +8,7 @@ import io.netty.channel.ChannelHandlerContext;
 
 /**
  * 任务管理
+ * jvm正常关闭时对未完成的任务做处理
  *
  */
 public class TaskTracker {    

@@ -3,6 +3,7 @@ package com.yl.distribute.scheduler.client;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 import java.util.stream.Collectors;
 import org.I0Itec.zkclient.ZkClient;
 import org.I0Itec.zkclient.IZkChildListener;
@@ -11,20 +12,17 @@ import io.netty.channel.pool.SimpleChannelPool;
 
 public class PoolChangeListener {
     
-   public String poolPrefix = "/root"; 
+   public String DEFAULT_ROOT_PATH = "/root"; 
     
-    public void init() {
-        init(poolPrefix);
-    }
-    
-    public void init(String rootPath) {
-        ZkClient zkClient = ZKHelper.getClient();
+    public void init(Properties prop) {
+        ZkClient zkClient = ZKHelper.getClient(prop.getProperty("zk.server.list"));
+        String rootPath = prop.getProperty("root.pool") == null ? DEFAULT_ROOT_PATH : prop.getProperty("root.pool");
         List<String> children = zkClient.getChildren(rootPath);
         if(children != null && children.size() > 0) {
             for(String poolName : children) {
                 String poolPath = rootPath + "/" + poolName;
                 addNodeChangeListener(zkClient,poolPath);  
-            }
+            }  
         }
     }
     

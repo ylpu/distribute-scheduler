@@ -6,6 +6,8 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import com.yl.distribute.scheduler.core.resource.rpc.ResourceProxy;
 import com.yl.distribute.scheduler.common.bean.TaskRequest;
+import com.yl.distribute.scheduler.common.enums.OSInfo;
+import com.yl.distribute.scheduler.common.utils.IOUtils;
 import com.yl.distribute.scheduler.common.utils.ReflectUtils;
 import com.yl.distribute.scheduler.core.resource.service.ResourceService;
 
@@ -22,9 +24,9 @@ public class ProcessorProxy implements InvocationHandler{
     
     @Override
     public Object invoke(Object object, Method method, Object[] args){  
-        TaskRequest task = null;
+        TaskRequest task = null;        
         try {
-            task = ReflectUtils.getFieldValue(obj, "task");
+            task = ReflectUtils.getFieldValue(obj, "task");            
             LOG.info("start to execute task " + task.getId());
             method.invoke(obj, args);
         } catch (Exception e) {
@@ -32,7 +34,8 @@ public class ProcessorProxy implements InvocationHandler{
             throw new RuntimeException(e);
         }finally {
             try {
-                TaskTracker.removeTask(task);
+            	removeProcessFile(task);
+                TaskTracker.removeTask(task);                
                 releaseResource(task);
             } catch (Exception e) {
                 LOG.error(e);
@@ -46,5 +49,16 @@ public class ProcessorProxy implements InvocationHandler{
         LOG.info("start to release resource for " + task.getRunningHost());
         ResourceService service = ResourceProxy.get(ResourceService.class);
         service.addResource(task.getRunningHost(), task);
+    }
+    
+    private void removeProcessFile(TaskRequest task) {
+    	String processFile = "";
+    	OSInfo osinfo = OSInfo.getOsInfo();
+    	if(osinfo == OSInfo.Windows) {
+    		processFile = "d:/pid/" + task.getTaskId() + ".pid";
+    	}else if(osinfo == OSInfo.Linux) {
+    		processFile = "/tmp/pid/" + task.getTaskId() + ".pid";
+    	} 
+    	IOUtils.removeFile(processFile);
     }
 }

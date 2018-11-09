@@ -2,7 +2,9 @@ package com.yl.distribute.scheduler.common.utils;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
+import java.io.File;
 import java.io.FileOutputStream;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -15,7 +17,7 @@ public final class IOUtils {
     private static final Log LOG = LogFactory.getLog(IOUtils.class);
     
     private IOUtils() {
-        
+    	
     }
     
     public static void writeOuput(InputStream is,String fileName){        
@@ -29,6 +31,12 @@ public final class IOUtils {
    public static void writeFile(InputStream is,String fileName) {
 	   BufferedWriter bw = null;
        try {
+	       File file = new File(fileName);
+	       String parentPath = file.getParent();
+	       File parentfile = new File(parentPath);
+	       if (!parentfile.exists()) {
+	    	   parentfile.mkdirs();
+	       }
            bw = new BufferedWriter(new OutputStreamWriter(new FileOutputStream (fileName,true),"GBK"));
            BufferedReader brError = new BufferedReader(new InputStreamReader(is, "GBK"));
            String errline = null;
@@ -45,7 +53,7 @@ public final class IOUtils {
                   bw.close();
                }
                if(is != null) {
-            	   is.close();
+            	  is.close();
                }
            } catch (IOException e) {
                LOG.error(e);
@@ -53,4 +61,61 @@ public final class IOUtils {
            }
        }        
    }
+   
+   public static void writeFile(String content, String filePath) {	   
+	   FileOutputStream fop = null;
+	   File file = null ;
+	   try {
+	       file = new File(filePath);
+	       String parentPath = file.getParent();
+	       File parentfile = new File(parentPath);
+	       if (!parentfile.exists()) {
+	    	   parentfile.mkdirs();
+	       }
+	       fop = new FileOutputStream(file);
+	       byte[] contentInBytes = content.getBytes();
+	       fop.write(contentInBytes);
+	   } catch (IOException e) {
+		   LOG.error(e);
+	   } finally {
+	        try {
+	            if (fop != null) {
+	                fop.close();
+	            }
+	        } catch (IOException e) {
+         	   LOG.error(e);
+	        }
+	   }	  
+   }
+   
+   public static String readFile(String fileName) {  
+       File file = new File(fileName);
+       StringBuilder sb = new StringBuilder();
+       BufferedReader reader = null;  
+       try {  
+           reader = new BufferedReader(new FileReader(file));  
+           String tempString = null;  
+           while ((tempString = reader.readLine()) != null) {  
+        	   sb.append(tempString);
+           }  
+       } catch (IOException e) {  
+    	   LOG.error(e);
+       } finally {  
+           if (reader != null) {  
+               try {  
+                   reader.close();  
+               } catch (IOException e) {  
+            	   LOG.error(e);
+               }  
+           }  
+       }  
+       return sb.toString();
+   } 
+   
+   public static void removeFile(String fileName) {  
+       File file = new File(fileName);
+       if(file.exists()) {
+    	   file.delete();    	   
+       }
+   } 
 }

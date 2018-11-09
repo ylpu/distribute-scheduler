@@ -1,6 +1,8 @@
 package com.yl.distribute.scheduler.client;
 
 import java.util.Date;
+import java.util.Properties;
+
 import javax.ws.rs.core.Response;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
@@ -12,6 +14,7 @@ import com.yl.distribute.scheduler.common.bean.TaskRequest;
 import com.yl.distribute.scheduler.common.bean.TaskResponse;
 import com.yl.distribute.scheduler.common.enums.TaskStatus;
 import com.yl.distribute.scheduler.common.utils.CallBackUtils;
+import com.yl.distribute.scheduler.core.config.Configuration;
 import com.yl.distribute.scheduler.core.resource.rpc.ResourceProxy;
 import com.yl.distribute.scheduler.core.resource.service.ResourceService;
 import com.yl.distribute.scheduler.core.task.TaskManager;
@@ -30,7 +33,8 @@ public class TaskClient {
 
     
     private TaskClient() {
-        new PoolChangeListener().init();
+    	Properties prop = Configuration.getConfig("Config.properties");
+        new PoolChangeListener().init(prop);
     }
     
     public static TaskClient getInstance() {

@@ -20,7 +20,7 @@ public class SchedulerClientTest {
     public void submitJob() throws Exception {
         
         TaskClient client = TaskClient.getInstance();        
-        for(int i = 0;i < 100; i++) {
+        for(int i = 0;i < 300; i++) {
             new ProduceThread(client,i).start();
         }
         

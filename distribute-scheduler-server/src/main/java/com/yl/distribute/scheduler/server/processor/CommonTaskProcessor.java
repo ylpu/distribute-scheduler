@@ -8,9 +8,11 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import com.yl.distribute.scheduler.common.bean.TaskRequest;
 import com.yl.distribute.scheduler.common.bean.TaskResponse;
+import com.yl.distribute.scheduler.common.enums.OSInfo;
 import com.yl.distribute.scheduler.common.enums.TaskStatus;
 import com.yl.distribute.scheduler.common.utils.IOUtils;
 import com.yl.distribute.scheduler.common.utils.MetricsUtils;
+import com.yl.distribute.scheduler.common.utils.TaskProcessUtils;
 import com.yl.distribute.scheduler.core.config.Configuration;
 import com.yl.distribute.scheduler.core.task.TaskManager;
 import io.netty.channel.ChannelHandlerContext;
@@ -28,15 +30,18 @@ public abstract class CommonTaskProcessor {
     public void executeTask(ChannelHandlerContext ctx,String command){        
         
         String errorFile = "./WebContent/jobfiles/" + task.getTaskId() + "_error";
-        String outPutFile = "./WebContent/jobfiles/" + task.getTaskId() + "_out";    
+        String outPutFile = "./WebContent/jobfiles/" + task.getTaskId() + "_out";
+        String linuxProcessFile = "/tmp/pid/" + task.getTaskId() + ".pid";        
+        String windowsProcessFile = "d:/pid/" + task.getTaskId() + ".pid";
                       
         try {
 //        	Thread.sleep(new Random().nextInt(20000));
             if(StringUtils.isNotBlank(command)) {
                 
                 Process process = Runtime.getRuntime().exec(command);
+                writePidFile(process,linuxProcessFile,windowsProcessFile);
                 IOUtils.writeOuput(process.getInputStream(),outPutFile);
-                IOUtils.writeOuput(process.getErrorStream(),errorFile);  
+                IOUtils.writeOuput(process.getErrorStream(),errorFile);
                 //update task to running
                 setRunningTask(outPutFile,errorFile);
                 Response updateResponse = TaskManager.getInstance().updateTask(task);
@@ -82,5 +87,17 @@ public abstract class CommonTaskProcessor {
         response.setJobId(task.getJob().getJobId());
         response.setTaskStatus(taskStatus);                  
         ctx.writeAndFlush(response);
+    }
+    
+    private void writePidFile(Process process,String linuxProcessFile,String windowsProcessFile) {
+    	Long pid = -1l;
+    	OSInfo osinfo = OSInfo.getOsInfo();
+    	if(osinfo == OSInfo.Windows) {
+    		pid = TaskProcessUtils.getWindowsPid(process);
+    		IOUtils.writeFile(String.valueOf(pid), windowsProcessFile);
+    	}else if(osinfo == OSInfo.Linux) {
+    		pid = TaskProcessUtils.getLinuxPid(process);
+    		IOUtils.writeFile(String.valueOf(pid), linuxProcessFile);
+    	}    	    	
     }
 }
