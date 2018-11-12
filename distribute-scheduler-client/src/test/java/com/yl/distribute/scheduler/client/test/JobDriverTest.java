@@ -6,7 +6,7 @@ import org.junit.Test;
 import com.yl.distribute.scheduler.client.callback.TaskResponseManager;
 import com.yl.distribute.scheduler.client.schedule.JobDriver;
 import com.yl.distribute.scheduler.client.schedule.JobParser;
-import com.yl.distribute.scheduler.common.bean.JobConf;
+import com.yl.distribute.scheduler.common.bean.JobRequest;
 import com.yl.distribute.scheduler.common.bean.TaskResponse;
 import com.yl.distribute.scheduler.common.enums.TaskStatus;
 
@@ -34,7 +34,7 @@ public class JobDriverTest {
         File file = new File("src/main/resources/jobplan.xml");
         JobParser parser = new JobParser(file);
         Element element = parser.readFile();
-        JobConf rootJob = parser.getRootJob(element);
+        JobRequest rootJob = parser.getRootJob(element);
         
         new JobDriver(rootJob).start();
         
@@ -65,7 +65,7 @@ public class JobDriverTest {
         File file = new File("src/main/resources/jobplan.xml");
         JobParser parser = new JobParser(file);
         Element element = parser.readFile();
-        JobConf rootJob = parser.getRootJob(element);        
+        JobRequest rootJob = parser.getRootJob(element);        
         new JobDriver(rootJob).start();
         Thread.sleep(10000);
     }

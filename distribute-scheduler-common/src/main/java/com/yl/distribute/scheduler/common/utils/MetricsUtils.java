@@ -8,7 +8,7 @@ import java.util.List;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
 import com.sun.management.OperatingSystemMXBean;
-import com.yl.distribute.scheduler.common.bean.JobConf;
+import com.yl.distribute.scheduler.common.bean.JobRequest;
 import com.yl.distribute.scheduler.common.constants.GlobalConstants;
 
 @SuppressWarnings("restriction")
@@ -20,7 +20,7 @@ public class MetricsUtils {
         System.out.println(getAvailiableProcessors());
         getHostName();
         getHostIpAddress();
-        JobConf jobConf = new JobConf();
+        JobRequest jobConf = new JobRequest();
         jobConf.setCommand("java -jar abc.jar");
         jobConf.setResourceParameters("-memory1024m -cpu4");
         System.out.println(getTaskMemory(jobConf));
@@ -61,7 +61,7 @@ public class MetricsUtils {
         return ip;
     }
     
-    public static long getTaskMemory(JobConf jobConf) {
+    public static long getTaskMemory(JobRequest jobConf) {
     	long memory = 0;
     	if(StringUtils.isNotBlank(jobConf.getCommand())) {
     		if(jobConf.getCommand().indexOf("-Xmx") > 0) {

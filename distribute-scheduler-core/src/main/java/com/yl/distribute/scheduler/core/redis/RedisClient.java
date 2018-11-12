@@ -8,7 +8,7 @@ import java.util.Properties;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
 import com.yl.distribute.scheduler.common.bean.HostInfo;
-import com.yl.distribute.scheduler.common.bean.JobConf;
+import com.yl.distribute.scheduler.common.bean.JobRequest;
 import com.yl.distribute.scheduler.common.bean.TaskRequest;
 import com.yl.distribute.scheduler.common.utils.MetricsUtils;
 import redis.clients.jedis.Jedis;
@@ -440,7 +440,7 @@ public class RedisClient {
        
         for(int i =0; i< 100; i++){       	
             TaskRequest tr = new TaskRequest();
-            JobConf jc = new JobConf();            
+            JobRequest jc = new JobRequest();            
             jc.setCommand("java -jar abc.jar");
             jc.setResourceParameters("-memory100m -cpu4");
             tr.setJob(jc);

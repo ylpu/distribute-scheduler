@@ -5,7 +5,7 @@ import org.quartz.Job;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 import com.yl.distribute.scheduler.client.TaskClient;
-import com.yl.distribute.scheduler.common.bean.JobConf;
+import com.yl.distribute.scheduler.common.bean.JobRequest;
 import com.yl.distribute.scheduler.common.bean.TaskRequest;
 import com.yl.distribute.scheduler.common.enums.TaskStatus;
 
@@ -16,7 +16,7 @@ import com.yl.distribute.scheduler.common.enums.TaskStatus;
 public class UserJob implements Job{
 
     public void execute(JobExecutionContext jobExecutionContext) throws JobExecutionException {
-        JobConf jobConf = (JobConf) jobExecutionContext.getJobDetail().getJobDataMap().get("data");
+        JobRequest jobConf = (JobRequest) jobExecutionContext.getJobDetail().getJobDataMap().get("data");
         TaskClient client = TaskClient.getInstance();
         TaskRequest task = new TaskRequest();
         task.setTaskId(new ObjectId().toHexString());

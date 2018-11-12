@@ -11,8 +11,8 @@ public class JobReleation implements Serializable{
      */
     private static final long serialVersionUID = 1L;
     private String jobId;
-    private List<JobConf> parentJobs = new ArrayList<JobConf>();
-    private List<JobConf> childJobs = new ArrayList<JobConf>();
+    private List<JobRequest> parentJobs = new ArrayList<JobRequest>();
+    private List<JobRequest> childJobs = new ArrayList<JobRequest>();
     
     public String getJobId() {
         return jobId;
@@ -20,16 +20,16 @@ public class JobReleation implements Serializable{
     public void setJobId(String jobId) {
         this.jobId = jobId;
     }
-    public List<JobConf> getParentJobs() {
+    public List<JobRequest> getParentJobs() {
         return parentJobs;
     }
-    public void setParentJobs(List<JobConf> parentJobs) {
+    public void setParentJobs(List<JobRequest> parentJobs) {
         this.parentJobs = parentJobs;
     }
-    public List<JobConf> getChildJobs() {
+    public List<JobRequest> getChildJobs() {
         return childJobs;
     }
-    public void setChildJobs(List<JobConf> childJobs) {
+    public void setChildJobs(List<JobRequest> childJobs) {
         this.childJobs = childJobs;
     }    
 }

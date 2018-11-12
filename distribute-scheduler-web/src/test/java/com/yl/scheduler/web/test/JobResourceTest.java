@@ -6,7 +6,7 @@ import javax.ws.rs.core.Response;
 
 import org.junit.Test;
 
-import com.yl.distribute.scheduler.common.bean.JobConf;
+import com.yl.distribute.scheduler.common.bean.JobRequest;
 import com.yl.distribute.scheduler.common.bean.TaskRequest;
 import com.yl.distribute.scheduler.common.bean.TaskResponse;
 import com.yl.distribute.scheduler.common.enums.TaskStatus;
@@ -20,14 +20,14 @@ public class JobResourceTest{
 
     @Test
     public void getTask() {
-    	JobConf task = JerseyClient.get("http://localhost:8085/api/job/getJobById/a", JobConf.class);
+    	JobRequest task = JerseyClient.get("http://localhost:8085/api/job/getJobById/a", JobRequest.class);
         System.out.println(task);
     }
     
 //    @Test
     public void addTask() {
     	String id = "1";
-        JobConf jobConf = new JobConf();
+        JobRequest jobConf = new JobRequest();
         TaskRequest task = new TaskRequest();
         jobConf.setJobId(id);
         jobConf.setCommand("ls -ltr");

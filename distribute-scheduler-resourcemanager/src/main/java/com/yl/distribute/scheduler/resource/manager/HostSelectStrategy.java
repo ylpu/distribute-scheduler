@@ -1,9 +1,9 @@
 package com.yl.distribute.scheduler.resource.manager;
 
-import com.yl.distribute.scheduler.common.bean.JobConf;
+import com.yl.distribute.scheduler.common.bean.JobRequest;
 
 public interface HostSelectStrategy {
     
-    public String getIdleHost(ResourceManager rm,JobConf request,String... lastFailedHosts);
+    public String getIdleHost(ResourceManager rm,JobRequest request,String... lastFailedHosts);
 
 }

@@ -6,7 +6,7 @@ import org.apache.commons.logging.LogFactory;
 import org.quartz.Job;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
-import com.yl.distribute.scheduler.common.bean.JobConf;
+import com.yl.distribute.scheduler.common.bean.JobRequest;
 import com.yl.distribute.scheduler.common.bean.WorkFlow;
 
 /**
@@ -26,7 +26,7 @@ public class PlanJob implements Job{
         } catch (SQLException e) {
             LOG.error(e);
         }
-        JobConf jobConf = jobParser.getRootJob(jobParser.readStream());
+        JobRequest jobConf = jobParser.getRootJob(jobParser.readStream());
         new JobDriver(jobConf).start();
     }
 }

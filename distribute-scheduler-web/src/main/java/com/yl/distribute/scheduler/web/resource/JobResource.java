@@ -2,7 +2,7 @@ package com.yl.distribute.scheduler.web.resource;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.*;
-import com.yl.distribute.scheduler.common.bean.JobConf;
+import com.yl.distribute.scheduler.common.bean.JobRequest;
 import com.yl.distribute.scheduler.web.service.JobService;
 import javax.ws.rs.core.Response;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,7 +26,7 @@ public class JobResource {
     @Path("addJob")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public Response addJob(JobConf job) {
+    public Response addJob(JobRequest job) {
         jobService.addJob(job);
         return Response.ok().build();
     }

@@ -5,7 +5,7 @@ import org.dom4j.Element;
 import org.junit.Test;
 
 import com.yl.distribute.scheduler.client.schedule.JobParser;
-import com.yl.distribute.scheduler.common.bean.JobConf;
+import com.yl.distribute.scheduler.common.bean.JobRequest;
 
 public class JobParserTest {
     
@@ -14,7 +14,7 @@ public class JobParserTest {
         File file = new File("src/main/resources/jobplan.xml");
         JobParser parser = new JobParser(file);
         Element element = parser.readFile();
-        JobConf rootJob = parser.getRootJob(element);
+        JobRequest rootJob = parser.getRootJob(element);
         boolean hasReleation = parser.hasReleation(element,rootJob);        
         System.out.println(hasReleation);
     }    

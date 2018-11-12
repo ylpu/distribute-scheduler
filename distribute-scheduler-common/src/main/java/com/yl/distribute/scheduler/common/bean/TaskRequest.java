@@ -14,7 +14,7 @@ public class TaskRequest implements Serializable{
 	private Integer id;	
     private String taskId;
     private Integer flowId;
-    private JobConf job;
+    private JobRequest job;
     private int failedTimes = 0;
     private String runningHost;   
     private String lastFailedHost;
@@ -43,10 +43,10 @@ public class TaskRequest implements Serializable{
 	public void setFlowId(Integer flowId) {
 		this.flowId = flowId;
 	}
-	public JobConf getJob() {
+	public JobRequest getJob() {
         return job;
     }
-    public void setJob(JobConf job) {
+    public void setJob(JobRequest job) {
         this.job = job;
     }
     public int getFailedTimes() {

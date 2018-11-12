@@ -1,11 +1,11 @@
 package com.yl.distribute.scheduler.web.service;
 
-import com.yl.distribute.scheduler.common.bean.JobConf;
+import com.yl.distribute.scheduler.common.bean.JobRequest;
 
 public interface JobService {
     
-    public JobConf getJobById(String jobId);
+    public JobRequest getJobById(String jobId);
     
-    public void addJob(JobConf job);
+    public void addJob(JobRequest job);
 
 }

@@ -13,7 +13,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import com.yl.distribute.scheduler.client.TaskClient;
 import com.yl.distribute.scheduler.client.callback.TaskResponseManager;
-import com.yl.distribute.scheduler.common.bean.JobConf;
+import com.yl.distribute.scheduler.common.bean.JobRequest;
 import com.yl.distribute.scheduler.common.bean.JobScheduleInfo;
 import com.yl.distribute.scheduler.common.bean.TaskRequest;
 import com.yl.distribute.scheduler.common.bean.TaskResponse;
@@ -32,16 +32,16 @@ public class JobDriver {
     
     private Long JOB_CHECK_INTERVAL = 1000L;
     
-    private Stack<JobConf> stack = new Stack<JobConf>();
+    private Stack<JobRequest> stack = new Stack<JobRequest>();
     private static Set<String> visited = new HashSet<String>();
     
-    private Queue<JobConf> queue = new LinkedList<JobConf>();
-    private Queue<JobConf> bfsQueue = new LinkedList<JobConf>();
+    private Queue<JobRequest> queue = new LinkedList<JobRequest>();
+    private Queue<JobRequest> bfsQueue = new LinkedList<JobRequest>();
     private static Set<String> bfsVisited = new HashSet<String>();
     
-    private JobConf job;
+    private JobRequest job;
     
-    public JobDriver(JobConf job){
+    public JobDriver(JobRequest job){
         this.job = job;
     }
     
@@ -59,7 +59,7 @@ public class JobDriver {
      * @throws Exception
      */ 
     @Deprecated
-    public void startJob(JobConf job) {
+    public void startJob(JobRequest job) {
         if(job == null ) {
             return;
         } 
@@ -72,9 +72,9 @@ public class JobDriver {
             }
             visited.add(job.getJobId());
         }
-        List<JobConf> childrenJob = job.getJobReleation().getChildJobs();
+        List<JobRequest> childrenJob = job.getJobReleation().getChildJobs();
         if(childrenJob != null){
-            for(JobConf jobConf : childrenJob) {
+            for(JobRequest jobConf : childrenJob) {
                 startJob(jobConf);
                 if(!visited.contains(jobConf.getJobId())) {
                     stack.push(jobConf);
@@ -85,18 +85,18 @@ public class JobDriver {
     }   
     
     
-    public void bfsVisit(JobConf job) {
+    public void bfsVisit(JobRequest job) {
         queue.offer(job);
         bfsVisited.add(job.getJobId());
         bfsLoop();
     }
 
     private void bfsLoop() {
-        JobConf currentJob = queue.poll(); //出队
+        JobRequest currentJob = queue.poll(); //出队
         bfsQueue.offer(currentJob);
-        List<JobConf> childrenJob = currentJob.getJobReleation().getChildJobs();
+        List<JobRequest> childrenJob = currentJob.getJobReleation().getChildJobs();
         if(childrenJob != null && childrenJob.size() > 0){
-            for (JobConf job : childrenJob) {
+            for (JobRequest job : childrenJob) {
                 if(!bfsVisited.contains(job.getJobId())) {
                     bfsVisited.add(job.getJobId());
                     queue.offer(job);
@@ -108,12 +108,12 @@ public class JobDriver {
         }
     }
     
-    private boolean parentJobsHaveFinished(JobConf job){
+    private boolean parentJobsHaveFinished(JobRequest job){
         if(job.getJobReleation().getParentJobs() == null){
             return true;
         }
         //父任务中只要有一个没有完成就退出
-        for(JobConf jobConf : job.getJobReleation().getParentJobs()){
+        for(JobRequest jobConf : job.getJobReleation().getParentJobs()){
             if(!jobHasFinished(jobConf)) {
             	return false;
             }
@@ -122,7 +122,7 @@ public class JobDriver {
     }
     
     
-    private boolean jobHasFinished(JobConf job){
+    private boolean jobHasFinished(JobRequest job){
         TaskResponse taskResponse = TaskResponseManager.get(job.getJobId());
         if(taskResponse != null){            
             if((taskResponse.getTaskStatus() == TaskStatus.FAILED )
@@ -133,8 +133,8 @@ public class JobDriver {
         return false;
     }
     
-    private void submitJob(JobConf job) {
-        JobConf jobConf = getJobDetail(job.getJobId());
+    private void submitJob(JobRequest job) {
+        JobRequest jobConf = getJobDetail(job.getJobId());
         if(jobConf == null){
             throw new RuntimeException("can not get job for jobId " + job.getJobId());
         }
@@ -147,13 +147,13 @@ public class JobDriver {
         }        
     }
     
-    private JobConf getJobDetail(String jobId) {
+    private JobRequest getJobDetail(String jobId) {
         Properties prop = Configuration.getConfig("config.properties");        
         String jobApi = Configuration.getString(prop, "job.web.api");
-        return JerseyClient.get(jobApi + "/getJobById/" + jobId, JobConf.class);
+        return JerseyClient.get(jobApi + "/getJobById/" + jobId, JobRequest.class);
     }
     
-    private void setScheduleInfo(JobScheduleInfo scheduleInfo,JobConf job){
+    private void setScheduleInfo(JobScheduleInfo scheduleInfo,JobRequest job){
         scheduleInfo.setJobName(job.getJobName());
         scheduleInfo.setJobGroupName(job.getJobName() + "_group");
         scheduleInfo.setTriggerName(job.getJobName() + "_trigger");
@@ -161,7 +161,7 @@ public class JobDriver {
         scheduleInfo.setData(job);
     }
     
-    private void submitTask(JobConf job){
+    private void submitTask(JobRequest job){
         TaskClient client = TaskClient.getInstance();
         TaskRequest task = new TaskRequest();
         task.setTaskId(new ObjectId().toHexString());
@@ -182,7 +182,7 @@ public class JobDriver {
         public void run() {
             //任务是否遍历完
             while(!stack.isEmpty()){
-                JobConf job = stack.peek();
+                JobRequest job = stack.peek();
                 //如果父任务执行完成就提交当前任务，如果没有完成压入栈顶，每隔1秒检查父任务是否完成
                 if(job != null){
                     if (parentJobsHaveFinished(job)){
@@ -214,7 +214,7 @@ public class JobDriver {
         	try {
                 //任务是否遍历完
                 while(!bfsQueue.isEmpty()){
-                    JobConf job = bfsQueue.peek();
+                    JobRequest job = bfsQueue.peek();
                     //如果父任务执行完成就提交当前任务，如果没有完成压入队列顶，每隔1秒检查父任务是否完成
                     if(job != null){
                         if (parentJobsHaveFinished(job)){

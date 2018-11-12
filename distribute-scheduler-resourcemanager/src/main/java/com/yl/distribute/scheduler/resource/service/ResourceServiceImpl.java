@@ -3,7 +3,7 @@ package com.yl.distribute.scheduler.resource.service;
 import java.util.Map;
 import java.util.Properties;
 import com.yl.distribute.scheduler.common.bean.HostInfo;
-import com.yl.distribute.scheduler.common.bean.JobConf;
+import com.yl.distribute.scheduler.common.bean.JobRequest;
 import com.yl.distribute.scheduler.common.bean.TaskRequest;
 import com.yl.distribute.scheduler.core.config.Configuration;
 import com.yl.distribute.scheduler.core.redis.RedisClient;
@@ -15,7 +15,7 @@ public class ResourceServiceImpl implements ResourceService{
     private static final String REDIS_CONFIG = "redis.properties";
 
     @Override
-    public String getIdleHost(JobConf input, String... lastFailedHosts) {
+    public String getIdleHost(JobRequest input, String... lastFailedHosts) {
         return ResourceManager.getInstance().getIdleHost(input, lastFailedHosts);
     }
     

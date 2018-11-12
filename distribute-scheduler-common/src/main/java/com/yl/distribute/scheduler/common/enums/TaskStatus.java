@@ -12,6 +12,15 @@ public enum TaskStatus implements Serializable{
    
    SUCCESS,
    
-   RUNNING
+   RUNNING;
+   
+   public static TaskStatus getTaskStatus(String taskStatus) {
+       for(TaskStatus ts : TaskStatus.values()) {
+           if(ts.toString().equalsIgnoreCase(taskStatus)) {
+               return ts;
+           }
+       }
+       throw new RuntimeException("does not support task type " + taskStatus);
+   }
  
 }

@@ -13,7 +13,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.I0Itec.zkclient.IZkChildListener;
 import com.yl.distribute.scheduler.common.bean.HostInfo;
-import com.yl.distribute.scheduler.common.bean.JobConf;
+import com.yl.distribute.scheduler.common.bean.JobRequest;
 import com.yl.distribute.scheduler.common.utils.MetricsUtils;
 import com.yl.distribute.scheduler.core.config.Configuration;
 import com.yl.distribute.scheduler.core.redis.RedisClient;
@@ -199,7 +199,7 @@ public class ResourceManager{
      * @param serverName
      * @param resourceParams
      */
-    public void subResource(String serverName,JobConf jobConf) {
+    public void subResource(String serverName,JobRequest jobConf) {
         long usedMemory = 0;
         synchronized(resourceMap){
             HostInfo hostInfo = resourceMap.get(serverName);
@@ -214,7 +214,7 @@ public class ResourceManager{
      * @param serverName
      * @param resourceParams
      */
-    public void addResource(String serverName,JobConf jobConf) {
+    public void addResource(String serverName,JobRequest jobConf) {
         long usedMemory = 0;
         synchronized(resourceMap){
             HostInfo hostInfo = resourceMap.get(serverName);
@@ -257,10 +257,10 @@ public class ResourceManager{
      * @param lastFailedHosts
      * @return
      */
-    public synchronized String getIdleHost(JobConf input,String... lastFailedHosts) {
-        HostSelectStrategy hostSelectStrategy = ResourceStrategy.getStrategy(input.getTaskStrategy());
+    public synchronized String getIdleHost(JobRequest input,String... lastFailedHosts) {
+        HostSelectStrategy hostSelectStrategy = ResourceStrategy.getStrategy(input.getJobStrategy());
         if(hostSelectStrategy == null){
-            throw new RuntimeException("can not find strategy class for " + input.getTaskStrategy());
+            throw new RuntimeException("can not find strategy class for " + input.getJobStrategy());
         }
         return new ResourceStrategyContext(hostSelectStrategy).select(this,input,lastFailedHosts);
 

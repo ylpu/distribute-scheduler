@@ -1,13 +1,15 @@
 package com.yl.distribute.scheduler.common.bean;
 
 import java.sql.Clob;
+import java.util.Date;
 
 public class WorkPlan {
     
     private Integer id;
     private String planName;
-    private String cron;    
     private Clob jobPlanFile;
+    private Date createTime;
+    private Date updateTime;
     
     public Integer getId() {
         return id;
@@ -27,10 +29,16 @@ public class WorkPlan {
     public void setPlanName(String planName) {
         this.planName = planName;
     }
-    public String getCron() {
-        return cron;
-    }
-    public void setCron(String cron) {
-        this.cron = cron;
-    }   
+	public Date getCreateTime() {
+		return createTime;
+	}
+	public void setCreateTime(Date createTime) {
+		this.createTime = createTime;
+	}
+	public Date getUpdateTime() {
+		return updateTime;
+	}
+	public void setUpdateTime(Date updateTime) {
+		this.updateTime = updateTime;
+	}    
 }

@@ -1,5 +1,6 @@
 package com.yl.distribute.scheduler.common.utils;
 
+import java.io.IOException;
 import java.lang.reflect.Field;
 
 import org.apache.commons.logging.Log;
@@ -45,8 +46,14 @@ public class TaskProcessUtils {
          return pid;
      }
      
-     public static void killLinuxProcess(Long pid){
-
+     public static void killLinuxProcess(Long pid){    	 
+    	 String command = "pkill -TERM -P " +  pid;
+         Runtime rt = Runtime.getRuntime();
+         try {
+			rt.exec(command);
+		} catch (IOException e) {
+			 LOG.error(e);
+		} 
      }
 	
      public static void killWindowProcess(Long pid){

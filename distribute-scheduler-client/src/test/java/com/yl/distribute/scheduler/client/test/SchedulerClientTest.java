@@ -6,11 +6,11 @@ import java.util.Map.Entry;
 import org.junit.Test;
 import com.yl.distribute.scheduler.client.TaskClient;
 import com.yl.distribute.scheduler.common.bean.HostInfo;
-import com.yl.distribute.scheduler.common.bean.JobConf;
+import com.yl.distribute.scheduler.common.bean.JobRequest;
 import com.yl.distribute.scheduler.common.bean.TaskRequest;
 import com.yl.distribute.scheduler.common.enums.JobType;
 import com.yl.distribute.scheduler.common.enums.TaskStatus;
-import com.yl.distribute.scheduler.common.enums.TaskStrategy;
+import com.yl.distribute.scheduler.common.enums.JobStrategy;
 import com.yl.distribute.scheduler.core.resource.rpc.ResourceProxy;
 import com.yl.distribute.scheduler.core.resource.service.ResourceService;
 
@@ -51,13 +51,13 @@ public class SchedulerClientTest {
         
         public void run() {
         	String id = String.valueOf(Math.random() + index);
-            JobConf jobConf = new JobConf();
+            JobRequest jobConf = new JobRequest();
             TaskRequest task = new TaskRequest();
             jobConf.setJobId(id);
             jobConf.setJobType(JobType.COMMAND);
             jobConf.setCommand("ls -ltr");
             jobConf.setPoolPath("/root/pool1");
-            jobConf.setTaskStrategy(TaskStrategy.MEMORY);
+            jobConf.setJobStrategy(JobStrategy.MEMORY);
             jobConf.setRetryTimes(0);
             task.setJob(jobConf);
             task.setTaskId(id);

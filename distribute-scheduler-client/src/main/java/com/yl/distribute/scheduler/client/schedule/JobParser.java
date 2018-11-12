@@ -19,7 +19,7 @@ import org.dom4j.Document;
 import org.dom4j.DocumentException;
 import org.dom4j.Element;
 import org.dom4j.io.SAXReader;
-import com.yl.distribute.scheduler.common.bean.JobConf;
+import com.yl.distribute.scheduler.common.bean.JobRequest;
 
 /**
  * 解析jobplan.xml并上传
@@ -89,12 +89,12 @@ public class JobParser {
      * @return
      */
     @SuppressWarnings({ "rawtypes", "unchecked" })
-    public JobConf getRootJob(Element rootElement){
-        JobConf job = null;
+    public JobRequest getRootJob(Element rootElement){
+        JobRequest job = null;
         Iterator rootIt = rootElement.elementIterator();          
         
         while(rootIt.hasNext()){
-            job = new JobConf();
+            job = new JobRequest();
             Element jobElement = (Element) rootIt.next();
             List<Attribute> attributes = jobElement.attributes();
             String jobId = "";
@@ -124,11 +124,11 @@ public class JobParser {
      * @return
      */
     @SuppressWarnings({ "rawtypes", "unchecked" })
-    private List<JobConf> getChildJobs(JobConf currentJob,Element rootElement){
+    private List<JobRequest> getChildJobs(JobRequest currentJob,Element rootElement){
         Iterator jobit = rootElement.elementIterator();
 
-        List<JobConf> childJobs = new ArrayList<JobConf>();
-        JobConf job = null;
+        List<JobRequest> childJobs = new ArrayList<JobRequest>();
+        JobRequest job = null;
         while(jobit.hasNext()){            
             Element jobElement = (Element) jobit.next();
             List<Attribute> attributes = jobElement.attributes();
@@ -142,13 +142,13 @@ public class JobParser {
                     if(StringUtils.isNotBlank(depends)) {
                         List<String> dependList = Arrays.asList(depends.split(","));
                         if(dependList.contains(currentJob.getJobId())) {
-                            job = new JobConf();
+                            job = new JobRequest();
                             job.setJobId(jobId);
                             childJobs.add(job);
                             currentJob.getJobReleation().setChildJobs(childJobs);
                             //为子任务设置父任务列表
                             for(String parentjobId : dependList) {
-                                JobConf parentJob = new JobConf();
+                                JobRequest parentJob = new JobRequest();
                                 parentJob.setJobId(parentjobId);
                                 job.getJobReleation().getParentJobs().add(parentJob);
                             }                            
@@ -161,7 +161,7 @@ public class JobParser {
         if(childJobs.size() == 0) {
             return null;
         }else {
-            return new ArrayList<JobConf>(childJobs);
+            return new ArrayList<JobRequest>(childJobs);
         }
     }
     /**
@@ -190,7 +190,7 @@ public class JobParser {
      * 深度遍历根任务并计算任务个数
      * @param parentJob
      */
-    public void visitJobs(JobConf parentJob) {
+    public void visitJobs(JobRequest parentJob) {
         if(parentJob == null ) {
             throw new RuntimeException("job can not empty");
         } 
@@ -198,8 +198,8 @@ public class JobParser {
             visited.add(parentJob.getJobId());
         }
         if(parentJob.getJobReleation().getChildJobs() != null){
-            List<JobConf> childs = parentJob.getJobReleation().getChildJobs();
-            for(JobConf jobConf : childs) {
+            List<JobRequest> childs = parentJob.getJobReleation().getChildJobs();
+            for(JobRequest jobConf : childs) {
                 visitJobs(jobConf);   
                 visited.add(jobConf.getJobId());              
             }   
@@ -210,7 +210,7 @@ public class JobParser {
      * 对比文件中任务个数和根任务遍历的任务个数来确定是否可以组成完整的依赖关系
      * @return
      */
-    public boolean hasReleation(Element element,JobConf rootJob) {
+    public boolean hasReleation(Element element,JobRequest rootJob) {
         visitJobs(rootJob);
         int fileJobCount = getFileJobsCount(element);
         int jobCount = getVisited().size();
@@ -225,11 +225,11 @@ public class JobParser {
      * @param job
      * @return
      */
-    public boolean detectCycle(JobConf job) {
-        return detect(job, new HashSet<JobConf>());
+    public boolean detectCycle(JobRequest job) {
+        return detect(job, new HashSet<JobRequest>());
     }
  
-    private boolean detect(JobConf job, HashSet<JobConf> jobs) {
+    private boolean detect(JobRequest job, HashSet<JobRequest> jobs) {
         if (job == null) {
             return false;
         } else if (jobs.contains(job)) {
@@ -237,7 +237,7 @@ public class JobParser {
         }
         jobs.add(job);
         if(job.getJobReleation().getChildJobs() != null) {
-            for (JobConf child : job.getJobReleation().getChildJobs()) {
+            for (JobRequest child : job.getJobReleation().getChildJobs()) {
                 if (detect(child, jobs)) {
                     return true;
                 }

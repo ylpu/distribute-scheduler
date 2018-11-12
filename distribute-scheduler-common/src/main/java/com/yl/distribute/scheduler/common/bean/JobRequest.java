@@ -1,10 +1,12 @@
 package com.yl.distribute.scheduler.common.bean;
 
 import java.io.Serializable;
-import com.yl.distribute.scheduler.common.enums.JobType;
-import com.yl.distribute.scheduler.common.enums.TaskStrategy;
+import java.util.Date;
 
-public class JobConf implements Serializable,Comparable<JobConf>{
+import com.yl.distribute.scheduler.common.enums.JobType;
+import com.yl.distribute.scheduler.common.enums.JobStrategy;
+
+public class JobRequest implements Serializable,Comparable<JobRequest>{
 
     private static final long serialVersionUID = 1L;
     private Integer id;
@@ -14,12 +16,14 @@ public class JobConf implements Serializable,Comparable<JobConf>{
     private JobType jobType;        
     private String poolPath;
     private int retryTimes = 0;
-    private TaskStrategy taskStrategy;
+    private JobStrategy jobStrategy;
     private String cronExpression;    
     private String command;
     private String alertEmail;
     private String owner;
-    private String resourceParameters;      
+    private String resourceParameters;
+    private Date createTime;
+    private Date updateTime;
     private JobReleation jobReleation = new JobReleation();    
     
     public Integer getId() {
@@ -75,13 +79,13 @@ public class JobConf implements Serializable,Comparable<JobConf>{
     }
     public void setPoolPath(String poolPath) {
         this.poolPath = poolPath;
-    }
-	public TaskStrategy getTaskStrategy() {
-		return taskStrategy;
+    }	
+	public JobStrategy getJobStrategy() {
+		return jobStrategy;
 	}
-	public void setTaskStrategy(TaskStrategy taskStrategy) {
-		this.taskStrategy = taskStrategy;
-	}	
+	public void setJobStrategy(JobStrategy jobStrategy) {
+		this.jobStrategy = jobStrategy;
+	}
 	public String getAlertEmail() {
 		return alertEmail;
 	}
@@ -105,9 +109,21 @@ public class JobConf implements Serializable,Comparable<JobConf>{
 	}
 	public void setJobReleation(JobReleation jobReleation) {
         this.jobReleation = jobReleation;
-    }
-    @Override
-    public int compareTo(JobConf o) {
+    }	
+    public Date getCreateTime() {
+		return createTime;
+	}
+	public void setCreateTime(Date createTime) {
+		this.createTime = createTime;
+	}
+	public Date getUpdateTime() {
+		return updateTime;
+	}
+	public void setUpdateTime(Date updateTime) {
+		this.updateTime = updateTime;
+	}
+	@Override
+    public int compareTo(JobRequest o) {
         return (this.getJobName().compareTo(o.getJobName()));
     }    
 }
