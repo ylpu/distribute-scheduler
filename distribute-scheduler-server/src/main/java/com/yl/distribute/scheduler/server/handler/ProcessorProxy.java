@@ -6,6 +6,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import com.yl.distribute.scheduler.core.resource.rpc.ResourceProxy;
 import com.yl.distribute.scheduler.common.bean.TaskRequest;
+import com.yl.distribute.scheduler.common.constants.GlobalConstants;
 import com.yl.distribute.scheduler.common.enums.OSInfo;
 import com.yl.distribute.scheduler.common.utils.IOUtils;
 import com.yl.distribute.scheduler.common.utils.ReflectUtils;
@@ -55,9 +56,9 @@ public class ProcessorProxy implements InvocationHandler{
     	String processFile = "";
     	OSInfo osinfo = OSInfo.getOsInfo();
     	if(osinfo == OSInfo.Windows) {
-    		processFile = "d:/pid/" + task.getTaskId() + ".pid";
+    		processFile = GlobalConstants.WIN_PID_DIR + task.getTaskId() + ".pid";
     	}else if(osinfo == OSInfo.Linux) {
-    		processFile = "/tmp/pid/" + task.getTaskId() + ".pid";
+    		processFile = GlobalConstants.LINUX_PID_DIR + task.getTaskId() + ".pid";
     	} 
     	IOUtils.removeFile(processFile);
     }

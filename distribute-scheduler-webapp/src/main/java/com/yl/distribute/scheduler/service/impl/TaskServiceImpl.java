@@ -28,17 +28,7 @@ public class TaskServiceImpl extends BaseServiceImpl<SchedulerTask,String> imple
         return schedulerTaskMapper;
     }
 
-	@Override
-	public String getErrorLog(String id) {
-		return null;
-	}
-
-	@Override
-	public String getOutputLog(String id) {
-		return null;
-	}
-
-	@Override
+    @Override
 	public void addTask(TaskRequest task) {
 		SchedulerTask schedulerTask = new SchedulerTask();
 		if(task != null) {

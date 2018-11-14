@@ -2,12 +2,13 @@ package com.yl.distribute.scheduler.common.utils;
 
 import java.io.IOException;
 import java.lang.reflect.Field;
-
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import com.sun.jna.Pointer;
 import com.sun.jna.platform.win32.Kernel32;
 import com.sun.jna.platform.win32.WinNT;
+import com.yl.distribute.scheduler.common.enums.OSInfo;
 
 public class TaskProcessUtils {
 	
@@ -54,6 +55,16 @@ public class TaskProcessUtils {
 		} catch (IOException e) {
 			 LOG.error(e);
 		} 
+     }
+     
+     public static void killProcess(OSInfo osinfo,String pid) {
+    	 if(StringUtils.isNotBlank(pid)) {
+    	    if(osinfo == OSInfo.Windows) {
+    	       killWindowProcess(Long.valueOf(pid));  		
+    	    }else if(osinfo == OSInfo.Linux) {
+    	       killLinuxProcess(Long.valueOf(pid));    	     		    		
+    	    } 
+    	 } 
      }
 	
      public static void killWindowProcess(Long pid){

@@ -6,29 +6,6 @@
     <version>0.0.1-SNAPSHOT</version>
   </parent>
   <artifactId>distribute-scheduler-webapp</artifactId>
-  <properties>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <!-- commons -->
-        <commons-io.version></commons-io.version>
-        <commons-lang3.version>3.4</commons-lang3.version>
-        <!-- springMvc -->
-        <spring-jdbc.version>4.1.6.RELEASE</spring-jdbc.version>
-        <spring-tx.version>4.1.6.RELEASE</spring-tx.version>
-        <spring-web.version>4.1.6.RELEASE</spring-web.version>
-        <spring-webmvc>4.1.6.RELEASE</spring-webmvc>
-        <spring-data-japa.version>1.8.0.RELEASE</spring-data-japa.version>
-        <spring-test.version>4.1.6.RELEASE</spring-test.version>
-        <aspectjweaver.version>1.8.5</aspectjweaver.version>
-        <webmvc.version>2.2.2.RELEASE</webmvc.version>
-        <!-- myBatis -->
-        <mybatis.version>3.2.8</mybatis.version>
-        <mybatis-generator-core.version>1.3.2</mybatis-generator-core.version>
-        <mybatis-spring.version>1.2.2</mybatis-spring.version>
-        <mysql-connector-java.version>5.1.34</mysql-connector-java.version>
-        <!-- mybatis pagehelper -->
-        <pagehelper.version>3.6.3</pagehelper.version>
-        <swagger.version>2.2.2</swagger.version>
-    </properties>
 
     <dependencies>
         <dependency>
@@ -65,17 +42,14 @@
         <dependency>
             <groupId>org.mybatis</groupId>
             <artifactId>mybatis</artifactId>
-            <version>${mybatis.version}</version>
         </dependency>
         <dependency>
             <groupId>org.mybatis</groupId>
             <artifactId>mybatis-spring</artifactId>
-            <version>${mybatis-spring.version}</version>
         </dependency>
         <dependency>
             <groupId>org.mybatis.generator</groupId>
             <artifactId>mybatis-generator-core</artifactId>
-            <version>${mybatis-generator-core.version}</version>
         </dependency>
         <dependency>
             <groupId>mysql</groupId>
@@ -85,7 +59,6 @@
         <dependency>
             <groupId>com.github.pagehelper</groupId>
             <artifactId>pagehelper</artifactId>
-            <version>${pagehelper.version}</version>
         </dependency>
         <!-- Spring -->
         <dependency>
@@ -124,28 +97,23 @@
         <dependency>
             <groupId>javax.inject</groupId>
             <artifactId>javax.inject</artifactId>
-            <version>1</version>
         </dependency>
         <dependency>
             <groupId>javax</groupId>
             <artifactId>javaee-api</artifactId>
-            <version>7.0</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.glassfish.web</groupId>
             <artifactId>javax.servlet.jsp.jstl</artifactId>
-            <version>1.2.2</version>
         </dependency>
         <dependency>
             <groupId>io.springfox</groupId>
             <artifactId>springfox-swagger2</artifactId>
-            <version>${swagger.version}</version>
         </dependency>
         <dependency>
             <groupId>io.springfox</groupId>
             <artifactId>springfox-swagger-ui</artifactId>
-            <version>${swagger.version}</version>
         </dependency>
         <dependency>
             <groupId>com.google.code.gson</groupId>
@@ -154,7 +122,6 @@
         <dependency>    
             <groupId>com.yl.distribute.scheduler</groupId>
             <artifactId>distribute-scheduler-client</artifactId>
-            <version>0.0.1-SNAPSHOT</version>
         </dependency>
     </dependencies>
     <build>

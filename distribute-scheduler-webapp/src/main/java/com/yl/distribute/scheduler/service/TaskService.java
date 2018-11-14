@@ -5,10 +5,6 @@ import com.yl.distribute.scheduler.common.service.BaseService;
 import com.yl.distribute.scheduler.entity.SchedulerTask;
 
 public interface TaskService extends BaseService<SchedulerTask,String>{
-    
-    public String getErrorLog(String id);
-    
-    public String getOutputLog(String id);
 
     public void addTask(TaskRequest task);
 

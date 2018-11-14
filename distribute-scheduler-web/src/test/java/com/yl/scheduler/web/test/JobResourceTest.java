@@ -20,7 +20,7 @@ public class JobResourceTest{
 
     @Test
     public void getTask() {
-    	JobRequest task = JerseyClient.get("http://localhost:8085/api/job/getJobById/a", JobRequest.class);
+    	JobRequest task = JerseyClient.get("http://localhost:8080/api/job/getJobById/a", JobRequest.class);
         System.out.println(task);
     }
     

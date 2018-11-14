@@ -1,9 +1,11 @@
 package com.yl.distribute.scheduler.controller;
 
+import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.*;
 import javax.ws.rs.core.*;
 import com.yl.distribute.scheduler.common.bean.SchedulerResponse;
 import com.yl.distribute.scheduler.common.bean.TaskRequest;
+import com.yl.distribute.scheduler.common.utils.IOUtils;
 import com.yl.distribute.scheduler.service.TaskService;
 import javax.ws.rs.core.Response;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,18 +14,18 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
-/**
- * JAX-RS resource class that provides operations for jobs.
- *
- */
 
 @Controller
-@RequestMapping("/task")
+@RequestMapping("/api/task")
 public class TaskController {
 	
     @Autowired
     private TaskService taskService;
+
+    @Autowired
+    private HttpServletResponse response;
 
     @GET
     @Path("getAllTasks")
@@ -54,14 +56,14 @@ public class TaskController {
    
 
     @ResponseBody
-    @RequestMapping(value="getErrorLog/{id}",method=RequestMethod.GET)
-    public void getErrorLog(@PathVariable String id) {
-        taskService.getErrorLog(id);
+    @RequestMapping(value="getErrorLog",method=RequestMethod.GET)
+    public void getErrorLog(@RequestParam("url") String url) {
+    	IOUtils.downloadByUrl(response, url);
     }
     
     @ResponseBody
-    @RequestMapping(value="getOutputLog/{id}",method=RequestMethod.GET)
-    public void getOutputLog(@PathVariable String id) {
-        taskService.getOutputLog(id);
-    }
+    @RequestMapping(value="getOutputLog",method=RequestMethod.GET)
+    public void getOutputLog(@RequestParam("url") String url) {
+    	IOUtils.downloadByUrl(response, url);
+    }    
 }

@@ -26,11 +26,11 @@ public class Swagger2 {
     private ApiInfo apiInfo() {
         return new ApiInfoBuilder()
                 //页面标题
-                .title("metadata restful api")
+                .title("distribute scheduler restful api")
                 //版本号
                 .version("1.0")
                 //描述
-                .description("工作流  API 描述")
+                .description("分布式工作流调度系统  API 描述")
                 .build();
     } 
 }

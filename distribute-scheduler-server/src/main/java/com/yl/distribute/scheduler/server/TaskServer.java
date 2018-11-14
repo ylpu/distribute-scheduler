@@ -10,8 +10,13 @@ import org.apache.commons.lang3.math.NumberUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.eclipse.jetty.server.Server;
-import org.eclipse.jetty.webapp.WebAppContext;
+import org.eclipse.jetty.server.handler.ContextHandler;
+import org.eclipse.jetty.server.handler.HandlerList;
+import org.eclipse.jetty.server.handler.ResourceHandler;
+import org.eclipse.jetty.servlet.ServletContextHandler;
+import org.eclipse.jetty.servlet.ServletHolder;
 import org.eclipse.jetty.xml.XmlConfiguration;
+import com.sun.jersey.spi.container.servlet.ServletContainer;
 import com.yl.distribute.scheduler.common.bean.HostInfo;
 import com.yl.distribute.scheduler.common.bean.TaskRequest;
 import com.yl.distribute.scheduler.common.bean.TaskResponse;
@@ -124,16 +129,31 @@ public class TaskServer {
      */
     public void startJettyServer(int port) throws Exception {
         Server server = new Server(port);
-        XmlConfiguration config = new XmlConfiguration(new FileInputStream("./WebContent/WEB-INF/jetty.xml"));  
+        
+        XmlConfiguration config = new XmlConfiguration(new FileInputStream("./WebContent/WEB-INF/jetty.xml"));
         config.configure(server);
-        WebAppContext webAppContext = new WebAppContext("WebContent","/");
-        webAppContext.setDescriptor("./WebContent/WEB-INF/web.xml");
-        webAppContext.setResourceBase("./WebContent/jobfiles/");
-        webAppContext.setDisplayName("jetty");
-        webAppContext.setContextPath("/server");
-        webAppContext.setConfigurationDiscovered(true);
-        webAppContext.setParentLoaderPriority(true);
-        server.setHandler(webAppContext);
+        
+        //static files handler        
+        ResourceHandler resource_handler = new ResourceHandler();
+        resource_handler.setDirectoriesListed(true);
+        resource_handler.setResourceBase("./WebContent/jobfiles/");
+
+        ContextHandler staticContext = new ContextHandler();
+        staticContext.setHandler(resource_handler);
+
+        //task handler
+        ServletHolder servletHolder = new ServletHolder(ServletContainer.class);
+        servletHolder.setInitParameter("com.sun.jersey.config.property.resourceConfigClass", "com.sun.jersey.api.core.PackagesResourceConfig");
+        servletHolder.setInitParameter("com.sun.jersey.config.property.packages", "com.yl.distribute.scheduler.server.action");
+        servletHolder.setAsyncSupported(true);
+        ServletContextHandler taskContext = new ServletContextHandler(ServletContextHandler.SESSIONS);
+        taskContext.addServlet(servletHolder, "/api/*");
+        
+        HandlerList handlers = new HandlerList();
+        handlers.addHandler(staticContext);
+        handlers.addHandler(taskContext); 
+        
+        server.setHandler(handlers);
         try{
             server.start();
         }catch(Exception e){

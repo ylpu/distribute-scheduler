@@ -8,9 +8,9 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import com.yl.distribute.scheduler.common.bean.TaskRequest;
 import com.yl.distribute.scheduler.common.bean.TaskResponse;
+import com.yl.distribute.scheduler.common.constants.GlobalConstants;
 import com.yl.distribute.scheduler.common.enums.OSInfo;
 import com.yl.distribute.scheduler.common.enums.TaskStatus;
-import com.yl.distribute.scheduler.common.utils.DateUtils;
 import com.yl.distribute.scheduler.common.utils.IOUtils;
 import com.yl.distribute.scheduler.common.utils.MetricsUtils;
 import com.yl.distribute.scheduler.common.utils.TaskProcessUtils;
@@ -32,8 +32,8 @@ public abstract class CommonTaskProcessor {
         
         String errorFile = "./WebContent/jobfiles/" + task.getTaskId() + "_error";
         String outPutFile = "./WebContent/jobfiles/" + task.getTaskId() + "_out";
-        String linuxProcessFile = "/tmp/pid/" + task.getTaskId() + ".pid";        
-        String windowsProcessFile = "d:/pid/" + task.getTaskId() + ".pid";
+        String linuxProcessFile = GlobalConstants.LINUX_PID_DIR + task.getTaskId() + ".pid";        
+        String windowsProcessFile = GlobalConstants.WIN_PID_DIR + task.getTaskId() + ".pid";
                       
         try {
 //        	Thread.sleep(new Random().nextInt(20000));
