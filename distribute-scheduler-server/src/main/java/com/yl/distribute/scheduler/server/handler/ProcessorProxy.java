@@ -2,8 +2,13 @@ package com.yl.distribute.scheduler.server.handler;
 
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
+import java.util.Properties;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
+import com.yl.distribute.scheduler.core.config.Configuration;
+import com.yl.distribute.scheduler.core.redis.RedisClient;
 import com.yl.distribute.scheduler.core.resource.rpc.ResourceProxy;
 import com.yl.distribute.scheduler.common.bean.TaskRequest;
 import com.yl.distribute.scheduler.common.constants.GlobalConstants;
@@ -14,6 +19,8 @@ import com.yl.distribute.scheduler.core.resource.service.ResourceService;
 
 public class ProcessorProxy implements InvocationHandler{
     
+	private static final String REDIS_CONFIG = "redis.properties";
+	
     private static final Log LOG = LogFactory.getLog(ProcessorProxy.class);
     
     private Object obj;
@@ -48,6 +55,8 @@ public class ProcessorProxy implements InvocationHandler{
 
     private void releaseResource(TaskRequest task) {
         LOG.info("start to release resource for " + task.getRunningHost());
+        Properties prop = Configuration.getConfig(REDIS_CONFIG);
+        RedisClient.getInstance(prop).getAndInc(task);
         ResourceService service = ResourceProxy.get(ResourceService.class);
         service.addResource(task.getRunningHost(), task);
     }

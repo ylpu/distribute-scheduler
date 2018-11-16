@@ -26,9 +26,6 @@ public class ResourceServiceImpl implements ResourceService{
      */
     public void addResource(String serverName,TaskRequest taskRequest) {
         
-        Properties prop = Configuration.getConfig(REDIS_CONFIG);
-        RedisClient.getInstance(prop).getAndInc(taskRequest);
-        
         ResourceManager.getInstance().addResource(serverName, taskRequest.getJob());
         ResourceManager.getInstance().decreaseTask(serverName);
     }

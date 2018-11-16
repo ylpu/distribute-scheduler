@@ -11,7 +11,7 @@ public class JobParserTest {
     
     @Test
     public void testJobParser() {
-        File file = new File("src/main/resources/jobplan.xml");
+        File file = new File("src/main/resources/jobplan1.xml");
         JobParser parser = new JobParser(file);
         Element element = parser.readFile();
         JobRequest rootJob = parser.getRootJob(element);

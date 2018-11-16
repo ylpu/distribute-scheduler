@@ -49,13 +49,13 @@ public class ZKHelper {
        ZkClient zkClient = ZKHelper.getClient();
        HostInfo hostInfo = new HostInfo();
        hostInfo.setTotalCores(MetricsUtils.getAvailiableProcessors());
-       hostInfo.setTotalMemory(MetricsUtils.getMemInfo());
+       hostInfo.setTotalMemory(MetricsUtils.getTotalMemInfo());
        hostInfo.setAvailableCores(MetricsUtils.getAvailiableProcessors());
-       hostInfo.setAvailableMemory(MetricsUtils.getMemInfo());
+       hostInfo.setAvailableMemory(MetricsUtils.getFreeMemInfo());
        hostInfo.setIp(MetricsUtils.getHostIpAddress() + ":" + 8081);
        hostInfo.setHostName(MetricsUtils.getHostName() + ":" + 8081);
 //       zkClient.createEphemeral("/root/pool1/BIH-D-6253:8081", hostInfo);
-       hostInfo.setAvailableMemory(MetricsUtils.getMemInfo() - 1000);
+       hostInfo.setAvailableMemory(MetricsUtils.getFreeMemInfo() - 1000);
        
        try {
     	   ZKHelper.createEphemeralNode(zkClient, "/root", null); 

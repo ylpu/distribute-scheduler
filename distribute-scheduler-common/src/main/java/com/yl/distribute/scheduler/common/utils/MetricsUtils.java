@@ -16,7 +16,8 @@ public class MetricsUtils {
     
     public static void main(String[] args)
     {
-        System.out.println(getMemInfo());
+        System.out.println(getFreeMemInfo());
+        System.out.println(getTotalMemInfo());
         System.out.println(getAvailiableProcessors());
         getHostName();
         getHostIpAddress();
@@ -27,10 +28,16 @@ public class MetricsUtils {
     }  
 
     
-    public static long getMemInfo()
+    public static long getFreeMemInfo()
     {
         OperatingSystemMXBean mem = (OperatingSystemMXBean) ManagementFactory.getOperatingSystemMXBean();
         return mem.getFreePhysicalMemorySize() / 1024 / 1024;
+    }
+    
+    public static long getTotalMemInfo()
+    {
+        OperatingSystemMXBean mem = (OperatingSystemMXBean) ManagementFactory.getOperatingSystemMXBean();
+        return mem.getTotalPhysicalMemorySize() / 1024 / 1024;
     }
     
     public static int getAvailiableProcessors() {

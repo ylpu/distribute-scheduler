@@ -30,7 +30,7 @@ public class JobDriver {
     
     private Log LOG = LogFactory.getLog(JobDriver.class);
     
-    private Long JOB_CHECK_INTERVAL = 1000L;
+    private Long JOB_CHECK_INTERVAL = 100l;
     
     private Stack<JobRequest> stack = new Stack<JobRequest>();
     private static Set<String> visited = new HashSet<String>();
@@ -39,16 +39,16 @@ public class JobDriver {
     private Queue<JobRequest> bfsQueue = new LinkedList<JobRequest>();
     private static Set<String> bfsVisited = new HashSet<String>();
     
-    private JobRequest job;
+    private JobRequest jobRequest;
     
-    public JobDriver(JobRequest job){
-        this.job = job;
+    public JobDriver(JobRequest jobRequest){
+        this.jobRequest = jobRequest;
     }
     
     public void start() {
 //        startJob(job);
 //        new Thread(new DFSJobChecker()).start();
-    	bfsVisit(job);
+    	bfsVisit(jobRequest);
         new Thread(new BFSJobChecker()).start();
         
     }
@@ -178,11 +178,14 @@ public class JobDriver {
     }
     @Deprecated
     private final class DFSJobChecker implements Runnable{
-
+    	JobRequest job = null;
+    	Properties prop = Configuration.getConfig("config.properties");
+    	Long jobCheckInterval = prop.get("job.check.interval") == null ? 
+    			JOB_CHECK_INTERVAL : Configuration.getLong(prop, "job.check.interval");
         public void run() {
             //任务是否遍历完
             while(!stack.isEmpty()){
-                JobRequest job = stack.peek();
+                job = stack.peek();
                 //如果父任务执行完成就提交当前任务，如果没有完成压入栈顶，每隔1秒检查父任务是否完成
                 if(job != null){
                     if (parentJobsHaveFinished(job)){
@@ -196,12 +199,19 @@ public class JobDriver {
                 }
  
                 try {
-                    Thread.sleep(JOB_CHECK_INTERVAL);
+                    Thread.sleep(jobCheckInterval);
                 } catch (InterruptedException e) {
                     LOG.error(e);
                 }
             }  
-            //所有任务执行完清除callback
+            //最后一个任务完成后清理callback
+            while(!jobHasFinished(job)) {
+                try {
+                    Thread.sleep(jobCheckInterval);
+                } catch (InterruptedException e) {
+                    LOG.error(e);
+                }
+            }
             for(String jobId : visited) {
                 System.out.println("remove job " + jobId);
                 TaskResponseManager.remove(jobId);
@@ -211,10 +221,14 @@ public class JobDriver {
     private final class BFSJobChecker implements Runnable{
 
         public void run() {
+        	JobRequest job = null;
+        	Properties prop = Configuration.getConfig("config.properties");
+        	Long jobCheckInterval = prop.get("job.check.interval") == null ? 
+        			JOB_CHECK_INTERVAL : Configuration.getLong(prop, "job.check.interval");
         	try {
                 //任务是否遍历完
                 while(!bfsQueue.isEmpty()){
-                    JobRequest job = bfsQueue.peek();
+                    job = bfsQueue.peek();
                     //如果父任务执行完成就提交当前任务，如果没有完成压入队列顶，每隔1秒检查父任务是否完成
                     if(job != null){
                         if (parentJobsHaveFinished(job)){
@@ -225,15 +239,22 @@ public class JobDriver {
                             }
                             bfsQueue.poll();
                         }   
-                    }
-     
+                    }     
                     try {
-                        Thread.sleep(JOB_CHECK_INTERVAL);
+                        Thread.sleep(jobCheckInterval);
                     } catch (InterruptedException e) {
                         LOG.error(e);
                     }
                 } 
         	}finally {
+        		//最后一个任务完成后清理callback
+        		while(!jobHasFinished(job)){
+        			try {
+						Thread.sleep(jobCheckInterval);
+					} catch (InterruptedException e) {
+						LOG.error(e);
+					}
+        		}  
         		cleanCallBack();
         	}            
         }   

@@ -1,5 +1,6 @@
 package com.yl.distribute.scheduler.client.test;
 
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -44,6 +45,10 @@ public class CommonTest {
         		System.out.println(column);
         	}
         }
+        DecimalFormat df = new DecimalFormat("0.00") ;
+        long freeMem = Runtime.getRuntime().freeMemory();
+        System.out.println(df.format(freeMem) + " MB");
+
 	}
 
 }

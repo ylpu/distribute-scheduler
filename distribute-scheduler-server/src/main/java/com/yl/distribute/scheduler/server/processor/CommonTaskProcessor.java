@@ -36,7 +36,7 @@ public abstract class CommonTaskProcessor {
         String windowsProcessFile = GlobalConstants.WIN_PID_DIR + task.getTaskId() + ".pid";
                       
         try {
-//        	Thread.sleep(new Random().nextInt(20000));
+        	Thread.sleep(new Random().nextInt(20000));
             if(StringUtils.isNotBlank(command)) {
                 
                 Process process = Runtime.getRuntime().exec(command);
@@ -63,8 +63,9 @@ public abstract class CommonTaskProcessor {
             }
         }catch (Exception e) {
             LOG.error(e);
-            updateAndResponse(ctx,TaskStatus.FAILED);
-            System.out.println("after process for " +  task.getTaskId());
+            updateAndResponse(ctx,TaskStatus.FAILED);            
+        }finally {
+        	System.out.println("after process for " +  task.getTaskId());
         }
     }
     

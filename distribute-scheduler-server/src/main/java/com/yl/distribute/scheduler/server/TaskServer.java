@@ -103,21 +103,16 @@ public class TaskServer {
         HostInfo hostInfo = new HostInfo();
         setRegistData(hostInfo);
         ZKHelper.createEphemeralNode(client,serverPath, hostInfo);
-        RedisClient redisClient = null;
-        try {
-            redisClient = RedisClient.getInstance(Configuration.getConfig(REDIS_CONFIG));        
-            redisClient.setObject(MetricsUtils.getHostName() + ":" + serverPort, hostInfo, 0);
-        }finally {
-        	redisClient.close();
-        }
+        RedisClient redisClient = RedisClient.getInstance(Configuration.getConfig(REDIS_CONFIG));        
+        redisClient.setObject(MetricsUtils.getHostName() + ":" + serverPort, hostInfo, 0);
     } 
     
     
     private void setRegistData(HostInfo hostInfo) {
         hostInfo.setTotalCores(MetricsUtils.getAvailiableProcessors());
-        hostInfo.setTotalMemory(MetricsUtils.getMemInfo());
+        hostInfo.setTotalMemory(MetricsUtils.getTotalMemInfo());
         hostInfo.setAvailableCores(MetricsUtils.getAvailiableProcessors());
-        hostInfo.setAvailableMemory(MetricsUtils.getMemInfo());
+        hostInfo.setAvailableMemory(MetricsUtils.getFreeMemInfo());
         hostInfo.setIp(MetricsUtils.getHostIpAddress() + ":" + serverPort);
         hostInfo.setHostName(MetricsUtils.getHostName() + ":" + serverPort);
     }
