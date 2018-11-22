@@ -2,6 +2,7 @@ package com.yl.distribute.scheduler.resource.manager;
 
 import java.text.MessageFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -14,6 +15,7 @@ import org.apache.commons.logging.LogFactory;
 import org.I0Itec.zkclient.IZkChildListener;
 import com.yl.distribute.scheduler.common.bean.HostInfo;
 import com.yl.distribute.scheduler.common.bean.JobRequest;
+import com.yl.distribute.scheduler.common.utils.DateUtils;
 import com.yl.distribute.scheduler.common.utils.MetricsUtils;
 import com.yl.distribute.scheduler.core.config.Configuration;
 import com.yl.distribute.scheduler.core.redis.RedisClient;
@@ -73,8 +75,8 @@ public class ResourceManager{
         }else {
         	zkClient.subscribeChildChanges("/rm", new IZkChildListener() {              
                 public void handleChildChange(String parentPath, List<String> currentChildren) throws Exception { 
-                    LOG.warn(String.format("[ZookeeperRegistry] service list change: path=%s, currentChildren=%s",
-                            parentPath, currentChildren.toString()));                    
+                    LOG.warn(String.format("[ZookeeperRegistry] service list change: path=%s, currentChildren=%s at %s",
+                            parentPath, currentChildren.toString(),DateUtils.getDateAsString(new Date(),DateUtils.dateTimeStr)));                    
                     try {
                  	   ZKHelper.createEphemeralNode(zkClient, parentPath + "/" + MetricsUtils.getHostName() + ":8088", null); 
                  	   init(rootPool,prop);

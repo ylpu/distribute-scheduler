@@ -21,12 +21,10 @@
           <dependency>
             <groupId>io.undertow</groupId>
             <artifactId>undertow-core</artifactId>
-            <version>${undertow.version}</version>
         </dependency>
         <dependency>
             <groupId>io.undertow</groupId>
             <artifactId>undertow-servlet</artifactId>
-            <version>${undertow.version}</version>
         </dependency>
         <!-- Jersey -->
         <dependency>
@@ -49,17 +47,14 @@
         <dependency>
             <groupId>com.fasterxml.jackson.module</groupId>
             <artifactId>jackson-module-parameter-names</artifactId>
-            <version>${jackson.version}</version>
         </dependency>
         <dependency>
             <groupId>com.fasterxml.jackson.datatype</groupId>
             <artifactId>jackson-datatype-jdk8</artifactId>
-            <version>${jackson.version}</version>
         </dependency>
         <dependency>
             <groupId>com.fasterxml.jackson.datatype</groupId>
             <artifactId>jackson-datatype-jsr310</artifactId>
-            <version>${jackson.version}</version>
         </dependency>
         <!-- Weld -->
         <dependency>
@@ -77,7 +72,6 @@
         <dependency>
             <groupId>org.hibernate</groupId>
             <artifactId>hibernate-core</artifactId>
-            <version>${hibernate.version}</version>
         </dependency>
         <!-- JUnit -->
         <dependency>
@@ -115,7 +109,6 @@
         <dependency>
           <groupId>mysql</groupId>
           <artifactId>mysql-connector-java</artifactId>
-          <version>5.1.46</version>
         </dependency>
         <!-- swagger -->
         <dependency> 
@@ -132,14 +125,12 @@
         <dependency>    
             <groupId>com.yl.distribute.scheduler</groupId>
             <artifactId>distribute-scheduler-client</artifactId>
-            <version>0.0.1-SNAPSHOT</version>
         </dependency>
         
         <!-- Spring 4 -->
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-web</artifactId>
-            <version>${spring.version}</version>
         </dependency>
         <!--Spring4 end-->
         
@@ -148,7 +139,6 @@
             <groupId>org.glassfish.jersey.ext</groupId>
             <!-- 官方只提供了对 Spring 3 的扩展:jersey-spring3.jar -->
             <artifactId>jersey-spring3</artifactId>
-            <version>${jersey.version}</version>
             <!-- 要想使用spring4 需去除jersey-spring3.jar自带的spring3版本 -->
             <exclusions>
                 <exclusion>
@@ -172,30 +162,46 @@
         <dependency>
              <groupId>org.glassfish.jersey.ext</groupId>
              <artifactId>jersey-bean-validation</artifactId>
-             <version>${jersey.version}</version>
         </dependency>       
         <!-- spring-data-jpa -->
         <dependency>
             <groupId>org.springframework.data</groupId>
             <artifactId>spring-data-jpa</artifactId>
-            <version>1.11.7.RELEASE</version>
         </dependency>
         <!-- Hibernate -->
         <dependency>
             <groupId>org.hibernate</groupId>
             <artifactId>hibernate-core</artifactId>
-            <version>5.0.11.Final</version>
         </dependency>        
         <dependency>
             <groupId>org.hibernate</groupId>
             <artifactId>hibernate-entitymanager</artifactId>
-            <version>5.0.11.Final</version>
         </dependency>
         <!-- c3p0 -->
         <dependency>
             <groupId>com.mchange</groupId>
             <artifactId>c3p0</artifactId>
             <version>0.9.5.2</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-slf4j-impl</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-jcl</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
         </dependency>      
     </dependencies>
     <build>
@@ -203,7 +209,6 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.5.1</version>
                 <configuration>
                     <source>1.8</source>
                     <target>1.8</target>
@@ -212,7 +217,6 @@
             </plugin>
             <plugin>
                 <artifactId>maven-shade-plugin</artifactId>
-                <version>3.0.0</version>
                 <executions>
                     <execution>
                         <phase>package</phase>

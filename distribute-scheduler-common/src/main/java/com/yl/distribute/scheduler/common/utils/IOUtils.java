@@ -164,4 +164,7 @@ public final class IOUtils {
            }
        }
 	}   
+   public static void main(String[] args) {
+	   writeFile("abc","D:\\pid\\test.pid");
+   }
 }

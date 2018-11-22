@@ -35,7 +35,7 @@ public class ProcessorProxy implements InvocationHandler{
         TaskRequest task = null;        
         try {
             task = ReflectUtils.getFieldValue(obj, "task");            
-            LOG.info("start to execute task " + task.getId());
+            LOG.info("start to execute task " + task.getTaskId());
             method.invoke(obj, args);
         } catch (Exception e) {
             LOG.error(e);
