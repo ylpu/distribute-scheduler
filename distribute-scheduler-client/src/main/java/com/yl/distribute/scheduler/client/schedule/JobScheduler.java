@@ -1,5 +1,7 @@
 package com.yl.distribute.scheduler.client.schedule;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.quartz.CronScheduleBuilder;
 import org.quartz.CronTrigger;
 import org.quartz.JobBuilder;
@@ -14,6 +16,9 @@ import org.quartz.impl.StdSchedulerFactory;
 import com.yl.distribute.scheduler.common.bean.JobScheduleInfo;
 
 public class JobScheduler {
+	
+    private static Log LOG = LogFactory.getLog(JobScheduler.class);
+
     private static SchedulerFactory schedulerFactory = new StdSchedulerFactory();  
     
     /**
@@ -46,6 +51,7 @@ public class JobScheduler {
                 sched.start();  
             }  
         } catch (Exception e) {  
+        	LOG.error(e);
             throw new RuntimeException(e);  
         }  
     }  
@@ -77,6 +83,7 @@ public class JobScheduler {
                 sched.rescheduleJob(triggerKey, trigger);
             }  
         } catch (Exception e) {  
+        	LOG.error(e);
             throw new RuntimeException(e);  
         }  
     }  
@@ -95,6 +102,7 @@ public class JobScheduler {
             sched.unscheduleJob(triggerKey);// 移除触发器  
             sched.deleteJob(JobKey.jobKey(scheduleInfo.getJobName(), scheduleInfo.getJobGroupName()));// 删除任务  
         } catch (Exception e) {  
+        	LOG.error(e);
             throw new RuntimeException(e);  
         }  
     }  
@@ -107,6 +115,7 @@ public class JobScheduler {
             Scheduler sched = schedulerFactory.getScheduler();  
             sched.start();  
         } catch (Exception e) {  
+        	LOG.error(e);
             throw new RuntimeException(e);  
         }  
     }  
@@ -121,6 +130,7 @@ public class JobScheduler {
                 sched.shutdown();  
             }  
         } catch (Exception e) {  
+        	LOG.error(e);
             throw new RuntimeException(e);  
         }  
     }  

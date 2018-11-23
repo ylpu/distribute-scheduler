@@ -4,8 +4,13 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 
 public class Configuration {
+	
+    private static Log LOG = LogFactory.getLog(Configuration.class);
 	
     private static Map<String,Properties> configMap = new HashMap<String,Properties>();
     
@@ -16,7 +21,7 @@ public class Configuration {
             try {
                 prop.load(Configuration.class.getClassLoader().getResourceAsStream(propFileName));
             } catch (IOException e) {
-                e.printStackTrace();
+            	LOG.error(e);
             }
             config = prop;
             configMap.put(propFileName, prop);

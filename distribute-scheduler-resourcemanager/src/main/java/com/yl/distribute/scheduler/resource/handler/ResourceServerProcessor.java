@@ -2,12 +2,16 @@ package com.yl.distribute.scheduler.resource.handler;
 
 import java.lang.reflect.Method;
 import java.util.List;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import io.netty.channel.ChannelHandlerContext;
 import com.yl.distribute.scheduler.common.bean.ResourceRequest;
 import com.yl.distribute.scheduler.common.bean.ResourceResponse;
 import com.yl.distribute.scheduler.core.scan.ClasspathPackageScanner;
 
 public class ResourceServerProcessor {
+	
+	private static Log LOG = LogFactory.getLog(ResourceServerProcessor.class);
     
     private ChannelHandlerContext ctx;
     private ResourceRequest request;
@@ -26,6 +30,7 @@ public class ResourceServerProcessor {
         } catch (Exception e) {
             response.setErrorCode(500);
             response.setErrorMsg(e.getMessage());
+            LOG.error(e);
         }
         ctx.writeAndFlush(response);
     }
@@ -57,6 +62,7 @@ public class ResourceServerProcessor {
                 throw new RuntimeException("can not find service implementation for " + classname);
             }
         } catch (Exception e) {
+        	LOG.error(e);
             throw new RuntimeException(e);
         }
         throw new RuntimeException("can not find service implementation for " + classname);

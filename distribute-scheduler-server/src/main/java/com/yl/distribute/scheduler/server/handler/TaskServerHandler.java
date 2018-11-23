@@ -23,7 +23,7 @@ public class TaskServerHandler extends SimpleChannelInboundHandler<TaskRequest> 
     public void channelInactive(ChannelHandlerContext ctx) throws Exception {
         InetSocketAddress insocket = (InetSocketAddress) ctx.channel().remoteAddress();
         String clientIP = insocket.getAddress().getHostAddress();
-        LOG.warn("disconnected with " + clientIP);   
+        LOG.error("disconnected with " + clientIP);   
         super.channelInactive(ctx);
     }
 

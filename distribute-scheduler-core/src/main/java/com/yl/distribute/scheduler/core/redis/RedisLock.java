@@ -2,10 +2,14 @@ package com.yl.distribute.scheduler.core.redis;
 
 import java.util.List;
 import java.util.UUID;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.Transaction;
 
 public class RedisLock {
+	
+	private static Log LOG = LogFactory.getLog(RedisLock.class);
     
     public static String acquireLockWithTimeout(
             Jedis jedis, String lockName, long acquireTimeout, long lockTimeout)
@@ -26,8 +30,9 @@ public class RedisLock {
 
                 try {
                     Thread.sleep(100);    //等待1秒后重新尝试设置锁的值
-                }catch(InterruptedException ie){
+                }catch(InterruptedException e){
                     Thread.currentThread().interrupt();
+                    LOG.error(e);
                 }
             }
             // 获取锁失败时返回null

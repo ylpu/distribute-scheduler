@@ -7,6 +7,8 @@ import java.io.ObjectOutputStream;
 import java.util.Properties;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import com.yl.distribute.scheduler.common.bean.HostInfo;
 import com.yl.distribute.scheduler.common.bean.JobRequest;
 import com.yl.distribute.scheduler.common.bean.TaskRequest;
@@ -19,6 +21,8 @@ import redis.clients.jedis.JedisPoolConfig;
  * 主要用来给用户提供一个设计完备的，通过jedis的jar包来管理redis内存数据库的各种方法
  */
 public class RedisClient {    
+	
+	private static Log LOG = LogFactory.getLog(RedisClient.class);
     
     private static String host = "127.0.0.1";
     private static int port = 6379;    //访问密码
@@ -75,7 +79,7 @@ public class RedisClient {
                 jedisPool = new JedisPool(config, host, port, timeout);
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            LOG.error(e);
         }
     }
     
@@ -118,7 +122,7 @@ public class RedisClient {
                 jedisPool = new JedisPool(config, host, port, timeout);
             }
         } catch (Exception e) {
-            e.printStackTrace();
+        	LOG.error(e);
         }
     }
     
@@ -136,6 +140,7 @@ public class RedisClient {
                 return null;
             }
         } catch (Exception e) {
+        	LOG.error(e);
             return null;
         }
     }
@@ -405,7 +410,7 @@ public class RedisClient {
             byte[] bytes = byteOut.toByteArray();
             return bytes;
         } catch (Exception e) {
-            e.printStackTrace();
+        	LOG.error(e);
         }
         return null;
     }
@@ -422,7 +427,7 @@ public class RedisClient {
             ObjectInputStream objIn = new ObjectInputStream(in);
             return objIn.readObject();
         } catch (Exception e) {
-            e.printStackTrace();
+        	LOG.error(e);
         }
         return null;
     }

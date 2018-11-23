@@ -1,6 +1,8 @@
 package com.yl.distribute.scheduler.core.resource.rpc;
 
 import java.util.*;
+
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -32,9 +34,12 @@ public class ResourceClient {
 
     private EventLoopGroup group;
 
-    public ResourceClient connect() throws InterruptedException {
+    public ResourceClient connect() throws Exception {
         
-        String resourceServer = getResourceServer();        
+        String resourceServer = getResourceServer();   
+        if(StringUtils.isBlank(resourceServer)) {
+        	throw new RuntimeException("can not get active resource manager");
+        }
     	String[] serverAndPort = resourceServer.split(":");
     	String server =  serverAndPort[0];
     	int port = NumberUtils.toInt(serverAndPort[1]);
