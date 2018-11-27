@@ -43,7 +43,7 @@ public class ResourceClientHandler extends SimpleChannelInboundHandler<ResourceR
      * if channel is inactive, then try to reconnect it
      */
     public void channelInactive(ChannelHandlerContext ctx) throws Exception {
-    	LOG.error("channel inactive" + ctx.channel());
+    	LOG.warn("channel inactive" + ctx.channel());
         System.out.println("channel inactive" + ctx.channel());    
     }
 

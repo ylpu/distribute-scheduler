@@ -81,7 +81,7 @@ public class ResourceManager{
                  	   ZKHelper.createEphemeralNode(zkClient, parentPath + "/" + MetricsUtils.getHostName() + ":8088", null); 
                  	   init(rootPool,prop);
                     }catch(Exception e) {
-                    	LOG.warn(MessageFormat.format("{0} can not compain as an active resourcemanager with exception {1}", MetricsUtils.getHostName(),e.getMessage()));
+                    	LOG.error(MessageFormat.format("{0} can not compain as an active resourcemanager with exception {1}", MetricsUtils.getHostName(),e.getMessage()));
                     }
                 }  
             });  

@@ -49,6 +49,7 @@
     <module>distribute-scheduler-web</module>
     <module>distribute-scheduler-resourcemanager</module>
     <module>distribute-scheduler-webapp</module>
+    <module>distribute-scheduler-resourcemanager-mesos</module>
   </modules>
   <dependencyManagement>
      <dependencies>

@@ -23,7 +23,7 @@ public class TaskServerHandler extends SimpleChannelInboundHandler<TaskRequest> 
     public void channelInactive(ChannelHandlerContext ctx) throws Exception {
         InetSocketAddress insocket = (InetSocketAddress) ctx.channel().remoteAddress();
         String clientIP = insocket.getAddress().getHostAddress();
-        LOG.error("disconnected with " + clientIP);   
+        LOG.warn("disconnected with " + clientIP);   
         super.channelInactive(ctx);
     }
 
@@ -33,6 +33,14 @@ public class TaskServerHandler extends SimpleChannelInboundHandler<TaskRequest> 
         process(ctx,task);
     } 
     
+    /**
+     * if caught exception, then close the channel 
+     */
+    public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
+        LOG.error(cause);
+        ctx.close();
+    }
+    
     private void process(ChannelHandlerContext ctx, TaskRequest task) {
         Class<?> cls = ProcessorManager.getProcessor(task.getJob().getJobType());
         IServerProcessor processor = null;
@@ -40,6 +48,7 @@ public class TaskServerHandler extends SimpleChannelInboundHandler<TaskRequest> 
             processor = (IServerProcessor) cls.getConstructor(task.getClass()).newInstance(task);
         } catch (Exception e) { 
             LOG.error(e);
+            throw new RuntimeException(e);
         }    
         IServerProcessor processorProxy = (IServerProcessor)Proxy.newProxyInstance(processor.getClass().getClassLoader(), processor
                 .getClass().getInterfaces(), new ProcessorProxy(processor));  

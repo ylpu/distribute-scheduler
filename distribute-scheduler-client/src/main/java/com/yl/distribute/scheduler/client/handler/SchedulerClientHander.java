@@ -29,7 +29,7 @@ public class SchedulerClientHander extends CommonChannelInboundHandler{
     public void channelInactive(ChannelHandlerContext ctx) throws Exception {
         InetSocketAddress insocket = (InetSocketAddress) ctx.channel().remoteAddress();
         String clientIP = insocket.getAddress().getHostAddress();
-        LOG.error("disconnected with " + clientIP);
+        LOG.warn("disconnected with " + clientIP);
         System.out.println("disconnected with " + clientIP);    
     }
 

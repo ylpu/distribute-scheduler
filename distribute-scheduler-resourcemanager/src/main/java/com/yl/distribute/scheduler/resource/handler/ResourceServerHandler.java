@@ -19,6 +19,7 @@ public class ResourceServerHandler extends SimpleChannelInboundHandler<ResourceR
 
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) {
+        LOG.error(cause);
         ctx.close();
     }
 
@@ -27,6 +28,6 @@ public class ResourceServerHandler extends SimpleChannelInboundHandler<ResourceR
         InetSocketAddress insocket = (InetSocketAddress) ctx.channel().remoteAddress();
         String clientIP = insocket.getAddress().getHostAddress();
         System.out.println("disconnected with " + clientIP);    
-        LOG.error("disconnected with " + clientIP);
+        LOG.warn("disconnected with " + clientIP);
     }
 }
