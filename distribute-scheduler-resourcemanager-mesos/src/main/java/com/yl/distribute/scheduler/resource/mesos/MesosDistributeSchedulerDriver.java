@@ -20,23 +20,33 @@ public class MesosDistributeSchedulerDriver {
 
 		Protos.CommandInfo.URI uri = Protos.CommandInfo.URI.newBuilder().setValue(path).setExtract(false).build();
 		String commandUserProfile = "java -cp pinspider-1.0-SNAPSHOT-jar-with-dependencies.jar com.geekz.anon.mesos.framework.PinUserProfileExecutor";
-		Protos.CommandInfo commandInfoUserProfile = Protos.CommandInfo.newBuilder().setValue(commandUserProfile).addUris(uri)
-																	  .build();
+		Protos.CommandInfo commandInfoUserProfile = Protos.CommandInfo.newBuilder()
+				.setValue(commandUserProfile)
+				.addUris(uri)	
+				.build();
 
 		String commandUserBoard   = "java -cp pinspider-1.0-SNAPSHOT-jar-with-dependencies.jar com.geekz.anon.mesos.framework.PinUserBoardExecutor";
-		Protos.CommandInfo commandInfoUserBoard = Protos.CommandInfo.newBuilder().setValue(commandUserBoard).addUris(uri)
-														   .build();
+		Protos.CommandInfo commandInfoUserBoard = Protos.CommandInfo.newBuilder()
+				.setValue(commandUserBoard)
+				.addUris(uri)
+				.build();
 
-		Protos.ExecutorInfo userProfileExecutorInfo = Protos.ExecutorInfo.newBuilder().setExecutorId(
-				Protos.ExecutorID.newBuilder().setValue("PinUserProfileExecutor")).setCommand(commandInfoUserProfile)
-															  .setName("PinUserProfileExecutor Java").build();
+		Protos.ExecutorInfo userProfileExecutorInfo = Protos.ExecutorInfo.newBuilder()
+				.setExecutorId(Protos.ExecutorID.newBuilder().setValue("PinUserProfileExecutor"))
+				.setCommand(commandInfoUserProfile)
+		        .setName("PinUserProfileExecutor Java")
+		        .build();
 
-		Protos.ExecutorInfo userBoardExecutorInfo = Protos.ExecutorInfo.newBuilder().setExecutorId(
-				Protos.ExecutorID.newBuilder().setValue("PinUserBoardExecutor")).setCommand(commandInfoUserBoard)
-															  .setName("PinUserBoardExecutor Java").build();
+		Protos.ExecutorInfo userBoardExecutorInfo = Protos.ExecutorInfo.newBuilder()
+				.setExecutorId(Protos.ExecutorID.newBuilder().setValue("PinUserBoardExecutor"))
+				.setCommand(commandInfoUserBoard)
+				.setName("PinUserBoardExecutor Java")
+				.build();
 
-		Protos.FrameworkInfo.Builder frameworkBuilder = Protos.FrameworkInfo.newBuilder().setFailoverTimeout(120000)
-																			.setUser("").setName("Pinspider Framework");
+		Protos.FrameworkInfo.Builder frameworkBuilder = Protos.FrameworkInfo.newBuilder()
+				.setFailoverTimeout(120000)
+				.setUser("")
+				.setName("Pinspider Framework");
 
 		if (System.getenv("MESOS_CHECKPOINT") != null) {
 			System.out.println("Enabling checkpoint for the framework");
@@ -63,7 +73,8 @@ public class MesosDistributeSchedulerDriver {
 			}
 
 			Protos.Credential credential = Protos.Credential.newBuilder()
-															.setPrincipal(System.getenv("DEFAULT_PRINCIPAL")).setSecret(System.getenv("DEFAULT_SECRET")).build();
+				  .setPrincipal(System.getenv("DEFAULT_PRINCIPAL"))
+				  .setSecret(System.getenv("DEFAULT_SECRET")).build();
 
 			frameworkBuilder.setPrincipal(System.getenv("DEFAULT_PRINCIPAL"));
 

@@ -46,7 +46,8 @@ public class ImageInfo {
 	    Gson gson = new Gson();
 		return gson.toJson(this);	}
 
-	@Override public String toString() {
+	@Override 
+	public String toString() {
 		return toJSON();
 	}
 }

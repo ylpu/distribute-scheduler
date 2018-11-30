@@ -17,20 +17,24 @@ public class PinUserProfileExecutor implements Executor {
 
 	private final static Log LOGGER = LogFactory.getLog(PinUserProfileExecutor.class);
 
-	@Override public void registered(ExecutorDriver executorDriver, Protos.ExecutorInfo executorInfo,
+	@Override 
+	public void registered(ExecutorDriver executorDriver, Protos.ExecutorInfo executorInfo,
 			Protos.FrameworkInfo frameworkInfo, Protos.SlaveInfo slaveInfo) {
 		LOGGER.info("Registered PinUserProfileExecutor on " + slaveInfo.getHostname());
 	}
 
-	@Override public void reregistered(ExecutorDriver executorDriver, Protos.SlaveInfo slaveInfo) {
+	@Override 
+	public void reregistered(ExecutorDriver executorDriver, Protos.SlaveInfo slaveInfo) {
 
 	}
 
-	@Override public void disconnected(ExecutorDriver executorDriver) {
+	@Override 
+	public void disconnected(ExecutorDriver executorDriver) {
 
 	}
 
-	@Override public void launchTask(final ExecutorDriver executorDriver, final Protos.TaskInfo taskInfo) {
+	@Override 
+	public void launchTask(final ExecutorDriver executorDriver, final Protos.TaskInfo taskInfo) {
 		LOGGER.info("Launching task in PinUserProfileExecutor ...");
 		Protos.TaskStatus taskStatus = Protos.TaskStatus.newBuilder().setTaskId(taskInfo.getTaskId())
 														.setState(Protos.TaskState.TASK_RUNNING).build();
@@ -134,19 +138,23 @@ public class PinUserProfileExecutor implements Executor {
 		return userProfileInfo.toJSON();
 	}
 
-	@Override public void killTask(ExecutorDriver executorDriver, Protos.TaskID taskID) {
+	@Override 
+	public void killTask(ExecutorDriver executorDriver, Protos.TaskID taskID) {
 
 	}
 
-	@Override public void frameworkMessage(ExecutorDriver executorDriver, byte[] bytes) {
+	@Override 
+	public void frameworkMessage(ExecutorDriver executorDriver, byte[] bytes) {
 
 	}
 
-	@Override public void shutdown(ExecutorDriver executorDriver) {
+	@Override 
+	public void shutdown(ExecutorDriver executorDriver) {
 
 	}
 
-	@Override public void error(ExecutorDriver executorDriver, String s) {
+	@Override 
+	public void error(ExecutorDriver executorDriver, String s) {
 
 	}
 
@@ -170,5 +178,4 @@ public class PinUserProfileExecutor implements Executor {
 		MesosExecutorDriver mesosExecutorDriver = new MesosExecutorDriver(new PinUserProfileExecutor());
 		System.exit(mesosExecutorDriver.run() == Protos.Status.DRIVER_STOPPED ? 0 : 1);
 	}
-
 }

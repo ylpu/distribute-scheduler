@@ -36,7 +36,8 @@ public class PinUserBoardExecutor implements Executor {
 	 * @see org.apache.mesos.ExecutorDriver
 	 * @see org.apache.mesos.MesosSchedulerDriver
 	 */
-	@Override public void registered(ExecutorDriver driver, Protos.ExecutorInfo executorInfo,
+	@Override 
+	public void registered(ExecutorDriver driver, Protos.ExecutorInfo executorInfo,
 			Protos.FrameworkInfo frameworkInfo, Protos.SlaveInfo slaveInfo) {
 		LOGGER.info("Registered PinUserBoardExecutor on " + slaveInfo.getHostname());
 	}
@@ -50,7 +51,8 @@ public class PinUserBoardExecutor implements Executor {
 	 *                  the tasks for this executor.
 	 * @see org.apache.mesos.ExecutorDriver
 	 */
-	@Override public void reregistered(ExecutorDriver driver, Protos.SlaveInfo slaveInfo) {
+	@Override 
+	public void reregistered(ExecutorDriver driver, Protos.SlaveInfo slaveInfo) {
 
 	}
 
@@ -60,7 +62,8 @@ public class PinUserBoardExecutor implements Executor {
 	 *
 	 * @param driver The executor driver that was disconnected.
 	 */
-	@Override public void disconnected(ExecutorDriver driver) {
+	@Override 
+	public void disconnected(ExecutorDriver driver) {
 
 	}
 
@@ -76,10 +79,13 @@ public class PinUserBoardExecutor implements Executor {
 	 * @see org.apache.mesos.ExecutorDriver
 	 * @see org.apache.mesos.Protos.TaskInfo
 	 */
-	@Override public void launchTask(ExecutorDriver driver, Protos.TaskInfo task) {
+	@Override 
+	public void launchTask(ExecutorDriver driver, Protos.TaskInfo task) {
 		LOGGER.info("Launching task in PinUserBoardExecutor...");
-		Protos.TaskStatus taskStatus = Protos.TaskStatus.newBuilder().setTaskId(task.getTaskId())
-														.setState(Protos.TaskState.TASK_RUNNING).build();
+		Protos.TaskStatus taskStatus = Protos.TaskStatus.newBuilder()
+				.setTaskId(task.getTaskId())
+				.setState(Protos.TaskState.TASK_RUNNING)
+				.build();
 		driver.sendStatusUpdate(taskStatus);
 		String url = task.getData().toStringUtf8();
 
@@ -93,8 +99,10 @@ public class PinUserBoardExecutor implements Executor {
 		LOGGER.info("Sending framework message and marking task finished." + getClass().getName());
 		driver.sendFrameworkMessage(message);
 
-		taskStatus = Protos.TaskStatus.newBuilder().setTaskId(task.getTaskId()).setState(Protos.TaskState.TASK_FINISHED)
-									  .build();
+		taskStatus = Protos.TaskStatus.newBuilder()
+				.setTaskId(task.getTaskId())
+				.setState(Protos.TaskState.TASK_FINISHED)
+				.build();
 		driver.sendStatusUpdate(taskStatus);
 	}
 
@@ -199,7 +207,8 @@ public class PinUserBoardExecutor implements Executor {
 	 * @see org.apache.mesos.ExecutorDriver
 	 * @see org.apache.mesos.Protos.TaskID
 	 */
-	@Override public void killTask(ExecutorDriver driver, Protos.TaskID taskId) {
+	@Override 
+	public void killTask(ExecutorDriver driver, Protos.TaskID taskId) {
 
 	}
 
@@ -212,7 +221,8 @@ public class PinUserBoardExecutor implements Executor {
 	 * @param data   The message payload.
 	 * @see org.apache.mesos.ExecutorDriver
 	 */
-	@Override public void frameworkMessage(ExecutorDriver driver, byte[] data) {
+	@Override 
+	public void frameworkMessage(ExecutorDriver driver, byte[] data) {
 
 	}
 
@@ -226,7 +236,8 @@ public class PinUserBoardExecutor implements Executor {
 	 * @param driver The executor driver that should terminate.
 	 * @see org.apache.mesos.ExecutorDriver
 	 */
-	@Override public void shutdown(ExecutorDriver driver) {
+	@Override 
+	public void shutdown(ExecutorDriver driver) {
 
 	}
 
@@ -239,7 +250,8 @@ public class PinUserBoardExecutor implements Executor {
 	 * @param message The error message.
 	 * @see org.apache.mesos.ExecutorDriver
 	 */
-	@Override public void error(ExecutorDriver driver, String message) {
+	@Override 
+	public void error(ExecutorDriver driver, String message) {
 
 	}
 

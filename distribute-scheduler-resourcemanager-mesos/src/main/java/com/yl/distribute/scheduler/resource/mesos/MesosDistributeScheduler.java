@@ -33,16 +33,19 @@ public class MesosDistributeScheduler implements Scheduler {
 		this.crawlQueue.add(url);
 	}
 
-	@Override public void registered(SchedulerDriver schedulerDriver, Protos.FrameworkID frameworkID,
+	@Override 
+	public void registered(SchedulerDriver schedulerDriver, Protos.FrameworkID frameworkID,
 			Protos.MasterInfo masterInfo) {
 		LOGGER.info("Registered! ID = " + frameworkID.getValue());
 	}
 
-	@Override public void reregistered(SchedulerDriver schedulerDriver, Protos.MasterInfo masterInfo) {
+	@Override 
+	public void reregistered(SchedulerDriver schedulerDriver, Protos.MasterInfo masterInfo) {
 
 	}
 
-	@Override public void resourceOffers(SchedulerDriver schedulerDriver, List<Protos.Offer> list) {
+	@Override 
+	public void resourceOffers(SchedulerDriver schedulerDriver, List<Protos.Offer> list) {
 		double CPUS_PER_TASK = 1;
 		double MEM_PER_TASK = 128;
 
@@ -70,46 +73,36 @@ public class MesosDistributeScheduler implements Scheduler {
 				String url = crawlQueue.get(0);
 				LOGGER.info("URL Obtained :" + url);
 
-				Protos.TaskInfo pinUserProfileTaskInfo = Protos.TaskInfo.newBuilder().setName("task " + taskID.getValue())
-														  .setTaskId(taskID).setSlaveId(offer.getSlaveId())
-														  .addResources(Protos.Resource.newBuilder().setName("cpus")
-																					   .setType(
-																							   Protos.Value.Type.SCALAR)
-																					   .setScalar(Protos.Value.Scalar
-																							   .newBuilder().setValue(
-																									   CPUS_PER_TASK)))
-														  .addResources(Protos.Resource.newBuilder().setName("mem")
-																					   .setType(
-																							   Protos.Value.Type.SCALAR)
-																					   .setScalar(Protos.Value.Scalar
-																							   .newBuilder()
-																							   .setValue(MEM_PER_TASK)))
-														  .setData(ByteString.copyFromUtf8(crawlQueue.get(0)))
-														  .setExecutor(Protos.ExecutorInfo.newBuilder(
-																  pinUserProfileExecutor))
-														  .build();
+				Protos.TaskInfo pinUserProfileTaskInfo = Protos.TaskInfo.newBuilder()
+					  .setName("task " + taskID.getValue())
+					  .setTaskId(taskID)
+					  .setSlaveId(offer.getSlaveId())
+					  .addResources(Protos.Resource.newBuilder().setName("cpus")
+					  .setType(Protos.Value.Type.SCALAR).setScalar(Protos.Value.Scalar.newBuilder().setValue(CPUS_PER_TASK)))
+					  .addResources(Protos.Resource.newBuilder()
+							       .setName("mem")
+							       .setType(Protos.Value.Type.SCALAR)
+							       .setScalar(Protos.Value.Scalar.newBuilder().setValue(MEM_PER_TASK)))
+					  .setData(ByteString.copyFromUtf8(crawlQueue.get(0)))
+					  .setExecutor(Protos.ExecutorInfo.newBuilder(pinUserProfileExecutor))
+					  .build();
 
 				taskID = Protos.TaskID.newBuilder().setValue(Integer.toString(launchedTasks++)).build();
 				LOGGER.info("Launching task :" + taskID.getValue() + " using the offer : " + offer.getId().getValue());
 
-				Protos.TaskInfo pinUserBoardTaskInfo = Protos.TaskInfo.newBuilder().setName("task " + taskID.getValue())
-														  .setTaskId(taskID).setSlaveId(offer.getSlaveId())
-														  .addResources(Protos.Resource.newBuilder().setName("cpus")
-																					   .setType(
-																							   Protos.Value.Type.SCALAR)
-																					   .setScalar(Protos.Value.Scalar
-																							   .newBuilder().setValue(
-																									   CPUS_PER_TASK)))
-														  .addResources(Protos.Resource.newBuilder().setName("mem")
-																					   .setType(
-																							   Protos.Value.Type.SCALAR)
-																					   .setScalar(Protos.Value.Scalar
-																							   .newBuilder()
-																							   .setValue(MEM_PER_TASK)))
-														  .setData(ByteString.copyFromUtf8(crawlQueue.get(0)))
-														  .setExecutor(Protos.ExecutorInfo.newBuilder(
-																  pinUserBoardExecutor))
-														  .build();
+				Protos.TaskInfo pinUserBoardTaskInfo = Protos.TaskInfo.newBuilder()
+					  .setName("task " + taskID.getValue())
+		              .setTaskId(taskID).setSlaveId(offer.getSlaveId())
+					  .addResources(Protos.Resource.newBuilder()
+							  .setName("cpus")
+					          .setType(Protos.Value.Type.SCALAR)
+					          .setScalar(Protos.Value.Scalar.newBuilder().setValue(CPUS_PER_TASK)))
+					  .addResources(Protos.Resource.newBuilder().setName("mem")
+					  .setType(Protos.Value.Type.SCALAR)
+					  .setScalar(Protos.Value.Scalar.newBuilder().setValue(MEM_PER_TASK)))
+				      .setData(ByteString.copyFromUtf8(crawlQueue.get(0)))
+					  .setExecutor(Protos.ExecutorInfo.newBuilder(pinUserBoardExecutor))
+					  .build();
 
 				taskInfoList.add(pinUserProfileTaskInfo);
 				taskInfoList.add(pinUserBoardTaskInfo);
@@ -119,15 +112,15 @@ public class MesosDistributeScheduler implements Scheduler {
 		}
 	}
 
-	@Override public void offerRescinded(SchedulerDriver schedulerDriver, Protos.OfferID offerID) {
+	@Override 
+	public void offerRescinded(SchedulerDriver schedulerDriver, Protos.OfferID offerID) {
 
 	}
 
-	@Override public void statusUpdate(SchedulerDriver schedulerDriver, Protos.TaskStatus taskStatus) {
+	@Override 
+	public void statusUpdate(SchedulerDriver schedulerDriver, Protos.TaskStatus taskStatus) {
 		LOGGER.info(
-				"Status update : Task ID " + taskStatus.getTaskId().getValue() + "in state : " + taskStatus.getState()
-																										   .getValueDescriptor()
-																										   .getName());
+				"Status update : Task ID " + taskStatus.getTaskId().getValue() + "in state : " + taskStatus.getState().getValueDescriptor().getName());
 		if (taskStatus.getState() == Protos.TaskState.TASK_FINISHED) {
 			finishedTasks++;
 			LOGGER.info("Finished tasks : " + finishedTasks);
@@ -140,9 +133,7 @@ public class MesosDistributeScheduler implements Scheduler {
 				|| taskStatus.getState() == Protos.TaskState.TASK_KILLED
 				|| taskStatus.getState() == Protos.TaskState.TASK_LOST) {
 			LOGGER.error("Aborting because the task " + taskStatus.getTaskId().getValue() + " is in unexpected state : "
-					+ taskStatus.getState().getValueDescriptor().getName() + "with reason : " + taskStatus.getReason()
-																										  .getValueDescriptor()
-																										  .getName()
+					+ taskStatus.getState().getValueDescriptor().getName() + "with reason : " + taskStatus.getReason().getValueDescriptor().getName()
 					+ " from source : " + taskStatus.getSource().getValueDescriptor().getName() + " with message : "
 					+ taskStatus.getMessage());
 			schedulerDriver.abort();
@@ -150,27 +141,32 @@ public class MesosDistributeScheduler implements Scheduler {
 
 	}
 
-	@Override public void frameworkMessage(SchedulerDriver schedulerDriver, Protos.ExecutorID executorID,
+	@Override 
+	public void frameworkMessage(SchedulerDriver schedulerDriver, Protos.ExecutorID executorID,
 			Protos.SlaveID slaveID, byte[] bytes) {
 		String data = new String(bytes);
 		System.out.println(data);
 		LOGGER.info("User Profile Information : " + data);
 	}
 
-	@Override public void disconnected(SchedulerDriver schedulerDriver) {
+	@Override 
+	public void disconnected(SchedulerDriver schedulerDriver) {
 
 	}
 
-	@Override public void slaveLost(SchedulerDriver schedulerDriver, Protos.SlaveID slaveID) {
+	@Override 
+	public void slaveLost(SchedulerDriver schedulerDriver, Protos.SlaveID slaveID) {
 
 	}
 
-	@Override public void executorLost(SchedulerDriver schedulerDriver, Protos.ExecutorID executorID,
+	@Override 
+	public void executorLost(SchedulerDriver schedulerDriver, Protos.ExecutorID executorID,
 			Protos.SlaveID slaveID, int i) {
 
 	}
 
-	@Override public void error(SchedulerDriver schedulerDriver, String s) {
+	@Override 
+	public void error(SchedulerDriver schedulerDriver, String s) {
 		LOGGER.error("Error : " + s);
 	}
 }
