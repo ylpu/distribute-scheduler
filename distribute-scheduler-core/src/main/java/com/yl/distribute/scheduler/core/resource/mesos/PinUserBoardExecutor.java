@@ -1,6 +1,6 @@
-package com.yl.distribute.scheduler.resource.mesos;
+package com.yl.distribute.scheduler.core.resource.mesos;
 
-import com.yl.distribute.scheduler.resource.mesos.model.*;
+import com.yl.distribute.scheduler.core.resource.mesos.model.*;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;

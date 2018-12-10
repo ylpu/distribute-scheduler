@@ -1,4 +1,4 @@
-package com.yl.distribute.scheduler.resource.mesos;
+package com.yl.distribute.scheduler.core.resource.mesos;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;

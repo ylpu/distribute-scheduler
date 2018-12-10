@@ -1,4 +1,4 @@
-package com.yl.distribute.scheduler.resource.mesos.model;
+package com.yl.distribute.scheduler.core.resource.mesos.model;
 
 import com.google.gson.Gson;
 

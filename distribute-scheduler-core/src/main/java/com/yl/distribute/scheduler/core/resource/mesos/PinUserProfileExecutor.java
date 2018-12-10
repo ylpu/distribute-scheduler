@@ -1,4 +1,4 @@
-package com.yl.distribute.scheduler.resource.mesos;
+package com.yl.distribute.scheduler.core.resource.mesos;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -10,7 +10,9 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
-import com.yl.distribute.scheduler.resource.mesos.model.UserProfileInfo;
+
+import com.yl.distribute.scheduler.core.resource.mesos.model.UserProfileInfo;
+
 import java.io.IOException;
 
 public class PinUserProfileExecutor implements Executor {

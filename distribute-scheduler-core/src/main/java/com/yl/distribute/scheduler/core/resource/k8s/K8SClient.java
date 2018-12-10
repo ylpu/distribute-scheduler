@@ -1,4 +1,4 @@
-package com.yl.distribute.scheduler.resource.k8s;
+package com.yl.distribute.scheduler.core.resource.k8s;
 
 import java.io.File;
 import java.util.HashMap;
