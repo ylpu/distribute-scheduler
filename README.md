@@ -6,11 +6,11 @@ distribute-scheduler是基于zookeeper和netty的工作流调度系统，系统�
 * distribute-scheduler-client
 client端主要负责任务dag解析与分发，根据任务所属的pool从resource manager中选择最优的机器去提交任务，任务失败后会根据用户配置的重试次数选择其它机器重新提交任务；监听zookeeper中pool下面机器的变化，如果有机器掉线，关闭客户端到该机器的连接池
 
-* distribute-scheduler-server
-server端在启动的时候首先会把自己注册到zookeeper上，其次会启动一个jetty server,jetty server主要用于用户获取任务的输出信息和错误信息,最后当任务执行完成更新任务状态并调用resourcemanager释放资源
+* distribute-scheduler-executor
+executor端在启动的时候首先会把自己注册到zookeeper上，其次会启动一个jetty server,jetty server主要用于用户获取任务的输出信息和错误信息,最后当任务执行完成更新任务状态并调用resourcemanager释放资源
 
 * distribute-scheduler-resoucemanger
-resourcemanager主要负责管理机器的资源；暴露jmx信息给外部；监听zookeeper中机器的变化，自动刷新内存中维护的机器列表；为client端提供最优的机器选择策略，目前支持3中策略：1.最优资源策略，提供任务pool中内存最多的一台机器给客户端。2.最小任务策略，提供pool中机器任务数最少的一台机器给客户端。3.随机策略，从pool中随机选择一台机器给客户端。
+resourcemanager主要负责管理机器的资源；暴露jmx信息给外部；监听zookeeper中机器的变化，自动刷新内存中维护的机器列表；为client端提供最优的机器选择策略，目前支持3中策略：1.最优资源策略，提供任务pool中内存最多的一台机器给客户端。2.最小任务策略，提供pool中机器任务数最少的一台机器给客户端。3.随机策略，从pool中随机选择一台机器给客户端。同时支持基于mesos和k8s的资源管理。
 
 * distribute-scheduler-common
 common提供了任务调度的bean和utils等相关类
