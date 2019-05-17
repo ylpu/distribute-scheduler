@@ -1,5 +1,5 @@
 # Introduction
-distribute-scheduler是基于zookeeper和netty的工作流调度系统，系统目前支持命令方式和jar方式提交任务，系统提供了任务dag解析，pool的最优调度，重试，监控，告警等一些列功能。
+distribute-scheduler是一款自主研发的分布式工作流调度系统，系统目前支持命令方式和jar方式提交任务，系统提供了任务dag解析，pool的最优调度，重试，监控，告警等一些列功能。
 # Architecture
 ![image](https://github.com/ylpu/distribute-scheduler/blob/master/files/arch.png)
 # Component
@@ -16,7 +16,7 @@ resourcemanager主要负责管理机器的资源；暴露jmx信息给外部；�
 common提供了任务调度的bean和utils等相关类
 
 * distribute-scheduler-core
-core主要提供了resourcemanager的rpc调用，rpc的序列化方式，zookeeper,jersey等一些帮助类
+core主要提供了rpc框架，zookeeper,jersey等一些帮助类
 
 * distribute-scheduler-web
 web主要负责任务的调度，停止，查看以及更新（目前还在开发中）
