@@ -16,6 +16,7 @@ public class JobRequest implements Serializable,Comparable<JobRequest>{
     private JobType jobType;        
     private String poolPath;
     private int retryTimes = 0;
+    private int retryInterval = 5;
     private JobStrategy jobStrategy;
     private String cronExpression;    
     private String command;
@@ -121,6 +122,12 @@ public class JobRequest implements Serializable,Comparable<JobRequest>{
 	}
 	public void setUpdateTime(Date updateTime) {
 		this.updateTime = updateTime;
+	}	
+	public int getRetryInterval() {
+		return retryInterval;
+	}
+	public void setRetryInterval(int retryInterval) {
+		this.retryInterval = retryInterval;
 	}
 	@Override
     public int compareTo(JobRequest o) {

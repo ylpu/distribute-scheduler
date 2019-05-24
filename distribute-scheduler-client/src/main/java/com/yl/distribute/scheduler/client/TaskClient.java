@@ -103,6 +103,11 @@ public class TaskClient {
     private void resubmit(TaskRequest task){
         if(task.getFailedTimes() < task.getJob().getRetryTimes()) {   
             System.out.println("retry " + task.getFailedTimes() + " for " + task.getJob().getJobId());
+            try {
+				Thread.sleep(task.getJob().getRetryInterval());
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
             TaskRequest newTask = new TaskRequest();
             initNewTask(newTask,task);            
             TaskClient.getInstance().submit(newTask);            
