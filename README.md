@@ -12,6 +12,12 @@ executor端在启动的时候首先会把自己注册到zookeeper上，其次会
 * distribute-scheduler-resoucemanger
 resourcemanager主要负责管理机器的资源；暴露jmx信息给外部；监听zookeeper中机器的变化，自动刷新内存中维护的机器列表；为client端提供最优的机器选择策略，目前支持3中策略：1.最优资源策略，提供任务pool中内存最多的一台机器给客户端。2.最小任务策略，提供pool中机器任务数最少的一台机器给客户端。3.随机策略，从pool中随机选择一台机器给客户端。同时支持基于mesos和k8s的资源管理。
 
+* distribute-scheduler-resoucemanger-mesos
+基于mesos的资源调度（目前在开发中）
+
+* distribute-scheduler-resoucemanger-k8s
+基于k8s的资源调度（目前在开发中）
+
 * distribute-scheduler-common
 common提供了任务调度的bean和utils等相关类
 
@@ -19,6 +25,9 @@ common提供了任务调度的bean和utils等相关类
 core主要提供了rpc框架，zookeeper,jersey等一些帮助类
 
 * distribute-scheduler-web
+web主要负责任务的调度，停止，查看以及更新（废弃）
+
+* distribute-scheduler-webapp
 web主要负责任务的调度，停止，查看以及更新（目前还在开发中）
 
 # Feature
