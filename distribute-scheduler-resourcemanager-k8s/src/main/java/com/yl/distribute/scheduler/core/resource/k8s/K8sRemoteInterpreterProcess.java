@@ -80,12 +80,10 @@ public class K8sRemoteInterpreterProcess extends RemoteInterpreterProcess {
     return podName;
   }
 
-  @Override
   public String getInterpreterSettingName() {
     return interpreterSettingName;
   }
 
-  @Override
   public void start(String userName) throws IOException {
     // create new pod
     apply(specTempaltes, false);
@@ -132,7 +130,6 @@ public class K8sRemoteInterpreterProcess extends RemoteInterpreterProcess {
     }
   }
 
-  @Override
   public void stop() {
     // delete pod
     try {
@@ -153,7 +150,6 @@ public class K8sRemoteInterpreterProcess extends RemoteInterpreterProcess {
     }
   }
 
-  @Override
   public String getHost() {
     if (portForward) {
       return "localhost";
@@ -162,12 +158,10 @@ public class K8sRemoteInterpreterProcess extends RemoteInterpreterProcess {
     }
   }
 
-  @Override
   public int getPort() {
     return podPort;
   }
 
-  @Override
   public boolean isRunning() {
     try {
       if (RemoteInterpreterUtils.checkIfRemoteEndpointAccessible(getHost(), getPort())) {
@@ -371,7 +365,6 @@ public class K8sRemoteInterpreterProcess extends RemoteInterpreterProcess {
     return randomStr;
   }
 
-  @Override
   public void processStarted(int port, String host) {
     LOGGER.info("Interpreter pod created {}:{}", host, port);
     synchronized (started) {
@@ -380,7 +373,6 @@ public class K8sRemoteInterpreterProcess extends RemoteInterpreterProcess {
     }
   }
 
-  @Override
   public String getErrorMessage() {
     return null;
   }
