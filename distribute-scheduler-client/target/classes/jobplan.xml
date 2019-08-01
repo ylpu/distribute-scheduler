@@ -1,0 +1,7 @@
+<?xml version="1.0"?>
+<jobplan>
+   <job jobId="a" depends=""/>      
+   <job jobId="b" depends="a"/>
+   <job jobId="c" depends="a"/>
+   <job jobId="d" depends="b,c"/>
+</jobplan>

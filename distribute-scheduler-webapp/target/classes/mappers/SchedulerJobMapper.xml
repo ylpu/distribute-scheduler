@@ -1,0 +1,213 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yl.distribute.scheduler.dao.SchedulerJobMapper" >
+  <resultMap id="BaseResultMap" type="com.yl.distribute.scheduler.entity.SchedulerJob" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="job_id" property="jobId" jdbcType="VARCHAR" />
+    <result column="job_name" property="jobName" jdbcType="VARCHAR" />
+    <result column="job_desc" property="jobDesc" jdbcType="VARCHAR" />
+    <result column="job_type" property="jobType" jdbcType="VARCHAR" />
+    <result column="pool_path" property="poolPath" jdbcType="VARCHAR" />
+    <result column="retry_times" property="retryTimes" jdbcType="INTEGER" />
+    <result column="job_strategy" property="jobStrategy" jdbcType="VARCHAR" />
+    <result column="cron_expression" property="cronExpression" jdbcType="VARCHAR" />
+    <result column="command" property="command" jdbcType="VARCHAR" />
+    <result column="alert_email" property="alertEmail" jdbcType="VARCHAR" />
+    <result column="owner" property="owner" jdbcType="VARCHAR" />
+    <result column="resource_parameters" property="resourceParameters" jdbcType="VARCHAR" />
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, job_id, job_name, job_desc, job_type, pool_path, retry_times, job_strategy, cron_expression, 
+    command, alert_email, owner, resource_parameters, create_time, update_time
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from tbl_job
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from tbl_job
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.yl.distribute.scheduler.entity.SchedulerJob" >
+    insert into tbl_job (id, job_id, job_name, 
+      job_desc, job_type, pool_path, 
+      retry_times, job_strategy, cron_expression, 
+      command, alert_email, owner, 
+      resource_parameters, create_time, update_time
+      )
+    values (#{id,jdbcType=INTEGER}, #{jobId,jdbcType=VARCHAR}, #{jobName,jdbcType=VARCHAR}, 
+      #{jobDesc,jdbcType=VARCHAR}, #{jobType,jdbcType=VARCHAR}, #{poolPath,jdbcType=VARCHAR}, 
+      #{retryTimes,jdbcType=INTEGER}, #{jobStrategy,jdbcType=VARCHAR}, #{cronExpression,jdbcType=VARCHAR}, 
+      #{command,jdbcType=VARCHAR}, #{alertEmail,jdbcType=VARCHAR}, #{owner,jdbcType=VARCHAR}, 
+      #{resourceParameters,jdbcType=VARCHAR}, #{createTime,jdbcType=TIMESTAMP}, #{updateTime,jdbcType=TIMESTAMP}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.yl.distribute.scheduler.entity.SchedulerJob" >
+    insert into tbl_job
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="jobId != null" >
+        job_id,
+      </if>
+      <if test="jobName != null" >
+        job_name,
+      </if>
+      <if test="jobDesc != null" >
+        job_desc,
+      </if>
+      <if test="jobType != null" >
+        job_type,
+      </if>
+      <if test="poolPath != null" >
+        pool_path,
+      </if>
+      <if test="retryTimes != null" >
+        retry_times,
+      </if>
+      <if test="jobStrategy != null" >
+        job_strategy,
+      </if>
+      <if test="cronExpression != null" >
+        cron_expression,
+      </if>
+      <if test="command != null" >
+        command,
+      </if>
+      <if test="alertEmail != null" >
+        alert_email,
+      </if>
+      <if test="owner != null" >
+        owner,
+      </if>
+      <if test="resourceParameters != null" >
+        resource_parameters,
+      </if>
+      <if test="createTime != null" >
+        create_time,
+      </if>
+      <if test="updateTime != null" >
+        update_time,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="jobId != null" >
+        #{jobId,jdbcType=VARCHAR},
+      </if>
+      <if test="jobName != null" >
+        #{jobName,jdbcType=VARCHAR},
+      </if>
+      <if test="jobDesc != null" >
+        #{jobDesc,jdbcType=VARCHAR},
+      </if>
+      <if test="jobType != null" >
+        #{jobType,jdbcType=VARCHAR},
+      </if>
+      <if test="poolPath != null" >
+        #{poolPath,jdbcType=VARCHAR},
+      </if>
+      <if test="retryTimes != null" >
+        #{retryTimes,jdbcType=INTEGER},
+      </if>
+      <if test="jobStrategy != null" >
+        #{jobStrategy,jdbcType=VARCHAR},
+      </if>
+      <if test="cronExpression != null" >
+        #{cronExpression,jdbcType=VARCHAR},
+      </if>
+      <if test="command != null" >
+        #{command,jdbcType=VARCHAR},
+      </if>
+      <if test="alertEmail != null" >
+        #{alertEmail,jdbcType=VARCHAR},
+      </if>
+      <if test="owner != null" >
+        #{owner,jdbcType=VARCHAR},
+      </if>
+      <if test="resourceParameters != null" >
+        #{resourceParameters,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null" >
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null" >
+        #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.yl.distribute.scheduler.entity.SchedulerJob" >
+    update tbl_job
+    <set >
+      <if test="jobId != null" >
+        job_id = #{jobId,jdbcType=VARCHAR},
+      </if>
+      <if test="jobName != null" >
+        job_name = #{jobName,jdbcType=VARCHAR},
+      </if>
+      <if test="jobDesc != null" >
+        job_desc = #{jobDesc,jdbcType=VARCHAR},
+      </if>
+      <if test="jobType != null" >
+        job_type = #{jobType,jdbcType=VARCHAR},
+      </if>
+      <if test="poolPath != null" >
+        pool_path = #{poolPath,jdbcType=VARCHAR},
+      </if>
+      <if test="retryTimes != null" >
+        retry_times = #{retryTimes,jdbcType=INTEGER},
+      </if>
+      <if test="jobStrategy != null" >
+        job_strategy = #{jobStrategy,jdbcType=VARCHAR},
+      </if>
+      <if test="cronExpression != null" >
+        cron_expression = #{cronExpression,jdbcType=VARCHAR},
+      </if>
+      <if test="command != null" >
+        command = #{command,jdbcType=VARCHAR},
+      </if>
+      <if test="alertEmail != null" >
+        alert_email = #{alertEmail,jdbcType=VARCHAR},
+      </if>
+      <if test="owner != null" >
+        owner = #{owner,jdbcType=VARCHAR},
+      </if>
+      <if test="resourceParameters != null" >
+        resource_parameters = #{resourceParameters,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null" >
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null" >
+        update_time = #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.yl.distribute.scheduler.entity.SchedulerJob" >
+    update tbl_job
+    set job_id = #{jobId,jdbcType=VARCHAR},
+      job_name = #{jobName,jdbcType=VARCHAR},
+      job_desc = #{jobDesc,jdbcType=VARCHAR},
+      job_type = #{jobType,jdbcType=VARCHAR},
+      pool_path = #{poolPath,jdbcType=VARCHAR},
+      retry_times = #{retryTimes,jdbcType=INTEGER},
+      job_strategy = #{jobStrategy,jdbcType=VARCHAR},
+      cron_expression = #{cronExpression,jdbcType=VARCHAR},
+      command = #{command,jdbcType=VARCHAR},
+      alert_email = #{alertEmail,jdbcType=VARCHAR},
+      owner = #{owner,jdbcType=VARCHAR},
+      resource_parameters = #{resourceParameters,jdbcType=VARCHAR},
+      create_time = #{createTime,jdbcType=TIMESTAMP},
+      update_time = #{updateTime,jdbcType=TIMESTAMP}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <cache />
+</mapper>
