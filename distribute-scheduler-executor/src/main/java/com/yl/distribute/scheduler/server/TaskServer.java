@@ -3,7 +3,7 @@ package com.yl.distribute.scheduler.server;
 import java.io.FileInputStream;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Map.Entry;
+import java.util.concurrent.LinkedBlockingQueue;
 import java.util.Properties;
 import org.I0Itec.zkclient.ZkClient;
 import org.apache.commons.lang3.math.NumberUtils;
@@ -18,7 +18,6 @@ import org.eclipse.jetty.servlet.ServletHolder;
 import org.eclipse.jetty.xml.XmlConfiguration;
 import com.sun.jersey.spi.container.servlet.ServletContainer;
 import com.yl.distribute.scheduler.common.bean.HostInfo;
-import com.yl.distribute.scheduler.common.bean.TaskRequest;
 import com.yl.distribute.scheduler.common.bean.TaskResponse;
 import com.yl.distribute.scheduler.common.enums.TaskStatus;
 import com.yl.distribute.scheduler.common.utils.MetricsUtils;
@@ -27,11 +26,9 @@ import com.yl.distribute.scheduler.core.redis.RedisClient;
 import com.yl.distribute.scheduler.core.task.TaskManager;
 import com.yl.distribute.scheduler.core.zk.ZKHelper;
 import com.yl.distribute.scheduler.server.handler.TaskCall;
-import com.yl.distribute.scheduler.server.handler.TaskServerHandler;
-import com.yl.distribute.scheduler.server.handler.TaskTracker;
+import com.yl.distribute.scheduler.server.handler.TaskRequestManager;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.ChannelFuture;
-import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelOption;
 import io.netty.channel.EventLoopGroup;
@@ -164,13 +161,12 @@ public class TaskServer {
         Runtime.getRuntime().addShutdownHook(
         new Thread(new Runnable() {
             public void run(){   
-                Map<TaskRequest,ChannelHandlerContext> taskMap = TaskTracker.getTaskMap();
-                if(taskMap != null && taskMap.size() > 0) {
-                    for(Entry<TaskRequest,ChannelHandlerContext> entry : taskMap.entrySet()) {                        
-                        writeResponse(new TaskCall(entry.getValue(),entry.getKey()));
-                        TaskManager.getInstance().updateTask(entry.getKey(),TaskStatus.FAILED);
-                    }
-                }       
+            	    LinkedBlockingQueue<TaskCall> taskQueue = TaskRequestManager.getQueue();
+            	    TaskCall taskCall = null;
+            	    while((taskCall = taskQueue.poll()) != null) {
+            	    	     writeResponse(taskCall);
+            	    	     TaskManager.getInstance().updateTask(taskCall.getTaskRequest(),TaskStatus.FAILED);
+            	    }
           }
       }));
     }

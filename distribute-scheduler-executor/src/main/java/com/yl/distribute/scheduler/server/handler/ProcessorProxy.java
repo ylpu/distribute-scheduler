@@ -42,9 +42,8 @@ public class ProcessorProxy implements InvocationHandler{
             throw new RuntimeException(e);
         }finally {
             try {
-            	removeProcessFile(task);
-                TaskTracker.removeTask(task);                
                 releaseResource(task);
+                removeProcessFile(task);
             } catch (Exception e) {
                 LOG.error(e);
                 throw new RuntimeException(e);
@@ -62,13 +61,13 @@ public class ProcessorProxy implements InvocationHandler{
     }
     
     private void removeProcessFile(TaskRequest task) {
-    	String processFile = "";
-    	OSInfo osinfo = OSInfo.getOsInfo();
-    	if(osinfo == OSInfo.Windows) {
-    		processFile = GlobalConstants.WIN_PID_DIR + task.getTaskId() + ".pid";
-    	}else if(osinfo == OSInfo.Linux) {
-    		processFile = GlobalConstants.LINUX_PID_DIR + task.getTaskId() + ".pid";
-    	} 
-    	IOUtils.removeFile(processFile);
+    	    String processFile = "";
+        OSInfo osinfo = OSInfo.getOsInfo();
+    	    if(osinfo == OSInfo.Windows) {
+    		    processFile = GlobalConstants.WIN_PID_DIR + task.getTaskId() + ".pid";
+    	    }else if(osinfo == OSInfo.Linux) {
+    		    processFile = GlobalConstants.LINUX_PID_DIR + task.getTaskId() + ".pid";
+    	    } 
+    	    IOUtils.removeFile(processFile);
     }
 }
