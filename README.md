@@ -1,7 +1,7 @@
 # Introduction
 distribute-scheduler是一款自主研发的分布式工作流调度系统，系统目前支持命令方式和jar方式提交任务，系统提供了任务dag解析，pool的最优调度，重试，监控，告警等一些列功能。
 # Architecture
-![image](https://github.com/ylpu/distribute-scheduler/blob/master/files/arch.png)
+![image](https://github.com/ylpu/distribute-scheduler/blob/master/files/arch-new.png)
 # Component
 * distribute-scheduler-client
 client端主要负责任务dag解析与分发，根据任务所属的pool从resource manager中选择最优的机器去提交任务，任务失败后会根据用户配置的重试次数选择其它机器重新提交任务；监听zookeeper中pool下面机器的变化，如果有机器掉线，关闭客户端到该机器的连接池
