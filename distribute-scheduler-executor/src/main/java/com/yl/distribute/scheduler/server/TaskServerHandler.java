@@ -15,7 +15,7 @@ public class TaskServerHandler extends SimpleChannelInboundHandler<TaskRequest> 
 	
     @Override
     public void channelActive(ChannelHandlerContext ctx) throws Exception {
-    	    LOG.info("active channel" + ctx);
+        LOG.info("active channel" + ctx);
     }
     
     @Override
@@ -28,7 +28,7 @@ public class TaskServerHandler extends SimpleChannelInboundHandler<TaskRequest> 
 
     @Override
     public void channelRead0(ChannelHandlerContext ctx, TaskRequest task) throws Exception {
-    	    TaskRequestManager.addTask(new TaskCall(ctx,task));
+        TaskRequestManager.addTask(new TaskCall(ctx,task));
     } 
     
     /**

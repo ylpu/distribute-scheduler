@@ -160,15 +160,15 @@ public class TaskServer {
     public void addShutDownHook() throws Exception {
         Runtime.getRuntime().addShutdownHook(
         new Thread(new Runnable() {
-            public void run(){   
-            	    LinkedBlockingQueue<TaskCall> taskQueue = TaskRequestManager.getQueue();
-            	    TaskCall taskCall = null;
-            	    while((taskCall = taskQueue.poll()) != null) {
-            	    	     writeResponse(taskCall);
-            	    	     TaskManager.getInstance().updateTask(taskCall.getTaskRequest(),TaskStatus.FAILED);
-            	    }
-          }
-      }));
+            public void run(){ 
+                LinkedBlockingQueue<TaskCall> taskQueue = TaskRequestManager.getQueue();
+                TaskCall taskCall = null;
+                while((taskCall = taskQueue.poll()) != null) {
+                     writeResponse(taskCall);
+                     TaskManager.getInstance().updateTask(taskCall.getTaskRequest(),TaskStatus.FAILED);
+                }
+            }
+        }));
     }
     
     private void writeResponse(TaskCall call) {
