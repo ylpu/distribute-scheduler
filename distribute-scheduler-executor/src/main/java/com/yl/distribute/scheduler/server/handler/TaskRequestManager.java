@@ -13,6 +13,8 @@ public class TaskRequestManager {
     private static Log LOG = LogFactory.getLog(TaskRequestManager.class);
 	
     private static LinkedBlockingQueue<TaskCall> queue = new LinkedBlockingQueue<TaskCall>();
+    
+    private static final int POOL_SIZE = 2;
 	
     private TaskRequestManager() {}
 	
@@ -23,9 +25,8 @@ public class TaskRequestManager {
     private static void init() {
         ExecutorService es = null;
         try {
-            int poolSize = Runtime.getRuntime().availableProcessors()/2;
-            es = Executors.newFixedThreadPool(poolSize);
-            for(int i = 0; i < poolSize; i++) {
+            es = Executors.newFixedThreadPool(POOL_SIZE);
+            for(int i = 0; i < POOL_SIZE; i++) {
                 es.execute(new TaskExecutor(queue));
             }
         }finally {

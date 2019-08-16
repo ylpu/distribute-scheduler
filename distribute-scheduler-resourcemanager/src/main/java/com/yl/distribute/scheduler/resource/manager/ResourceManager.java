@@ -37,11 +37,8 @@ public class ResourceManager{
     
     //key is hostname,value is tasknumbers
     public Map<String,Integer> taskMap = new HashMap<String,Integer>();
-    
-    private static final String REDIS_CONFIG = "redis.properties";
         
-    
-    private ResourceManager() {        
+    private ResourceManager() {      
     }
     
     public static ResourceManager getInstance() {
@@ -52,9 +49,9 @@ public class ResourceManager{
      * 竞选节点为active resource manager
      */
     public void compainAndInit() {
-    	Properties prop = new Properties();
-    	prop.put("zk.server.list", "127.0.0.1:2181");
-    	compainAndInit(rootPool,prop);
+        Properties prop = new Properties();
+        prop.put("zk.server.list", "127.0.0.1:2181");
+        compainAndInit(rootPool,prop);
     }
     
     /**
@@ -66,14 +63,14 @@ public class ResourceManager{
         
         List<String> root = zkClient.getChildren("/");      
         if(root == null || !root.contains("rm")) {
-        	ZKHelper.createNode(zkClient, "/rm", null);        	
+           ZKHelper.createNode(zkClient, "/rm", null);        	
         }
         List<String> rmChildren = zkClient.getChildren("/rm");
         if(rmChildren == null || rmChildren.size() == 0) {
-        	ZKHelper.createEphemeralNode(zkClient, "/rm/" + MetricsUtils.getHostName() + ":8088", null);
-        	init(rootPool,prop);
+           ZKHelper.createEphemeralNode(zkClient, "/rm/" + MetricsUtils.getHostName() + ":8088", null);
+           init(rootPool,prop);
         }else {
-        	zkClient.subscribeChildChanges("/rm", new IZkChildListener() {              
+           zkClient.subscribeChildChanges("/rm", new IZkChildListener() {              
                 public void handleChildChange(String parentPath, List<String> currentChildren) throws Exception { 
                     LOG.warn(String.format("[ZookeeperRegistry] service list change: path=%s, currentChildren=%s at %s",
                             parentPath, currentChildren.toString(),DateUtils.getDateAsString(new Date(),DateUtils.dateTimeStr)));                    
@@ -101,7 +98,7 @@ public class ResourceManager{
         }
     }
     
-    private void initPool(ZkClient zkClient,String poolPath) {          
+    private void initPool(ZkClient zkClient,String poolPath) {
         List<String> servers = poolServers.get(poolPath);
         if(servers == null) {
             servers = new ArrayList<String>();
@@ -150,6 +147,7 @@ public class ResourceManager{
             }
         }
     }
+    
     /**
      * 刷新pool
      * @param zkClient
@@ -176,13 +174,12 @@ public class ResourceManager{
     private synchronized void removeResource(List<String> disconnectedChildren) {
         if(disconnectedChildren != null && disconnectedChildren.size() > 0) {
             for(String child : disconnectedChildren) {
-                RedisClient.getInstance(Configuration.getConfig(REDIS_CONFIG)).del(child.getBytes());
                 resourceMap.remove(child);                
             }
         }
     }
     /**
-     * 为每台机器添加资源信息
+     * 从zk上读取资源信息
      * @param zkClient
      * @param poolPath
      * @param children
@@ -190,39 +187,31 @@ public class ResourceManager{
     private synchronized void setResource(ZkClient zkClient,String poolPath,String... children) {
         if(children != null && children.length > 0) {
             for(String child : children) {                
-//                HostInfo hostInfo = zkClient.readData(poolPath + "/" + child);   
-                HostInfo redisHostInfo = RedisClient.getInstance(Configuration.getConfig(REDIS_CONFIG)).getObject(child);
-                resourceMap.put(child, redisHostInfo);     
+                HostInfo hostInfo = zkClient.readData(poolPath + "/" + child); 
+                if(hostInfo != null ) {
+                   resourceMap.put(child, hostInfo);
+                }else {
+                   resourceMap.put(child, new HostInfo());
+                }
             }
         }
     }
+
     /**
-     * 处理任务时减少资源
+     * 更新资源信息
      * @param serverName
      * @param resourceParams
      */
-    public void subResource(String serverName,JobRequest jobConf) {
-        long usedMemory = 0;
+    public void updateResource(HostInfo hi) {
         synchronized(resourceMap){
-            HostInfo hostInfo = resourceMap.get(serverName);
-            usedMemory = MetricsUtils.getTaskMemory(jobConf);
-            hostInfo.setAvailableCores(hostInfo.getAvailableCores() - 1);
-            hostInfo.setAvailableMemory(hostInfo.getAvailableMemory() - usedMemory);  
-        }
-    }
-    
-    /**
-     * 任务处理完毕恢复资源
-     * @param serverName
-     * @param resourceParams
-     */
-    public void addResource(String serverName,JobRequest jobConf) {
-        long usedMemory = 0;
-        synchronized(resourceMap){
-            HostInfo hostInfo = resourceMap.get(serverName);
-            usedMemory = MetricsUtils.getTaskMemory(jobConf);
-            hostInfo.setAvailableCores(hostInfo.getAvailableCores() + 1);
-            hostInfo.setAvailableMemory(hostInfo.getAvailableMemory() + usedMemory); 
+            HostInfo hostInfo = resourceMap.get(hi.getHostName());
+            hostInfo.setIp(hi.getIp());
+            hostInfo.setHostName(hi.getHostName());
+            hostInfo.setTotalCores(hi.getTotalCores());
+            hostInfo.setTotalMemory(hi.getTotalMemory());
+            hostInfo.setAvailableCores(hi.getAvailableCores());
+            hostInfo.setAvailableMemory(hi.getAvailableMemory());  
+            hostInfo.setCpuLoad(hi.getCpuLoad());
         }
     }
     

@@ -1,8 +1,6 @@
 package com.yl.distribute.scheduler.server.processor;
 
 import com.yl.distribute.scheduler.common.bean.TaskRequest;
-import com.yl.distribute.scheduler.common.utils.MetricsUtils;
-
 import io.netty.channel.ChannelHandlerContext;
 
 public class JavaProcessor extends CommonTaskProcessor implements IServerProcessor{    
@@ -24,14 +22,6 @@ public class JavaProcessor extends CommonTaskProcessor implements IServerProcess
     public String buildCommand() {
         StringBuilder commandBuilder = new StringBuilder();
         commandBuilder.append(task.getJob().getCommand());
-        commandBuilder.append(" ");
-        if(task.getJob().getCommand().indexOf("-Xmx") <= 0) {
-        	long executeExemory = MetricsUtils.getTaskMemory(task.getJob());
-        	commandBuilder.append(" ");
-        	commandBuilder.append("-Xms" + executeExemory + "mb");
-        	commandBuilder.append(" ");
-        	commandBuilder.append("-Xmx" + executeExemory + "mb");
-        } 
         return commandBuilder.toString();
     }
 }

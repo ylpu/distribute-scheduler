@@ -38,11 +38,11 @@ public class ResourceClient {
         
         String resourceServer = getResourceServer();   
         if(StringUtils.isBlank(resourceServer)) {
-        	throw new RuntimeException("can not get active resource manager");
+           throw new RuntimeException("can not get active resource manager");
         }
-    	String[] serverAndPort = resourceServer.split(":");
-    	String server =  serverAndPort[0];
-    	int port = NumberUtils.toInt(serverAndPort[1]);
+        String[] serverAndPort = resourceServer.split(":");
+        String server =  serverAndPort[0];
+        int port = NumberUtils.toInt(serverAndPort[1]);
         
         ResourceClient client = new ResourceClient();         
         EventLoopGroup group = new NioEventLoopGroup();

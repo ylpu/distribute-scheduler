@@ -18,9 +18,9 @@ public class TaskCallback{
     }
     
     public void onRead(TaskResponse response){
-    	LOG.info(task.getTaskId() + "返回状态是" + response.getTaskStatus());
-    	//根据response中任务的状态来判断dag是否往下执行
-    	TaskResponseManager.add(task.getJob().getJobId(),response);        
+        LOG.info(task.getTaskId() + "返回状态是" + response.getTaskStatus());
+        //根据response中任务的状态来判断dag是否往下执行
+        TaskResponseManager.add(task.getJob().getJobId(),response);        
         resubmitIfNeccesery(response);
     }
     

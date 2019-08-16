@@ -131,18 +131,17 @@ public class RedisClient {
      * @return
      */
     public synchronized static Jedis getJedis() {
+      	Jedis resource = null;
         try {
             if (jedisPool != null) {
-                Jedis resource = jedisPool.getResource();
+                 resource = jedisPool.getResource();
                 return resource;
-            } else {
-                System.out.println("can not get redis pool");
-                return null;
-            }
+            } 
         } catch (Exception e) {
-        	LOG.error(e);
-            return null;
-        }
+            LOG.error(e);
+            throw new RuntimeException("can not get redis pool");
+       }
+       return resource;
     }
     
     /**
@@ -344,11 +343,13 @@ public class RedisClient {
     public <T> void setObject(String key,T obj,int expire) {
         byte[] data = ObjTOSerialize(obj);
         Jedis jedis = getJedis();
-        jedis.set(key.getBytes(),data);
-        if(expire != 0) {
-            jedis.expire(key, expire);
+        if(jedis != null) {
+            jedis.set(key.getBytes(),data);
+            if(expire != 0) {
+                jedis.expire(key, expire);
+            }
+            jedis.close();
         }
-        jedis.close();
     }
     
     /**
@@ -368,31 +369,27 @@ public class RedisClient {
         return (T)obj;
     }
     
-    public void getAndInc(TaskRequest taskRequest){
-        
-        Jedis jedis = getJedis();        
-        String identifier = RedisLock.acquireLockWithTimeout(
-                jedis,taskRequest.getRunningHost(),ACQUIER_LOCK_TIME,LOCK_TIME);
-        HostInfo hostInfo = getObject(taskRequest.getRunningHost());
-        hostInfo.setAvailableMemory(hostInfo.getAvailableMemory() + MetricsUtils.getTaskMemory(taskRequest.getJob()));
-        hostInfo.setAvailableCores(hostInfo.getAvailableCores() + 1);
-        setObject(taskRequest.getRunningHost(), hostInfo,0);   
-        RedisLock.releaseLock(jedis, taskRequest.getRunningHost(), identifier);
-        jedis.close();
-    }
-    
-    public void getAndSub(TaskRequest taskRequest){
-        
-        Jedis jedis = getJedis();        
-        String identifier = RedisLock.acquireLockWithTimeout(
-                jedis,taskRequest.getRunningHost(),ACQUIER_LOCK_TIME,LOCK_TIME);
-        HostInfo hostInfo = getObject(taskRequest.getRunningHost());
-        hostInfo.setAvailableMemory(hostInfo.getAvailableMemory() - MetricsUtils.getTaskMemory(taskRequest.getJob()));
-        hostInfo.setAvailableCores(hostInfo.getAvailableCores() - 1);
-        setObject(taskRequest.getRunningHost(), hostInfo,0);        
-        RedisLock.releaseLock(jedis, taskRequest.getRunningHost(), identifier);
-        jedis.close();
-    }
+//    public void getAndInc(TaskRequest taskRequest){
+//        
+//        Jedis jedis = getJedis();        
+//        String identifier = RedisLock.acquireLockWithTimeout(
+//                jedis,taskRequest.getRunningHost(),ACQUIER_LOCK_TIME,LOCK_TIME);
+//        HostInfo hostInfo = getObject(taskRequest.getRunningHost());
+//        setObject(taskRequest.getRunningHost(), hostInfo,0);   
+//        RedisLock.releaseLock(jedis, taskRequest.getRunningHost(), identifier);
+//        jedis.close();
+//    }
+//    
+//    public void getAndSub(TaskRequest taskRequest){
+//        
+//        Jedis jedis = getJedis();        
+//        String identifier = RedisLock.acquireLockWithTimeout(
+//                jedis,taskRequest.getRunningHost(),ACQUIER_LOCK_TIME,LOCK_TIME);
+//        HostInfo hostInfo = getObject(taskRequest.getRunningHost());
+//        setObject(taskRequest.getRunningHost(), hostInfo,0);        
+//        RedisLock.releaseLock(jedis, taskRequest.getRunningHost(), identifier);
+//        jedis.close();
+//    }
     
     /**
      * 
@@ -447,18 +444,17 @@ public class RedisClient {
             TaskRequest tr = new TaskRequest();
             JobRequest jc = new JobRequest();            
             jc.setCommand("java -jar abc.jar");
-            jc.setResourceParameters("-memory100m -cpu4");
             tr.setJob(jc);
             tr.setRunningHost("ppd-02020301:8081");
             
-            Thread t = new Thread(new Runnable(){
-            	@Override
-                public void run() {
-                    RedisClient.getInstance(null).getAndInc(tr);
-                }
-                
-            });
-            t.start();            
+//            Thread t = new Thread(new Runnable(){
+//            	@Override
+//                public void run() {
+//                    RedisClient.getInstance(null).getAndInc(tr);
+//                }
+//                
+//            });
+//            t.start();            
         }
         
         try {

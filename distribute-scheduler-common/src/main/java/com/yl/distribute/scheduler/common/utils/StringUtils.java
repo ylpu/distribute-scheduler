@@ -64,7 +64,8 @@ public class StringUtils {
             builder.append("availableCores : " + entry.getValue().getAvailableCores() + ", ");
             builder.append("availableMemory : " + entry.getValue().getAvailableMemory() + ", ");
             builder.append("totalCores : " + entry.getValue().getTotalCores() + ", ");
-            builder.append("totalMemory : " + entry.getValue().getTotalMemory());
+            builder.append("totalMemory : " + entry.getValue().getTotalMemory() + ", ");
+            builder.append("cpuLoad : " + entry.getValue().getCpuLoad());
             builder.append("]");
             if(iterator.hasNext()) {
                 builder.append("\n");

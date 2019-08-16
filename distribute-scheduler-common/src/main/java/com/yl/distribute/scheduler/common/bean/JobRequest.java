@@ -22,7 +22,6 @@ public class JobRequest implements Serializable,Comparable<JobRequest>{
     private String command;
     private String alertEmail;
     private String owner;
-    private String resourceParameters;
     private Date createTime;
     private Date updateTime;
     private JobReleation jobReleation = new JobReleation();    
@@ -102,12 +101,7 @@ public class JobRequest implements Serializable,Comparable<JobRequest>{
 	public JobReleation getJobReleation() {
         return jobReleation;
     }
-    public String getResourceParameters() {
-		return resourceParameters;
-	}
-	public void setResourceParameters(String resourceParameters) {
-		this.resourceParameters = resourceParameters;
-	}
+
 	public void setJobReleation(JobReleation jobReleation) {
         this.jobReleation = jobReleation;
     }	

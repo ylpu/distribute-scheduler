@@ -54,10 +54,8 @@ public class ProcessorProxy implements InvocationHandler{
 
     private void releaseResource(TaskRequest task) {
         LOG.info("start to release resource for " + task.getRunningHost());
-        Properties prop = Configuration.getConfig(REDIS_CONFIG);
-        RedisClient.getInstance(prop).getAndInc(task);
         ResourceService service = ResourceProxy.get(ResourceService.class);
-        service.addResource(task.getRunningHost(), task);
+        service.decTask(task.getRunningHost(), task);
     }
     
     private void removeProcessFile(TaskRequest task) {

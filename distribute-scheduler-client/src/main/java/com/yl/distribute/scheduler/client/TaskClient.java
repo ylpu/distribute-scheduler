@@ -2,7 +2,6 @@ package com.yl.distribute.scheduler.client;
 
 import java.util.Date;
 import java.util.Properties;
-
 import javax.ws.rs.core.Response;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
@@ -31,7 +30,6 @@ public class TaskClient {
     
     private static final TaskClient jobClient = new TaskClient();    
 
-    
     private TaskClient() {
     	Properties prop = Configuration.getConfig("Config.properties");
         new PoolChangeListener().init(prop);
@@ -72,9 +70,9 @@ public class TaskClient {
                         public void operationComplete(ChannelFuture future) throws Exception {
                             if(future.isSuccess()) {
                                 LOG.info("提交任务" + task.getTaskId() + "-" + task.getId() + "到" + idleHost);                                
-                                service.subResource(idleHost, task);  
+                                service.incTask(idleHost, task);  
                             } else {  
-                            	LOG.error("提交任务" + task.getTaskId() + "-" + task.getId() + "到" + idleHost + "失败");  
+                            	   LOG.error("提交任务" + task.getTaskId() + "-" + task.getId() + "到" + idleHost + "失败");  
                             }                                
                         }  
                     });                  
@@ -83,9 +81,9 @@ public class TaskClient {
             });
             
         }catch(Exception e) {
-        	LOG.error(e);
-        	updateTaskStatus(task,TaskStatus.FAILED);
-        	resubmit(task);
+           LOG.error(e);
+           updateTaskStatus(task,TaskStatus.FAILED);
+           resubmit(task);
         }
     } 
     
@@ -102,11 +100,11 @@ public class TaskClient {
     
     private void resubmit(TaskRequest task){
         if(task.getFailedTimes() < task.getJob().getRetryTimes()) {   
-            System.out.println("retry " + task.getFailedTimes() + " for " + task.getJob().getJobId());
+            LOG.info("retry " + task.getFailedTimes() + " for " + task.getJob().getJobId());
             try {
 				Thread.sleep(task.getJob().getRetryInterval());
 			} catch (InterruptedException e) {
-				e.printStackTrace();
+				LOG.error(e);
 			}
             TaskRequest newTask = new TaskRequest();
             initNewTask(newTask,task);            

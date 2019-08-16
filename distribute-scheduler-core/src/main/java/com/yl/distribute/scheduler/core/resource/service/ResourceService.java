@@ -10,9 +10,11 @@ public interface ResourceService {
     
     String getIdleHost(JobRequest input,String... lastFailedHosts);
     
-    void addResource(String serverName,TaskRequest taskRequest);
+    void incTask(String serverName,TaskRequest taskRequest);
     
-    void subResource(String serverName,TaskRequest taskRequest);
+    void updateResource(HostInfo hostInfo);
+    
+    void decTask(String serverName,TaskRequest taskRequest);
     
     Map<String,HostInfo> getResources();
     

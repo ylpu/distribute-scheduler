@@ -35,7 +35,8 @@ public class TaskServerHandler extends SimpleChannelInboundHandler<TaskRequest> 
      * if caught exception, then close the channel 
      */
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
-        LOG.error(cause);
-        ctx.close();
+    	    if(ctx != null) {
+    	       ctx.close();
+    	    }
     }
 }

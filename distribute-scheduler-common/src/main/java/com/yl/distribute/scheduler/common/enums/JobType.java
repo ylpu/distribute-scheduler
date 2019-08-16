@@ -3,9 +3,11 @@ package com.yl.distribute.scheduler.common.enums;
 public enum JobType { 
     
     COMMAND,
-    JAVA;
-    
-    public static JobType getTaskType(String taskType) {
+    JAVA,
+	HIVE,
+	SPARK;
+
+	public static JobType getTaskType(String taskType) {
         for(JobType tt : JobType.values()) {
             if(tt.toString().equalsIgnoreCase(taskType)) {
                 return tt;

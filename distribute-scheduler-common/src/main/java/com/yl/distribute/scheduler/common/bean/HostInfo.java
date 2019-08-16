@@ -43,7 +43,12 @@ public class HostInfo implements Serializable,Comparable<HostInfo>{
      * available memory of current host
      */
     
-    private long availableMemory;    
+    private long availableMemory;   
+    
+    /**
+     * cpu load
+     */
+    private Double cpuLoad;
 
     public String getIp() {
 		return ip;
@@ -93,7 +98,15 @@ public class HostInfo implements Serializable,Comparable<HostInfo>{
         this.hostName = hostName;
     }
 
-    @Override
+    public Double getCpuLoad() {
+		return cpuLoad;
+	}
+
+	public void setCpuLoad(Double cpuLoad) {
+		this.cpuLoad = cpuLoad;
+	}
+
+	@Override
     public int compareTo(HostInfo o) {
        if(o!= null) {
            HostInfo hostInfo =(HostInfo)o;

@@ -48,7 +48,7 @@ public class JobDriver {
     public void start() {
 //        startJob(job);
 //        new Thread(new DFSJobChecker()).start();
-    	bfsVisit(jobRequest);
+        bfsVisit(jobRequest);
         new Thread(new BFSJobChecker()).start();
         
     }
@@ -125,8 +125,7 @@ public class JobDriver {
     private boolean jobHasFinished(JobRequest job){
         TaskResponse taskResponse = TaskResponseManager.get(job.getJobId());
         if(taskResponse != null){            
-            if((taskResponse.getTaskStatus() == TaskStatus.FAILED )
-                    || (taskResponse.getTaskStatus() == TaskStatus.SUCCESS)){
+            if(taskResponse.getTaskStatus() == TaskStatus.SUCCESS){
                 return true;
             }
         }
@@ -134,16 +133,19 @@ public class JobDriver {
     }
     
     private void submitJob(JobRequest job) {
-        JobRequest jobConf = getJobDetail(job.getJobId());
+        TaskRequest taskRequest = initTask(jobRequest);
+        JobRequest jobConf = getJobDetail(jobRequest.getJobId());
         if(jobConf == null){
-            throw new RuntimeException("can not get job for jobId " + job.getJobId());
+            throw new RuntimeException("can not get job for jobId " + jobRequest.getJobId());
         }
         if(StringUtils.isNotBlank(jobConf.getCronExpression())){
             JobScheduleInfo scheduleInfo = new JobScheduleInfo();
-            setScheduleInfo(scheduleInfo,jobConf);
+            setScheduleInfo(scheduleInfo,taskRequest);
             JobScheduler.addJob(scheduleInfo, UserJob.class);
         }else{
-            submitTask(jobConf); 
+            TaskClient client = TaskClient.getInstance();
+            taskRequest.setTaskStatus(TaskStatus.SUBMIT);
+            client.submit(taskRequest);
         }        
     }
     
@@ -153,16 +155,15 @@ public class JobDriver {
         return JerseyClient.get(jobApi + "/getJobById/" + jobId, JobRequest.class);
     }
     
-    private void setScheduleInfo(JobScheduleInfo scheduleInfo,JobRequest job){
-        scheduleInfo.setJobName(job.getJobName());
-        scheduleInfo.setJobGroupName(job.getJobName() + "_group");
-        scheduleInfo.setTriggerName(job.getJobName() + "_trigger");
-        scheduleInfo.setTriggerGroupName(job.getJobName() + "_triggerGroup");
-        scheduleInfo.setData(job);
+    private void setScheduleInfo(JobScheduleInfo scheduleInfo,TaskRequest taskRequest){
+        scheduleInfo.setJobName(taskRequest.getJob().getJobId() + "-" + taskRequest.getTaskId());
+        scheduleInfo.setJobGroupName(taskRequest.getJob().getJobName() + "_group");
+        scheduleInfo.setTriggerName(taskRequest.getJob().getJobId() + "-" + taskRequest.getTaskId() + "_trigger");
+        scheduleInfo.setTriggerGroupName(taskRequest.getJob().getJobName() + "_triggerGroup");
+        scheduleInfo.setData(taskRequest);
     }
     
-    private void submitTask(JobRequest job){
-        TaskClient client = TaskClient.getInstance();
+    private TaskRequest initTask(JobRequest job) {
         TaskRequest task = new TaskRequest();
         task.setTaskId(new ObjectId().toHexString());
         task.setJob(job);
@@ -173,9 +174,9 @@ public class JobDriver {
         task.setFailedTimes(0);
         task.setStdOutputUrl("");
         task.setErrorOutputUrl("");
-        task.setTaskStatus(TaskStatus.SUBMIT);
-        client.submit(task);
+        return task;
     }
+
     @Deprecated
     private final class DFSJobChecker implements Runnable{
     	JobRequest job = null;

@@ -22,7 +22,8 @@ import com.yl.distribute.scheduler.common.bean.TaskResponse;
 import com.yl.distribute.scheduler.common.enums.TaskStatus;
 import com.yl.distribute.scheduler.common.utils.MetricsUtils;
 import com.yl.distribute.scheduler.core.config.Configuration;
-import com.yl.distribute.scheduler.core.redis.RedisClient;
+import com.yl.distribute.scheduler.core.resource.rpc.ResourceProxy;
+import com.yl.distribute.scheduler.core.resource.service.ResourceService;
 import com.yl.distribute.scheduler.core.task.TaskManager;
 import com.yl.distribute.scheduler.core.zk.ZKHelper;
 import com.yl.distribute.scheduler.server.handler.TaskCall;
@@ -43,12 +44,15 @@ import io.netty.handler.codec.serialization.ObjectEncoder;
 import io.netty.util.concurrent.DefaultEventExecutorGroup;
 
 public class TaskServer {
+	
+	private static final String ROOT_POOL = "/root";
     
     private static Log LOG = LogFactory.getLog(TaskServer.class);
-    
-    private static final String REDIS_CONFIG = "redis.properties";
-    
+        
     private int serverPort;
+    
+    public TaskServer() {
+    }
     
     public TaskServer(int serverPort) {
         this.serverPort = serverPort;
@@ -89,7 +93,10 @@ public class TaskServer {
      * @param path
      */
     public void regServer(ZkClient client, Map<String,Object> parameterMap) {  
-    	String poolPath = parameterMap.get("serverPoolPath").toString();
+        if(!client.exists(ROOT_POOL)) {     
+            ZKHelper.createNode(client, ROOT_POOL,null);     
+        }
+        String poolPath = ROOT_POOL + "/" + parameterMap.get("serverPoolName").toString();
         if(!client.exists(poolPath)) {     
             ZKHelper.createNode(client, poolPath,null);     
         }
@@ -98,18 +105,17 @@ public class TaskServer {
             ZKHelper.delete(client, serverPath);     
         }
         HostInfo hostInfo = new HostInfo();
-        setRegistData(hostInfo);
+        setMetricData(hostInfo);
         ZKHelper.createEphemeralNode(client,serverPath, hostInfo);
-        RedisClient redisClient = RedisClient.getInstance(Configuration.getConfig(REDIS_CONFIG));        
-        redisClient.setObject(MetricsUtils.getHostName() + ":" + serverPort, hostInfo, 0);
     } 
     
     
-    private void setRegistData(HostInfo hostInfo) {
+    private void setMetricData(HostInfo hostInfo) {
         hostInfo.setTotalCores(MetricsUtils.getAvailiableProcessors());
         hostInfo.setTotalMemory(MetricsUtils.getTotalMemInfo());
         hostInfo.setAvailableCores(MetricsUtils.getAvailiableProcessors());
         hostInfo.setAvailableMemory(MetricsUtils.getFreeMemInfo());
+        hostInfo.setCpuLoad(MetricsUtils.getCpuLoad());
         hostInfo.setIp(MetricsUtils.getHostIpAddress() + ":" + serverPort);
         hostInfo.setHostName(MetricsUtils.getHostName() + ":" + serverPort);
     }
@@ -184,29 +190,58 @@ public class TaskServer {
     public static void start(Map<String,Object> parameterMap) throws Exception{
         TaskServer server = new TaskServer(NumberUtils.toInt(parameterMap.get("serverPort").toString()));
         
-        ZkClient client = ZKHelper.getClient(parameterMap.get("zkServers").toString());
-//        String path = parameterMap.get("serverPoolPath") + MetricsUtils.getHostName() + ":" + parameterMap.get("serverPort").toString();
-        server.regServer(client,parameterMap);
-        server.startJettyServer(NumberUtils.toInt(parameterMap.get("jettyPort").toString()));
+        //系统异常终止监听
         server.addShutDownHook();
+        
+        //注册机器信息到zk
+        ZkClient client = ZKHelper.getClient(parameterMap.get("zkServers").toString());
+        server.regServer(client,parameterMap);
+        
+        //启动 jetty server
+        server.startJettyServer(NumberUtils.toInt(parameterMap.get("jettyPort").toString()));
+       
+        //更新机器内存
+        MetricsHeartBeatThread heartBeatThread = server.new MetricsHeartBeatThread();
+        heartBeatThread.setDaemon(true);
+        heartBeatThread.start();
+        
+        //启动 netty server
         server.start();
+    }
+    
+    private final class MetricsHeartBeatThread extends Thread{
+		@Override
+		public void run() {
+			while(true) {
+				try {
+					Thread.sleep(1000);
+					HostInfo hostInfo = new HostInfo();
+					setMetricData(hostInfo);
+			        ResourceService service = ResourceProxy.get(ResourceService.class);
+			        service.updateResource(hostInfo);
+				} catch (InterruptedException e) {
+					LOG.error(e);
+				}
+			}
+		}
+    	
     }
     
     public static void main(String[] args) throws Exception {
         Properties prop = Configuration.getConfig("Config.properties");        
         int serverPort = Configuration.getInt(prop, "server.regist.default.port");
-        String serverPoolPath = Configuration.getString(prop, "server.regist.default.pool.path");
+        String serverPoolName = Configuration.getString(prop, "server.regist.default.pool.name");
         int jettyPort = Configuration.getInt(prop, "jetty.server.port");       
         
         if (args.length > 1) {           
             serverPort = NumberUtils.toInt(args[0],serverPort);   
-            serverPoolPath = args[1];             
+            serverPoolName = args[1];             
         }
         
         String zkServers = Configuration.getString(prop, "zk.server.list");
         Map<String,Object> parameterMap = new HashMap<String,Object>();
         parameterMap.put("serverPort", serverPort);
-        parameterMap.put("serverPoolPath", serverPoolPath);
+        parameterMap.put("serverPoolName", serverPoolName);
         parameterMap.put("jettyPort", jettyPort);        
         parameterMap.put("zkServers", zkServers);
         start(parameterMap);   

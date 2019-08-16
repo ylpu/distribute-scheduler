@@ -1,6 +1,7 @@
 package com.yl.distribute.scheduler.common.utils;
 
 import java.lang.management.ManagementFactory;
+import java.math.BigDecimal;
 import java.net.InetAddress;
 import java.util.Arrays;
 import java.util.List;
@@ -19,11 +20,10 @@ public class MetricsUtils {
         System.out.println(getFreeMemInfo());
         System.out.println(getTotalMemInfo());
         System.out.println(getAvailiableProcessors());
-        getHostName();
-        getHostIpAddress();
+        System.out.println(getHostName());
+        System.out.println(getHostIpAddress());
         JobRequest jobConf = new JobRequest();
         jobConf.setCommand("java -jar abc.jar");
-        jobConf.setResourceParameters("-memory1024m -cpu4");
         System.out.println(getTaskMemory(jobConf));
     }  
 
@@ -42,6 +42,13 @@ public class MetricsUtils {
     
     public static int getAvailiableProcessors() {
         return Runtime.getRuntime().availableProcessors();
+    }
+    
+    public static double getCpuLoad() {
+        OperatingSystemMXBean mem = (OperatingSystemMXBean) ManagementFactory.getOperatingSystemMXBean();
+        BigDecimal bg = new BigDecimal(mem.getSystemCpuLoad() * 100);
+        double percentCpuLoad = bg.setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue();
+        return percentCpuLoad;
     }
     
     public static String getHostName() {
@@ -69,23 +76,16 @@ public class MetricsUtils {
     }
     
     public static long getTaskMemory(JobRequest jobConf) {
-    	long memory = 0;
-    	if(StringUtils.isNotBlank(jobConf.getCommand())) {
-    		if(jobConf.getCommand().indexOf("-Xmx") > 0) {
-    			memory = extractMemoryInfo(jobConf.getCommand(),"-Xmx");
-    			if(memory > 0 ) {
-    				return memory;
-    			}
-    		}
-    	}
-    	
-        if(StringUtils.isNotBlank(jobConf.getResourceParameters())) {
-        	memory = extractMemoryInfo(jobConf.getResourceParameters(),"-memory");
-			if(memory > 0 ) {
-				return memory;
-			}
-        }
-        return GlobalConstants.DEFAUTL_MEMEORY;
+        long memory = 0;
+        if(StringUtils.isNotBlank(jobConf.getCommand())) {
+           if(jobConf.getCommand().indexOf("-Xmx") > 0) {
+              memory = extractMemoryInfo(jobConf.getCommand(),"-Xmx");
+              if(memory > 0 ) {
+                return memory;
+              }
+           }
+         }   
+       return GlobalConstants.DEFAUTL_MEMEORY;
     }
     
     private static long extractMemoryInfo(String command,String key) {
