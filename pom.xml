@@ -10,7 +10,7 @@
      <version>1.5.13.RELEASE</version>
   </parent>
   <properties>
-    <netty.version>4.1.25.Final</netty.version>
+    <netty.version>4.1.42.Final</netty.version>
     <zkclient.version>0.10</zkclient.version>
     <distribute-scheduler.version>0.0.1-SNAPSHOT</distribute-scheduler.version>
     <junit.version>4.12</junit.version>
