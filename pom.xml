@@ -25,7 +25,7 @@
     <commons-beanutils.version>1.9.3</commons-beanutils.version>
     <commons-lang3.version>3.4</commons-lang3.version>
     <dom4j-version>1.6.1</dom4j-version>
-    <quartz-version>2.3.0</quartz-version>   
+    <quartz-version>2.3.2</quartz-version>   
     <guava.version>23.0</guava.version> 
     <jna.version>4.5.2</jna.version>
     <platform.version>3.5.2</platform.version>
