@@ -13,7 +13,7 @@
     <netty.version>4.1.25.Final</netty.version>
     <zkclient.version>0.10</zkclient.version>
     <distribute-scheduler.version>0.0.1-SNAPSHOT</distribute-scheduler.version>
-    <junit.version>4.12</junit.version>
+    <junit.version>4.13.1</junit.version>
     <jersey.version>2.25.1</jersey.version>
     <jmx.version>1.2.1</jmx.version>
     <jetty-jsp.version>9.2.15.v20160210</jetty-jsp.version>
