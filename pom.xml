@@ -38,7 +38,7 @@
     <mysql-connector-java.version>5.1.34</mysql-connector-java.version>
     <pagehelper.version>3.6.3</pagehelper.version>    
     <swagger.version>2.2.2</swagger.version>
-    <log4j.version>2.11.0</log4j.version>
+    <log4j.version>2.16.0</log4j.version>
     <slf4j.version>1.8.0-alpha2</slf4j.version>
   </properties>
   <modules>
